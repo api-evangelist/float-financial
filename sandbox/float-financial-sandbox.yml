@@ -1,0 +1,46 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+  (read via the Zendesk Help Center JSON API, HTTP 200), and https://docs.floatfinancial.com/llms.txt
+api: Float Public API
+sandbox_available: false
+test_environment: none
+test_keys: none
+test_data: none
+test_clock: false
+pointer_emitted: false
+verbatim: >-
+  "Can I create a Sandbox environment to test Float's API? No, Float doesn't offer a sandbox or test environment
+  for API access."
+note: >-
+  Recorded because it is an explicit, documented NEGATIVE from Float's own FAQ, not an absence we inferred. There
+  is one environment — production, https://api.floatfinancial.com — and one credential type, a live per-business
+  bearer token minted by an Administrator in the Float web app. No `Sandbox` pointer is emitted in apis.yml: the
+  artifact documents the absence of a sandbox and must not be scored as the presence of one.
+consequences:
+  - Integration development and testing happen against live business data and live cards.
+  - >-
+    The two BETA write operations (createCard, createCardLimit) issue real cards and real spend limits — there is
+    no non-production path to exercise them.
+  - >-
+    Webhook consumers cannot trigger transaction.authorized / transaction.cleared events on demand; a real card
+    purchase is required to produce one.
+  - >-
+    There is no key-prefix distinction between test and live credentials, so a leaked token cannot be triaged as
+    "only test".
+closest_substitutes:
+- name: Float API Google Sheets template
+  url: https://docs.google.com/spreadsheets/d/1BcLXmVfTugZOpkMJK8NFTLCJ7h--opxMo2bpI5BUOqI/edit
+  source: https://docs.floatfinancial.com/changelog/may-2025-release-notes
+  note: >-
+    Float's own no-code way to exercise the API read surface — copy the sheet, paste a token and business name,
+    click "Import data". Still runs against production with a live token.
+- name: Anonymous spec endpoint
+  url: https://api.floatfinancial.com/v1/openapi
+  note: >-
+    The only Float API endpoint reachable without credentials (HTTP 200). Useful for contract-level tooling and
+    client generation, not for exercising behaviour.
+remediation_for_provider: >-
+  A sandbox with seeded businesses, magic card numbers and a webhook event trigger would remove the single
+  largest barrier in this API — today the first call an integrator makes is against real money.

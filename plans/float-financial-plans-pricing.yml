@@ -1,0 +1,98 @@
+generated: '2026-08-16'
+method: searched
+source: https://floatfinancial.com/pricing (HTTP 200)
+currency: CAD
+billing_period: monthly
+plan_count: 3
+api_access_documented_in_pricing: false
+api_access_note: >-
+  Float's pricing page does NOT list API access as a tier feature on any of the three plans, and neither the API
+  documentation nor the "Get Started with Float's Public API" help article states a plan requirement. Third-party
+  reviews assert the API is limited to Professional and Enterprise; that claim is NOT corroborated by any Float
+  page probed here, so it is recorded as unverified rather than asserted. What IS on the pricing page is that
+  API tokens are minted by an Administrator in the Float web app, and that the NetSuite integration and SAML SSO
+  are Professional/Enterprise only.
+plans:
+- name: Essentials
+  price: 0
+  price_display: $0/user/mo
+  currency: CAD
+  period: monthly
+  positioning: For small businesses & startups getting started with spend management.
+  quotas:
+    physical_cards: 20
+    virtual_cards: unlimited
+    credit_limit_max: 3000000
+    cashback_max_pct: 1
+    interest_yield_max_pct: 3.5
+    fx_rate_pct: 0.25
+  included:
+  - Up to 20 physical & unlimited virtual cards with custom limits and controls
+  - Credit limits up to $3M (subject to eligibility)
+  - Up to 1% cashback on spend (1% requires over $25k monthly spend per card program)
+  - CDIC-insured business accounts earning up to 3.5% interest on CAD and USD funds
+  - Fee-free inbound payments via wire, EFT and ACH
+  - 0.25% FX rates
+  - Mobile app, automated receipt collection and matching
+  - Canadian tax tracking
+  - Employee reimbursements with mileage and CAD direct payouts
+  - Bill payments via wire, and no-fee EFT and ACH
+  - Interac e-transfer and 1-business-day funding
+  - Accounting sync with QBO, Xero or custom exports
+  - Customer support in English and French
+  - MFA secured login
+  excluded:
+  - NetSuite integration
+  - SAML SSO
+  - USD reimbursement payouts
+  - Delegate access
+  - Post-sale manager transaction reviews
+  overage: null
+- name: Professional
+  price: 10
+  price_display: $10/user/mo
+  price_floor: 100
+  price_floor_display: starts at $100/mo and includes your first 10 users
+  currency: CAD
+  period: monthly
+  billing_model: active-user
+  billing_model_note: Only pay for employees who actually use the platform.
+  positioning: Advanced controls & workflows for growing teams.
+  quotas:
+    physical_cards: unlimited
+    virtual_cards: unlimited
+  included:
+  - Everything in Essentials
+  - Unlimited physical and virtual cards with advanced controls
+  - Team management with multi-level requests and approvals
+  - Customizable submission and approval policies
+  - International reports and USD direct payouts for employee reimbursements
+  - Post-sale manager transaction reviews
+  - Delegate access
+  - Advanced accounting integration with NetSuite
+  - Float Intelligence, including the transaction coding agent
+  - SAML SSO
+  overage: null
+- name: Enterprise
+  price: null
+  price_display: Contact us
+  currency: CAD
+  period: custom
+  positioning: Dedicated support & custom solutions at scale.
+  included:
+  - Everything in Professional
+  - Custom implementation and data migration
+  - Team training and advanced workshops
+  - Premium support and access to new features
+  - Dedicated Customer Success Manager
+  - Custom Charge credit terms with dedicated underwriting team
+  - Custom pricing and rewards
+  overage: null
+  note: Sales-gated. No published price.
+footnotes:
+- Conditions and fees apply and are subject to change. See terms and conditions for details.
+- To issue more than twenty physical cards move to the Professional plan. Float does not charge for physical cards after this amount.
+- Charge and Fast Funding availability subject to eligibility requirements.
+- 1% cashback with over $25k in monthly spending per card program (USD, CAD). Enterprise has different rewards structures.
+- Float may change yield rates at any time without notice.
+terms: https://floatfinancial.com/legal

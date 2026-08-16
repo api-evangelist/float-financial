@@ -1,0 +1,219 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  https://docs.floatfinancial.com/docs/accounting, https://docs.floatfinancial.com/docs/webhooks,
+  live probe of https://api.floatfinancial.com/v1/cards (HTTP 401) and https://api.floatfinancial.com/v1/openapi
+  (HTTP 200), and openapi/float-financial-openapi.yml
+api: Float Public API
+base_url: https://api.floatfinancial.com
+versioning:
+  style: path
+  current: v1
+  example: https://api.floatfinancial.com/v1/card-transactions
+  info_version: 1.0.0
+  note: >-
+    Every path is prefixed /v1/. The OpenAPI info.version is 1.0.0. No media-type or header versioning, and no
+    documented policy for how a v2 would be introduced.
+authentication:
+  style: bearer
+  header: 'Authorization: Bearer <api_token>'
+  scheme_name: bearerToken
+  token_issuance: >-
+    Log in to app.floatfinancial.com as an Administrator, then Settings > Business Settings > Developers.
+  scoped: false
+  note: >-
+    A single OpenAPI securityScheme (http/bearer). Tokens are per-business; the spec declares no scopes and no
+    OAuth flows, so authorization is all-or-nothing at the token level.
+  see: authentication/float-financial-authentication.yml
+idempotency:
+  supported: true
+  header: X-Idempotency-Key
+  required: true
+  scope: per-operation
+  operation_count: 9
+  operations:
+  - operationId: createAccountingConnection
+    method: POST
+    path: /v1/accounting-connections
+  - operationId: markBillAsSynced
+    method: POST
+    path: /v1/bills/{bill_id}/sync
+  - operationId: createCardLimit
+    method: POST
+    path: /v1/card-limits
+  - operationId: createCard
+    method: POST
+    path: /v1/cards
+  - operationId: updateCustomField
+    method: PATCH
+    path: /v1/custom-fields/{custom_field_id}
+  - operationId: updateCustomFieldOption
+    method: PATCH
+    path: /v1/custom-fields/{custom_field_id}/options/{option_id}
+  - operationId: updateGLCode
+    method: PATCH
+    path: /v1/gl-codes/{gl_code_id}
+  - operationId: markReimbursementAsSynced
+    method: POST
+    path: /v1/reimbursements/{reimbursement_id}/sync
+  - operationId: createUser
+    method: POST
+    path: /v1/users
+  retention: undocumented
+  spec_description: A unique key to ensure idempotency of the request
+  note: >-
+    Float declares X-Idempotency-Key on 9 of its 22 write operations and marks it REQUIRED, not optional — a
+    stronger stance than most APIs, which make the header opt-in. Coverage is uneven, though: the
+    accounting-sync writes (markBillAsSynced, markReimbursementAsSynced), card and card-limit creation, user
+    creation and the single-object GL-code / custom-field updates are protected, while the bulk-create surface
+    (createGLCodes, createTaxCodes, createCustomFields, createVendors, createCustomFieldOptions), the bulk
+    PATCH endpoints (patchBills, patchTransactions, patchReimbursements) and createWebhookSubscription are not.
+    Key retention/TTL and replay-conflict behaviour are undocumented.
+  unprotected_writes:
+  - patchBills
+  - patchBill
+  - patchTransactions
+  - patchTransaction
+  - patchReimbursements
+  - patchReimbursement
+  - patchVendor
+  - createGLCodes
+  - createTaxCodes
+  - createCustomFields
+  - createCustomFieldOptions
+  - createVendors
+  - createWebhookSubscription
+  - updateAccountingConnection
+  - updateTaxCode
+  - deleteCustomFields
+  - deleteCustomFieldById
+  - deleteCustomFieldOptionById
+  - deleteTaxCodeById
+  - deleteAccountingConnection
+  webhook_idempotency:
+    supported: true
+    field: id
+    note: >-
+      Webhook events carry a unique `id` (also sent as the Float-Webhook-Id header) that Float's docs explicitly
+      tell consumers to use for idempotency, because deliveries are retried up to 10 times.
+pagination:
+  style: page-number
+  request_params:
+  - name: page
+    in: query
+    note: 1-indexed
+  - name: page_size
+    in: query
+  response_fields:
+  - items
+  - pages
+  applies_to_operations: 21
+  example: |
+    for (let page_num = 1; true; page_num++) {
+      ... "?page=" + page_num + "&page_size=" + page_size ...
+      let page = await response.json()
+      for (const item of page.items) { ... }
+      if (page.pages <= page_num) break
+    }
+  source: https://docs.floatfinancial.com/docs/accounting
+  note: >-
+    Offset/page-number paging, not cursors. The client loops until `page.pages <= page_num`. No Link header and
+    no next-page URL is returned.
+filtering:
+  params:
+  - name: created_at__gte
+    in: query
+    note: ISO-8601 lower bound; present on all 21 paginated collection operations
+  - name: created_at__lte
+    in: query
+    note: ISO-8601 upper bound
+  - name: order_by
+    in: query
+  resource_specific:
+  - accounting_stage
+  - export_status
+  - transaction_type
+  - filter_type
+  - account_id
+  - card_id
+  note: >-
+    Django-style double-underscore lookup suffixes (`__gte`, `__lte`) — consistent with the gunicorn/Django
+    stack the API advertises in its Server header.
+field_expansion:
+  supported: false
+  note: >-
+    No `expand`/`fields`/`include` parameter. Related objects are inlined as reference sub-schemas instead —
+    NameReferenceSchema, EmailReferenceSchema, ExternalIdReferenceSchema, NameExternalIdReferenceSchema — each
+    carrying just enough of the related entity (name / email / external_id) to code a transaction without a
+    second call.
+metadata:
+  supported: true
+  mechanism: custom fields
+  note: >-
+    Float exposes user-defined metadata as first-class Custom Fields (with typed options and rules), not as an
+    opaque `metadata` map. Custom fields attach to card transactions, bills and reimbursements and are managed
+    through /v1/custom-fields.
+external_id:
+  supported: true
+  note: >-
+    GL codes, tax codes, vendors and subsidiaries all carry an `external_id`, which is the join key against the
+    customer's ERP. This is the primary correlation mechanism for accounting integrations.
+request_id_tracing:
+  supported: false
+  observed_headers: []
+  note: >-
+    No X-Request-Id / X-Correlation-Id observed on live responses (probed /v1/openapi 200 and /v1/cards 401).
+    Errors carry no trace identifier, so support escalation cannot be correlated to a single call.
+error_envelope:
+  format: vendor-json
+  rfc9457: false
+  content_type: application/json
+  shape:
+    error: machine-readable code (e.g. UNAUTHORIZED)
+    message: human-readable description
+    docs: link to https://docs.floatfinancial.com
+  observed_example: '{"error":"UNAUTHORIZED","message":"Incorrect authentication credentials.","docs":"https://docs.floatfinancial.com"}'
+  observed_from: live GET https://api.floatfinancial.com/v1/cards without credentials (HTTP 401)
+  note: >-
+    The envelope is real and consistent, but it is NOT declared in the OpenAPI — the spec's 4xx responses carry
+    only a description string with no schema, so a generated client has no error type. See
+    errors/float-financial-problem-types.yml.
+  see: errors/float-financial-problem-types.yml
+rate_limiting:
+  documented: false
+  headers_observed: []
+  note: >-
+    Float publishes no rate limits and returns no RateLimit-*/X-RateLimit-*/Retry-After headers on the
+    unauthenticated responses observed. The OpenAPI declares no 429 response on any of the 71 operations.
+  see: rate-limits/float-financial-rate-limits.yml
+security_headers_observed:
+- 'strict-transport-security: max-age=31536000; includeSubDomains; preload'
+- 'x-content-type-options: nosniff'
+- 'x-frame-options: DENY'
+- 'referrer-policy: no-referrer'
+- 'cross-origin-opener-policy: same-origin'
+- 'permissions-policy: camera=(), geolocation=(), microphone=()'
+observed_on: https://api.floatfinancial.com/v1/openapi
+webhooks:
+  supported: true
+  signing: HMAC-SHA256
+  headers:
+  - Float-Signature
+  - Float-Webhook-Id
+  - Float-Timestamp
+  payload_style: thin (resource id only — fetch the full object with a follow-up GET)
+  see: asyncapi/float-financial-webhooks.yml
+spec_discovery:
+  self_describing: true
+  endpoint: https://api.floatfinancial.com/v1/openapi
+  operation: getOpenAPI
+  auth_required: false
+  note: >-
+    Float serves its own OpenAPI document anonymously from the API host as a first-class `Meta` operation. This
+    is unusually good discovery hygiene: no docs-host scraping is needed to obtain the contract.
+cross_references:
+  authentication: authentication/float-financial-authentication.yml
+  errors: errors/float-financial-problem-types.yml
+  lifecycle: lifecycle/float-financial-lifecycle.yml
+  rate_limits: rate-limits/float-financial-rate-limits.yml
+  data_model: data-model/float-financial-data-model.yml

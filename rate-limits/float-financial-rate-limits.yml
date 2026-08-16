@@ -1,0 +1,33 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  https://docs.floatfinancial.com/llms.txt and every guide it indexes, https://docs.floatfinancial.com/docs/accounting,
+  openapi/float-financial-openapi.yml, the Float help centre (Zendesk Help Center API search), plus live header
+  observation on https://api.floatfinancial.com/v1/openapi (HTTP 200) and https://api.floatfinancial.com/v1/cards (HTTP 401)
+api: Float Public API
+limit_count: 0
+documented: false
+limits: []
+response_headers:
+  published: []
+  observed: []
+  note: >-
+    No RateLimit-*, X-RateLimit-*, Retry-After or any throttling header was returned on either observed
+    response. The full observed header set on a 200 is: date, content-type, server (gunicorn), allow, vary,
+    content-language, x-frame-options, permissions-policy, strict-transport-security, x-content-type-options,
+    referrer-policy, cross-origin-opener-policy. None of these carries a quota signal.
+exhaustion_status_code: undocumented
+spec_coverage:
+  status_429_declared: false
+  operations_declaring_429: 0
+  note: None of the 71 operations declares a 429 response.
+note: >-
+  An honest zero. Float publishes no rate limits anywhere a machine or a human can read: not in the OpenAPI
+  (no 429 on any operation), not in the accounting guide — which shows an unbounded page-by-page polling loop
+  over /v1/card-transactions with no backoff advice — not in the webhooks guide, and not in the help centre.
+  This is a real gap for agent consumers: the accounting integration pattern Float itself documents is a tight
+  pagination loop, and an integrator has no published budget to stay inside and no runtime signal to react to.
+remediation_for_provider: >-
+  Publish the per-token limit and window, emit RateLimit-Limit / RateLimit-Remaining / RateLimit-Reset (or the
+  X-RateLimit-* equivalents) plus Retry-After on 429, and declare the 429 response in the OpenAPI so generated
+  clients and agents can handle it.

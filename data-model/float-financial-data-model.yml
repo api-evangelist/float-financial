@@ -1,0 +1,362 @@
+generated: '2026-08-16'
+method: derived
+source: openapi/float-financial-openapi.yml ($ref graph and id-reference fields across 180 component schemas)
+api: Float Public API
+identifier_style:
+  format: UUID
+  path_params:
+  - transaction_id
+  - bill_id
+  - reimbursement_id
+  - payment_id
+  - receipt_id
+  - card_id
+  - card_limit_id
+  - account_id
+  - custom_field_id
+  - option_id
+  - gl_code_id
+  - tax_code_id
+  - vendor_id
+  - subsidiary_id
+  - team_id
+  - user_id
+  - approval_policy_id
+  - submission_policy_id
+  - connection_id
+  prefixed: false
+  note: >-
+    Opaque UUIDs with no type prefix, so an id alone does not identify its resource type — unlike Stripe-style
+    prefixed ids. The one exception is webhook event ids, which the docs show prefixed (`evt_...`).
+external_id_join:
+  fields: [external_id, parent_external_id]
+  entities: [GLCode, TaxCode, Vendor, Subsidiary]
+  note: >-
+    `external_id` is the correlation key to the customer's accounting system and is the backbone of the whole
+    integration model — the accounting guide instructs integrators to create coding objects in Float carrying
+    the ERP's own identifiers.
+reference_pattern:
+  note: >-
+    Float does not use plain foreign-key ids for related objects. Instead it embeds one of four purpose-built
+    reference wrappers, each carrying the minimum a coder needs without a second call.
+  wrappers:
+  - name: ReferenceSchema
+    carries: [id]
+  - name: NameReferenceSchema
+    carries: [id, name]
+  - name: EmailReferenceSchema
+    carries: [id, email]
+  - name: ExternalIdReferenceSchema
+    carries: [id, external_id]
+  - name: NameExternalIdReferenceSchema
+    carries: [id, name, external_id]
+entities:
+- name: CardTransaction
+  schema: CardTransactionSchema
+  operations: [getTransactions, getTransactionById, patchTransactions, patchTransaction]
+  domain: spend
+  relationships:
+  - belongs_to: Card
+    via: card
+    wrapper: NameReferenceSchema
+  - belongs_to: User
+    via: user
+    wrapper: EmailReferenceSchema
+  - belongs_to: Team
+    via: team
+    wrapper: NameReferenceSchema
+  - belongs_to: Vendor
+    via: vendor
+    wrapper: ExternalIdReferenceSchema
+  - belongs_to: Subsidiary
+    via: subsidiary
+    wrapper: NameExternalIdReferenceSchema
+  - has_many: Receipt
+    via: receipts
+  - has_many: TransactionLine
+    via: lines
+  - has_many: Export
+    via: exports
+  - has_one: Merchant
+    via: merchant
+  - has_one: CardTransactionAccountingStage
+    via: accounting_stage
+  money_fields: [total, merchant_total]
+- name: AccountTransaction
+  schema: AccountTransactionSchema
+  operations: [getAccountTransactions, getAccountTransactionByTransactionId]
+  domain: treasury
+  relationships:
+  - belongs_to: User
+    via: spender
+    wrapper: EmailReferenceSchema
+  - belongs_to: Team
+    via: team
+    wrapper: NameReferenceSchema
+  - belongs_to: GLCode
+    via: gl_code
+    wrapper: ExternalIdReferenceSchema
+  - belongs_to: Vendor
+    via: vendor
+    wrapper: NameReferenceSchema
+  - belongs_to: Account
+    via: account
+  money_fields: [total]
+- name: Account
+  schema: AccountSchema
+  operations: [getAccounts, getAccountById]
+  domain: treasury
+  fields: [id, type, currency]
+- name: Bill
+  schema: BillSchema
+  operations: [getBills, getBillById, patchBills, patchBill, markBillAsSynced]
+  domain: accounts-payable
+  relationships:
+  - belongs_to: User
+    via: creator
+    wrapper: EmailReferenceSchema
+  - belongs_to: BillPayee
+    via: payee
+    wrapper: NameExternalIdReferenceSchema
+  - belongs_to: ApprovalPolicy
+    via: approval_policy
+    wrapper: NameReferenceSchema
+  - has_many: BillAttachment
+    via: attachments
+  - has_many: BillLineItem
+    via: lines
+  - has_many: Payment
+    via: payments
+  - has_many: Export
+    via: exports
+  - has_one: FundingSource
+    via: funding_source
+  money_fields: [total]
+- name: BillLineItem
+  schema: BillLineItemSchema
+  domain: accounts-payable
+  relationships:
+  - belongs_to: TaxCode
+    via: tax_code
+  - belongs_to: GLCode
+    via: gl_code
+    wrapper: ExternalIdReferenceSchema
+  - has_many: CustomField
+    via: custom_fields
+- name: BillAttachment
+  schema: BillAttachmentSchema
+  operations: [getBillAttachments, getBillAttachmentById]
+  domain: accounts-payable
+  relationships:
+  - belongs_to: Bill
+    via: bill
+    wrapper: ReferenceSchema
+- name: ReimbursementReport
+  schema: ReimbursementReportSchema
+  operations: [getReimbursements, getReimbursement, patchReimbursements, patchReimbursement, markReimbursementAsSynced]
+  domain: reimbursements
+  relationships:
+  - belongs_to: User
+    via: requester
+    wrapper: EmailReferenceSchema
+  - belongs_to: Team
+    via: team
+    wrapper: NameReferenceSchema
+  - belongs_to: Subsidiary
+    via: subsidiary
+    wrapper: NameExternalIdReferenceSchema
+  - belongs_to: Vendor
+    via: accounting_vendor
+  - has_many: Expense
+    via: expenses
+  - has_many: Payment
+    via: payments
+  - has_many: Export
+    via: exports
+  money_fields: [total]
+- name: Payment
+  schema: PaymentSchema
+  operations: [getPayments, getPaymentById]
+  domain: payments
+  relationships:
+  - polymorphic_belongs_to: [Bill, ReimbursementReport]
+    via: resource_id
+    discriminator: resource_type
+    discriminator_schema: PayableType
+  - belongs_to: AccountTransaction
+    via: account_transaction
+    wrapper: ReferenceSchema
+  - has_one: FundingSource
+    via: funding_source
+  money_fields: [amount]
+  note: >-
+    The one polymorphic association in the model — Payment points at either a Bill or a ReimbursementReport via
+    the untyped `resource_id` plus the `resource_type` enum, so a client must branch on resource_type before it
+    can resolve the parent.
+- name: Card
+  schema: CardSchema
+  operations: [getCards, getCardById, createCard]
+  domain: cards
+  relationships:
+  - belongs_to: User
+    via: user
+    wrapper: EmailReferenceSchema
+  - has_many: CardLimit
+    via: card_id (reverse)
+  money_fields: [spending_power, limit]
+- name: CardLimit
+  schema: CardLimitSchema
+  operations: [getCardLimits, getCardLimitById, createCardLimit]
+  domain: cards
+  relationships:
+  - belongs_to: Card
+    via: card_id
+    wrapper: raw-id
+  money_fields: [amount]
+  note: The only raw foreign-key id field in the model — everything else uses a reference wrapper.
+- name: Receipt
+  schema: ReceiptSchema
+  operations: [getReceipts, getReceiptById]
+  domain: spend
+  relationships:
+  - belongs_to: User
+    via: user
+    wrapper: EmailReferenceSchema
+  - has_many: CardTransaction
+    via: transactions
+- name: Vendor
+  schema: VendorOutputSchema
+  operations: [getVendors, getVendorById, createVendors, patchVendor]
+  domain: coding
+  fields: [id, name, currency, currencies, external_id]
+- name: GLCode
+  schema: GLCodeOutputSchema
+  operations: [getGLCodes, getGLCodeById, createGLCodes, updateGLCode]
+  domain: coding
+  relationships:
+  - belongs_to: GLCode
+    via: parent_external_id
+    note: self-referential chart-of-accounts hierarchy keyed on external_id
+  fields: [id, external_id, account_type, name, account_number, currency]
+- name: TaxCode
+  schema: TaxCodeOutputSchema
+  operations: [getTaxCodes, getTaxCodeById, createTaxCodes, updateTaxCode, deleteTaxCodeById]
+  domain: coding
+  relationships:
+  - has_many: TaxComponent
+    via: components
+  fields: [id, external_id, name, effective_rate]
+  note: Multi-part tax codes compose TaxComponents — the Canadian GST/PST/HST split this API exists to model.
+- name: TaxComponent
+  operations: [tax_components_retrieve]
+  domain: coding
+- name: CustomField
+  schema: CustomFieldSchema
+  operations: [getCustomFields, getCustomFieldById, createCustomFields, updateCustomField, deleteCustomFieldById, deleteCustomFields]
+  domain: coding
+  relationships:
+  - has_many: CustomFieldOption
+    via: options
+  - has_many: CustomFieldRule
+    via: rules
+- name: Subsidiary
+  schema: SubsidiarySchema
+  operations: [getSubsidiaries, getSubsidiaryById]
+  domain: org
+  relationships:
+  - belongs_to: Subsidiary
+    via: parent
+    wrapper: NameExternalIdReferenceSchema
+    note: self-referential subsidiary tree
+  gating: NetSuite accounting connections only (403 otherwise)
+- name: Team
+  schema: TeamSchema
+  operations: [getTeams, getTeamById]
+  domain: org
+  relationships:
+  - has_many: User
+    via: managers
+  - has_many: User
+    via: members
+  - has_many: ApprovalPolicy
+    via: approval_policies
+  - has_many: CustomField
+    via: custom_fields
+- name: User
+  schema: UserSchema
+  operations: [getUsers, getUserById, createUser]
+  domain: org
+  relationships:
+  - has_many: Team
+    via: teams
+- name: ApprovalPolicy
+  schema: ApprovalPolicySchema
+  operations: [getApprovalPolicies, getApprovalPolicyById]
+  domain: policy
+  relationships:
+  - has_many: Team
+    via: teams
+  - has_many: Workflow
+    via: workflows
+- name: SubmissionPolicy
+  schema: SubmissionPolicySchema
+  operations: [getSubmissionPolicies, getSubmissionPolicyById]
+  domain: policy
+  relationships:
+  - has_one: AutoPause
+    via: auto_pause
+  - has_one: Rules
+    via: rules
+- name: AccountingConnection
+  schema: AccountingConnectionSchema
+  operations: [getAccountingConnections, createAccountingConnection, updateAccountingConnection, deleteAccountingConnection]
+  domain: integration
+  fields: [id, provider_name, connection_type, connection_status, is_active]
+- name: WebhookSubscription
+  schema: WebhookSubscriptionOutputSchema
+  operations: [getWebhookSubscriptions, createWebhookSubscription]
+  domain: integration
+  fields: [id, url, created_at, updated_at]
+shared_value_objects:
+- MoneyValueSchema
+- MoneyValueWithOptionalCurrencySchema
+- TaxCodeAmountSchema
+- TaxCodeAmountWithOptionalCurrencySchema
+- MerchantSchema
+- FundingSourceSchema
+- Currencies
+enumerations:
+- AccountType
+- AccountTransactionType
+- AccountingConnectionType
+- AccountingConnectionStatus
+- AccountingReviewStatus
+- AccountingStageEnum
+- ApprovalPolicyType
+- BillStatus
+- BillPaymentStatus
+- CardActivationStateType
+- CardPausedStateType
+- CardLimitType
+- CardLimitStatus
+- CardTransactionType
+- CustomFieldType
+- Currencies
+- ExpenseReportPaymentStatus
+- ExportStatus
+- FulfillmentMethodType
+- PayableType
+- PostingDateType
+- ReimbursementType
+- ReloadIntervalType
+- SpendComplianceStatus
+counts:
+  component_schemas: 180
+  modelled_entities: 22
+  domains: 8
+lifecycle_axis:
+  note: >-
+    Three spend objects (CardTransaction, Bill, ReimbursementReport) share an export lifecycle — each carries
+    exports[] and an export/accounting stage (AccountingStageEnum / ExportStatus) plus a `sync` or accounting
+    review transition. That shared lifecycle, not the object graph, is what an accounting integration is
+    actually written against.

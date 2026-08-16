@@ -1,0 +1,137 @@
+generated: '2026-08-16'
+method: probed
+source: live HTTPS GET of /.well-known/* on every Float host
+summary:
+  hosts_probed: 4
+  paths_probed: 8
+  real_documents_found: 0
+  pointer_emitted: false
+note: >-
+  No Float host serves a real /.well-known/ document. floatfinancial.com, api.floatfinancial.com and
+  docs.floatfinancial.com return HTTP 404 on all eight probed paths. app.floatfinancial.com returns HTTP 200 for
+  EVERY path — but the body is the single-page-app HTML shell (`<!doctype html><html lang="en"><head>...`),
+  not a document. Per the pipeline rule, an SPA catch-all 200 is a MISS, not a hit: no WellKnown, SecurityTxt,
+  APICatalog or AgentCard pointer is emitted for this provider. Float's security contact is published as prose
+  on https://floatfinancial.com/security (security@floatfinancial.com), not as an RFC 9116 security.txt.
+probes:
+- host: floatfinancial.com
+  results:
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+- host: api.floatfinancial.com
+  results:
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+- host: docs.floatfinancial.com
+  results:
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+- host: app.floatfinancial.com
+  spa_catch_all: true
+  results:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell, not a security.txt
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell, not OIDC metadata
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell — the dominant A2A false positive. Rejected.
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: text/html; charset=utf-8
+    document: false
+    note: SPA HTML shell. Rejected.

@@ -1,0 +1,128 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  https://floatfinancial.com/security, https://trust.floatfinancial.com/, https://docs.floatfinancial.com/docs/webhooks,
+  openapi/float-financial-openapi.yml, and live response-header observation on https://api.floatfinancial.com/v1/openapi
+api: Float Public API
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: >-
+    Float serves a valid OpenAPI 3.1.0 document anonymously at https://api.floatfinancial.com/v1/openapi
+    (HTTP 200, application/json, 307,883 bytes) — 47 paths, 71 operations, 180 component schemas, all
+    operations tagged with unique operationIds.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    The OpenAPI declares a single securityScheme, `bearerToken` (type http, scheme bearer). No oauth2 flows, no
+    authorizationUrl/tokenUrl, no scopes. Tokens are static per-business secrets minted in the Float web app.
+- id: oidc
+  conforms: false
+  evidence: >-
+    No openIdConnect securityScheme and no /.well-known/openid-configuration on any Float host (404 on
+    floatfinancial.com, api.floatfinancial.com and docs.floatfinancial.com; app.floatfinancial.com returns an
+    SPA HTML shell, not metadata). Float uses Okta internally for employee IAM per its security page, which is
+    not a customer-facing OIDC surface.
+- id: rfc9457
+  conforms: false
+  evidence: >-
+    Errors are returned as application/json with a vendor envelope {error, message, docs}, not
+    application/problem+json. Observed live on GET /v1/cards (HTTP 401).
+- id: rfc8594
+  conforms: false
+  evidence: No Deprecation or Sunset headers observed; no deprecation policy published.
+- id: rfc9116
+  conforms: false
+  evidence: >-
+    /.well-known/security.txt returns 404 on every Float host. The security contact
+    (security@floatfinancial.com) is published only as prose on https://floatfinancial.com/security.
+- id: idempotency
+  conforms: partial
+  evidence: >-
+    X-Idempotency-Key is declared and REQUIRED on 9 of 22 write operations. It is absent from the bulk-create,
+    bulk-PATCH and webhook-subscription surfaces. Webhook events carry a stable `id` for consumer-side
+    idempotency. Not the IETF idempotency-key draft header name (`Idempotency-Key`).
+- id: pagination
+  conforms: true
+  evidence: >-
+    Consistent page/page_size query parameters with an `items` + `pages` response envelope across all 21
+    collection operations. Offset-style, not cursor-based; no Link header.
+- id: hmac-webhook-signing
+  conforms: true
+  evidence: >-
+    All webhook requests are signed HMAC-SHA256 with Float-Signature (sha256=...), Float-Webhook-Id and
+    Float-Timestamp headers. Signing secret returned once at subscription creation.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    Float documents four webhook events in prose at https://docs.floatfinancial.com/docs/webhooks but publishes
+    no AsyncAPI document, and the OpenAPI 3.1 `webhooks` object is empty. Captured as a webhook catalog instead.
+- id: json-schema-2020-12
+  conforms: true
+  evidence: OpenAPI 3.1.0 implies JSON Schema 2020-12 dialect for its 180 component schemas.
+- id: hsts-preload
+  conforms: true
+  evidence: >-
+    'strict-transport-security: max-age=31536000; includeSubDomains; preload' observed on
+    https://api.floatfinancial.com/v1/openapi.
+- id: fapi
+  conforms: false
+  evidence: Not claimed and not applicable — Float is not an open-banking data holder.
+- id: psd2
+  conforms: false
+  evidence: Not applicable — Float operates in Canada, not the EEA.
+- id: fdx
+  conforms: false
+  evidence: >-
+    Not claimed. Float's API is an accounting/ERP integration surface, not a financial-data-sharing (FDX)
+    interface.
+compliance_programs:
+- id: soc2-type2
+  name: SOC 2 Type 2
+  status: certified
+  evidence: >-
+    "Float is SOC 2 Type 2 and PCI-DSS compliant and committed to the highest level of security and industry
+    standards." — https://floatfinancial.com/security. Audited annually; report available on request through
+    the Trust Centre.
+  report_access: https://trust.floatfinancial.com/
+- id: pci-dss
+  name: PCI DSS
+  status: certified
+  evidence: >-
+    Named on https://floatfinancial.com/security as "Cardholder data protection standard"; Float's own product
+    announcement "PCI-DSS: From Compliance to Certification" documents the certification.
+  report_access: https://trust.floatfinancial.com/
+- id: rpaa
+  name: Retail Payment Activities Act (Canada)
+  status: registered
+  evidence: >-
+    "RPAA Compliant — Registered payment services provider (PSP) under Retail Payment Activities Act." Customer
+    funds are held in segregated trust accounts at Canadian financial institutions and are not commingled with
+    Float's operating capital. — https://floatfinancial.com/security
+- id: payments-canada
+  name: Payments Canada membership
+  status: member
+  evidence: '"Payments Canada — Member of Payments Canada" — https://floatfinancial.com/security'
+- id: cdic
+  name: CDIC deposit insurance
+  status: via banking partner
+  evidence: >-
+    "CDIC Insurance — Federal deposit insurance through banking partner" — https://floatfinancial.com/security.
+    Float is a financial technology company, not a bank.
+security_practices:
+- practice: Encryption in transit
+  detail: TLS 1.2 or higher
+  source: https://floatfinancial.com/security
+- practice: Penetration testing
+  detail: Annual penetration testing with an external audit firm; vendor not named publicly
+  source: https://floatfinancial.com/security
+- practice: Vulnerability assessment
+  detail: Periodic network vulnerability scanning, dependency scanning, IDS/IPS
+  source: https://floatfinancial.com/security
+- practice: Identity and access management
+  detail: Okta for employee IAM with role-based, approved access
+  source: https://floatfinancial.com/security
+- practice: Customer SSO
+  detail: SAML SSO available on Professional and Enterprise plans; MFA on all plans
+  source: https://floatfinancial.com/pricing
+trust_center: https://trust.floatfinancial.com/

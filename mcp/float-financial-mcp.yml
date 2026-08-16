@@ -1,0 +1,251 @@
+generated: '2026-08-16'
+method: derived
+source: openapi/float-financial-openapi.yml
+status: candidate
+name: Float Public API (candidate MCP server)
+description: >-
+  Float does not publish an MCP server. This is a DERIVED candidate tool surface computed from the 71 operations
+  in Float's published OpenAPI 3.1.0 document, recorded so an agent integrator can see what a Float MCP server
+  would expose. Nothing here is served by Float today.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  verified: derived
+  note: >-
+    No hosted endpoint and no stdio package exist. Probed https://mcp.floatfinancial.com/mcp (DNS does not
+    resolve, curl exit 6), https://api.floatfinancial.com/mcp (HTTP 404) and https://docs.floatfinancial.com/mcp
+    (HTTP 401 — the docs platform's own gated route, not an MCP transport). npm and PyPI carry no Float MCP
+    package. `auth: api-key` records what a server WOULD need: Float's API uses a bearer token issued per
+    business from app.floatfinancial.com Settings > Business Settings > Developers.
+discovery_probes:
+- url: https://mcp.floatfinancial.com/mcp
+  method: POST tools/list
+  status: null
+  note: host does not resolve
+- url: https://api.floatfinancial.com/mcp
+  method: POST tools/list
+  status: 404
+- url: https://docs.floatfinancial.com/mcp
+  method: POST tools/list
+  status: 401
+  note: docs-platform gated route, not a JSON-RPC MCP transport
+candidate_tools:
+- name: list_card_transactions
+  rest: getTransactions
+  description: List card transactions with page/page_size paging and created_at range filters.
+- name: get_card_transaction
+  rest: getTransactionById
+  description: Retrieve a single card transaction by ID.
+- name: update_card_transaction
+  rest: patchTransaction
+  description: Update coding (GL code, tax code, vendor, custom fields, accounting stage) on one card transaction.
+- name: update_card_transactions
+  rest: patchTransactions
+  description: Bulk-update coding across multiple card transactions.
+- name: list_account_transactions
+  rest: getAccountTransactions
+  description: List account-level transactions such as funding, top-ups and cashback.
+- name: get_account_transaction
+  rest: getAccountTransactionByTransactionId
+  description: Retrieve a single account transaction.
+- name: list_accounts
+  rest: getAccounts
+  description: List the business's CAD/USD accounts.
+- name: get_account
+  rest: getAccountById
+  description: Retrieve one account by ID.
+- name: list_bills
+  rest: getBills
+  description: List accounts-payable bills.
+- name: get_bill
+  rest: getBillById
+  description: Retrieve a bill by ID.
+- name: update_bill
+  rest: patchBill
+  description: Update a bill's coding or metadata.
+- name: update_bills
+  rest: patchBills
+  description: Bulk-update bills.
+- name: mark_bill_synced
+  rest: markBillAsSynced
+  description: Mark a bill as synced to the external accounting system.
+- name: list_bill_attachments
+  rest: getBillAttachments
+  description: List attachments on a bill.
+- name: get_bill_attachment
+  rest: getBillAttachmentById
+  description: Retrieve one bill attachment.
+- name: list_reimbursements
+  rest: getReimbursements
+  description: List employee reimbursement reports.
+- name: get_reimbursement
+  rest: getReimbursement
+  description: Retrieve one reimbursement report.
+- name: update_reimbursement
+  rest: patchReimbursement
+  description: Update a reimbursement report's coding.
+- name: update_reimbursements
+  rest: patchReimbursements
+  description: Bulk-update reimbursement reports.
+- name: mark_reimbursement_synced
+  rest: markReimbursementAsSynced
+  description: Mark a reimbursement report as synced to accounting.
+- name: list_payments
+  rest: getPayments
+  description: List payments made against bills and reimbursements.
+- name: get_payment
+  rest: getPaymentById
+  description: Retrieve one payment.
+- name: list_receipts
+  rest: getReceipts
+  description: List receipts.
+- name: get_receipt
+  rest: getReceiptById
+  description: Retrieve one receipt.
+- name: list_cards
+  rest: getCards
+  description: List physical and virtual cards.
+- name: get_card
+  rest: getCardById
+  description: Retrieve one card.
+- name: create_card
+  rest: createCard
+  description: 'BETA: issue a new card.'
+- name: list_card_limits
+  rest: getCardLimits
+  description: List card spend limits.
+- name: get_card_limit
+  rest: getCardLimitById
+  description: Retrieve one card limit.
+- name: create_card_limit
+  rest: createCardLimit
+  description: 'BETA: create a card limit.'
+- name: list_gl_codes
+  rest: getGLCodes
+  description: List GL codes in the chart of accounts.
+- name: create_gl_codes
+  rest: createGLCodes
+  description: Bulk-create GL codes.
+- name: get_gl_code
+  rest: getGLCodeById
+  description: Retrieve one GL code.
+- name: update_gl_code
+  rest: updateGLCode
+  description: Update a GL code.
+- name: list_tax_codes
+  rest: getTaxCodes
+  description: List tax codes.
+- name: create_tax_codes
+  rest: createTaxCodes
+  description: Bulk-create tax codes (with multi-part components).
+- name: get_tax_code
+  rest: getTaxCodeById
+  description: Retrieve one tax code.
+- name: update_tax_code
+  rest: updateTaxCode
+  description: Update a tax code, replacing its components.
+- name: delete_tax_code
+  rest: deleteTaxCodeById
+  description: Delete a tax code.
+- name: list_tax_components
+  rest: tax_components_retrieve
+  description: List tax components available for multi-part tax codes.
+- name: list_vendors
+  rest: getVendors
+  description: List vendors.
+- name: create_vendors
+  rest: createVendors
+  description: Bulk-create vendors.
+- name: get_vendor
+  rest: getVendorById
+  description: Retrieve one vendor.
+- name: update_vendor
+  rest: patchVendor
+  description: Update a vendor's name, external ID or currencies.
+- name: list_custom_fields
+  rest: getCustomFields
+  description: List custom coding fields.
+- name: create_custom_fields
+  rest: createCustomFields
+  description: Bulk-create custom fields.
+- name: get_custom_field
+  rest: getCustomFieldById
+  description: Retrieve one custom field.
+- name: update_custom_field
+  rest: updateCustomField
+  description: Update a custom field.
+- name: delete_custom_field
+  rest: deleteCustomFieldById
+  description: Delete a custom field.
+- name: delete_custom_fields
+  rest: deleteCustomFields
+  description: Bulk-delete custom fields.
+- name: create_custom_field_options
+  rest: createCustomFieldOptions
+  description: Add options to a custom field.
+- name: update_custom_field_option
+  rest: updateCustomFieldOption
+  description: Update a custom field option.
+- name: delete_custom_field_option
+  rest: deleteCustomFieldOptionById
+  description: Delete a custom field option.
+- name: list_subsidiaries
+  rest: getSubsidiaries
+  description: List subsidiaries (NetSuite connections only).
+- name: get_subsidiary
+  rest: getSubsidiaryById
+  description: Retrieve one subsidiary.
+- name: list_teams
+  rest: getTeams
+  description: List teams.
+- name: get_team
+  rest: getTeamById
+  description: Retrieve one team.
+- name: list_users
+  rest: getUsers
+  description: List users.
+- name: get_user
+  rest: getUserById
+  description: Retrieve one user.
+- name: create_user
+  rest: createUser
+  description: Create a user.
+- name: list_approval_policies
+  rest: getApprovalPolicies
+  description: List approval policies.
+- name: get_approval_policy
+  rest: getApprovalPolicyById
+  description: Retrieve one approval policy.
+- name: list_submission_policies
+  rest: getSubmissionPolicies
+  description: List submission policies.
+- name: get_submission_policy
+  rest: getSubmissionPolicyById
+  description: Retrieve one submission policy.
+- name: list_accounting_connections
+  rest: getAccountingConnections
+  description: List accounting connections for the business.
+- name: create_accounting_connection
+  rest: createAccountingConnection
+  description: Create an API accounting connection. Requires the X-Idempotency-Key header.
+- name: update_accounting_connection
+  rest: updateAccountingConnection
+  description: Update an accounting connection.
+- name: delete_accounting_connection
+  rest: deleteAccountingConnection
+  description: Delete an accounting connection.
+- name: list_webhook_subscriptions
+  rest: getWebhookSubscriptions
+  description: List webhook subscriptions.
+- name: create_webhook_subscription
+  rest: createWebhookSubscription
+  description: Register a webhook endpoint for card transaction events. Signing secret is returned once.
+- name: get_openapi
+  rest: getOpenAPI
+  description: Retrieve the Float OpenAPI document.
+coverage:
+  openapi_operations: 71
+  candidate_tools: 71

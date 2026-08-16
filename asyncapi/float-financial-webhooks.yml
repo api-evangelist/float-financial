@@ -1,0 +1,95 @@
+generated: '2026-08-16'
+method: searched
+source: https://docs.floatfinancial.com/docs/webhooks (HTTP 200) and openapi/float-financial-openapi.yml
+api: Float Public API
+event_surface:
+  style: webhooks
+  asyncapi_published: false
+  asyncapi_note: >-
+    Float publishes no AsyncAPI document and the OpenAPI 3.1 `webhooks` object is empty ([]). The event surface
+    below is transcribed from Float's own prose webhook documentation. No AsyncAPI is generated on Float's
+    behalf — an AsyncAPI pointer would assert Float ships a spec it does not.
+  streaming: false
+  polling_alternative: >-
+    GET /v1/card-transactions with created_at__gte / created_at__lte filters, which is what the accounting guide
+    shows for batch sync.
+subscription:
+  management: API
+  operations:
+  - operationId: getWebhookSubscriptions
+    method: GET
+    path: /v1/webhooks
+    description: Retrieve a paginated list of webhook subscriptions.
+  - operationId: createWebhookSubscription
+    method: POST
+    path: /v1/webhooks
+    description: >-
+      Register a new webhook endpoint to receive card transaction events. The signing secret is only returned
+      once at creation time — store it securely.
+  delete_supported: false
+  note: >-
+    Subscriptions can be listed and created via the API, but there is no DELETE or PATCH on /v1/webhooks — a
+    subscription cannot be rotated or removed programmatically. WebhookSubscriptionOutputSchema exposes only
+    {id, url, created_at, updated_at}; there is no per-subscription event filter, so a subscriber receives all
+    four card-transaction event types.
+events:
+- name: transaction.authorized
+  resource: Card Transaction
+  description: >-
+    Fired when a card authorization is approved. This occurs in real-time when a cardholder makes a purchase.
+  follow_up_operation: getTransactionById
+- name: transaction.cleared
+  resource: Card Transaction
+  description: Fired when a card transaction is captured and settled by the card network.
+  follow_up_operation: getTransactionById
+- name: transaction.ready_to_export
+  resource: Card Transaction
+  description: >-
+    Fired when a transaction reaches the READY_TO_EXPORT accounting stage — after it has been reviewed and is
+    ready for export to the accounting system.
+  follow_up_operation: getTransactionById
+- name: transaction.export_requested
+  resource: Card Transaction
+  description: Fired when an export has been requested for a card transaction on the Month End page.
+  follow_up_operation: getTransactionById
+event_count: 4
+coverage_note: >-
+  All four events are card-transaction events. Bills, reimbursements, payments, receipts, cards, users and the
+  accounting-coding objects (GL codes, tax codes, vendors, custom fields) have NO event coverage — those
+  resources can only be synchronised by polling.
+payload:
+  style: thin
+  schema:
+    id: string — unique event identifier; use for idempotency
+    type: string — event type, e.g. "transaction.authorized"
+    created_at: string — ISO 8601 timestamp when the event was created
+    business_id: string — UUID of the Float business
+    object:
+      id: string — UUID of the affected resource
+  note: >-
+    The payload carries only the resource ID by design. Full detail requires a follow-up
+    GET https://api.floatfinancial.com/v1/card-transactions/{transaction_id} with the bearer token.
+security:
+  signing: HMAC-SHA256
+  headers:
+  - name: Float-Signature
+    description: 'HMAC-SHA256 signature of the signed content, formatted sha256=<hex>'
+  - name: Float-Webhook-Id
+    description: Unique event identifier; matches event.id
+  - name: Float-Timestamp
+    description: Unix timestamp when the request was sent
+  secret_delivery: returned once, at subscription creation
+  replay_protection: >-
+    Float-Timestamp is provided; the docs do not state a tolerance window, so the consumer must choose one.
+  verification_sample_published: false
+  note: >-
+    Float documents the headers and the algorithm but publishes no worked signature-verification example and
+    does not state exactly what string is signed ("the signed content"), which leaves the most error-prone part
+    of webhook consumption to guesswork.
+delivery:
+  retries: 10
+  backoff: exponential with jitter
+  success_criteria: HTTP 200-299
+  timeout_seconds: 10
+  ordering_guarantee: not documented
+  consumer_idempotency: Use the event `id` / Float-Webhook-Id header to deduplicate replays.

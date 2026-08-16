@@ -1,0 +1,46 @@
+generated: '2026-08-16'
+method: searched
+source: https://trust.floatfinancial.com/ (HTTP 200) and https://floatfinancial.com/security (HTTP 200)
+trust_center:
+  published: true
+  url: https://trust.floatfinancial.com/
+  status: 200
+  title: Float Trust Center
+  platform: Vanta
+  platform_evidence: >-
+    The page ships Vanta's `vanta-entry-loader` bundle and its og:image is served from
+    https://app.vanta.com/doc?s=u2ulatlqovjbfdmujaky. Content is client-rendered, so certification detail was
+    read from Float's own security page rather than scraped from the JS shell.
+  document_access: request-based
+  note: >-
+    "You can request a copy of our SOC 2 Report at our Trust Centre." — https://floatfinancial.com/security.
+    Reports are gated behind a request form on the Vanta trust centre; the certification claims themselves are
+    published openly on floatfinancial.com/security.
+certifications:
+- name: SOC 2 Type 2
+  status: certified
+  scope: Information security practices, audited annually
+  report_available: on request via trust centre
+  source: https://floatfinancial.com/security
+- name: PCI DSS
+  status: certified
+  scope: Cardholder data protection — storage, processing and transmission
+  report_available: on request via trust centre
+  source: https://floatfinancial.com/security
+regulatory:
+- name: RPAA (Retail Payment Activities Act)
+  status: Registered payment services provider (PSP)
+  jurisdiction: Canada
+  detail: Customer deposits held in segregated trust accounts at Canadian financial institutions, never commingled.
+  source: https://floatfinancial.com/security
+- name: Payments Canada
+  status: Member
+  jurisdiction: Canada
+  source: https://floatfinancial.com/security
+- name: CDIC
+  status: Deposit insurance through banking partner
+  jurisdiction: Canada
+  detail: Float is a financial technology company, not a bank.
+  source: https://floatfinancial.com/security
+security_page: https://floatfinancial.com/security
+security_contact: security@floatfinancial.com

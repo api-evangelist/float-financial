@@ -1,0 +1,89 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  https://docs.floatfinancial.com/llms.txt, https://docs.floatfinancial.com/changelog/may-2025-release-notes,
+  https://docs.floatfinancial.com/docs/webhooks, openapi/float-financial-openapi.yml, and host probes of
+  status.floatfinancial.com / status.float.com
+api: Float Public API
+versioning:
+  scheme: path
+  current_version: v1
+  info_version: 1.0.0
+  policy_published: false
+  note: >-
+    All 47 paths are under /v1/. Float publishes no versioning policy — nothing states how long v1 is supported,
+    how a v2 would be introduced, or whether additive changes can land in v1 without notice.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No deprecation policy, no RFC 8594 Sunset/Deprecation headers observed, and no operation in the OpenAPI
+    carries `deprecated: true`. No `Deprecation` pointer is emitted — there is nothing to point at.
+beta_surface:
+  count: 2
+  note: >-
+    Float marks pre-GA operations in the summary text rather than with an extension or a stability field. Two
+    operations are labelled "BETA:" in their summary. There is no published graduation path or stability
+    guarantee for them.
+  operations:
+  - operationId: createCardLimit
+    summary: 'BETA: Create a new card limit'
+    path: /v1/card-limits
+  - operationId: createCard
+    summary: 'BETA: Create a new card'
+    path: /v1/cards
+status_page:
+  published: false
+  probes:
+  - url: https://status.floatfinancial.com/
+    status: null
+    note: host does not resolve (curl exit 6)
+  - url: https://status.float.com/
+    status: 200
+    note: >-
+      OWNERSHIP REJECTED — NOT FLOAT FINANCIAL. status.float.com is the status page of Float (float.com), the
+      Australian/US resource-management and scheduling product, an unrelated company that shares the "Float"
+      brand name. Its listed components are "Float App", "API - public", "www.float.com" and
+      "Float Payments & Subscriptions", and it links to support.float.com. Wiring it to this profile would have
+      credited Float Financial with another company's uptime page. Recorded here so a later round does not
+      repeat the mistake.
+  note: >-
+    Float Financial publishes no status page reachable from floatfinancial.com, docs.floatfinancial.com or the
+    help centre. No `StatusPage` pointer is emitted.
+sla:
+  published: false
+  note: No public SLA or uptime commitment for the API. Enterprise terms are behind a sales conversation.
+changelog:
+  published: true
+  url: https://docs.floatfinancial.com/changelog/may-2025-release-notes
+  entries: 1
+  most_recent: '2025-05'
+  cadence: irregular
+  note: >-
+    The docs site has a Changelog section but llms.txt lists exactly one entry — "May 2025 Release Notes" — even
+    though the API reference pages carry updatedAt timestamps into August 2026. The published changelog is
+    roughly 15 months stale relative to the surface it describes.
+  see: changelog/float-financial-changelog.yml
+support:
+  help_centre: https://help.floatfinancial.com/hc/en-us
+  api_getting_started: https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+  languages:
+  - en
+  - fr
+  channels:
+  - email
+  - live chat
+  - phone
+  note: >-
+    The help centre is fronted by a bot challenge — direct GETs return HTTP 403 ("Enable JavaScript and
+    cookies") — but the articles are genuinely public and readable through the Zendesk Help Center JSON API
+    (/api/v2/help_center/en-us/articles/<id>.json returned HTTP 200).
+webhook_delivery:
+  retries: 10
+  backoff: exponential with jitter
+  success_criteria: HTTP 200-299
+  timeout_seconds: 10
+  source: https://docs.floatfinancial.com/docs/webhooks

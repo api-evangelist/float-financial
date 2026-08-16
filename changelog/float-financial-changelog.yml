@@ -1,0 +1,63 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  https://docs.floatfinancial.com/llms.txt (Changelog section) and
+  https://docs.floatfinancial.com/changelog/may-2025-release-notes (HTTP 200)
+api: Float Public API
+changelog:
+  published: true
+  url: https://docs.floatfinancial.com/changelog/may-2025-release-notes
+  index: https://docs.floatfinancial.com/llms.txt
+  scheme: dated release notes
+  machine_readable: true
+  machine_readable_note: >-
+    Every docs page is available as markdown at the same URL + `.md`, and the whole site is indexed in
+    /llms.txt — so the changelog is agent-readable even though it is not a feed.
+  feed: none
+  entry_count: 1
+  most_recent: '2025-05'
+  cadence: irregular
+  staleness_note: >-
+    The Changelog section of llms.txt lists exactly ONE entry, "May 2025 Release Notes", while the API reference
+    pages carry updatedAt timestamps as recent as 2026-08-12 and 2026-08-07. The published changelog is roughly
+    fifteen months behind the surface it describes, so an integrator cannot tell from it what changed in the
+    last year — including the arrival of the Card Limits, Cards, Submission Policies, Tax Components and
+    Webhooks endpoints now present in the OpenAPI but absent from any release note.
+current_version: v1
+entries:
+- title: May 2025 Release Notes
+  date: '2025-05'
+  url: https://docs.floatfinancial.com/changelog/may-2025-release-notes
+  breaking: []
+  additions:
+  - resource: Reimbursements
+    detail: Retrieve reimbursement reports, check statuses, and track workflows across the organization.
+    operations: [getReimbursements, getReimbursement]
+  - resource: Bills
+    detail: Access Bills directly via API for syncing with accounting tools.
+    operations: [getBills, getBillById]
+  - resource: Payments
+    detail: Access payment details across reimbursements and bills.
+    operations: [getPayments, getPaymentById]
+  - resource: Vendors
+    detail: Update vendor names and IDs via API.
+    operations: [patchVendor]
+  resources:
+  - name: Google Sheets Template
+    detail: >-
+      Pre-built template for analyzing API data with no code — copy it, enter an API token and business name,
+      then click "Import data".
+    url: https://docs.google.com/spreadsheets/d/1BcLXmVfTugZOpkMJK8NFTLCJ7h--opxMo2bpI5BUOqI/edit
+  - name: Accounting integration guide
+    detail: Guide to building an accounting integration on the Float API.
+    url: https://docs.floatfinancial.com/docs/accounting
+docs_page_updates_observed:
+- page: https://docs.floatfinancial.com/docs/accounting
+  updatedAt: '2026-08-12'
+- page: https://docs.floatfinancial.com/docs/webhooks
+  updatedAt: '2026-08-07'
+- page: https://docs.floatfinancial.com/reference/getopenapi
+  updatedAt: '2026-05-20'
+  note: >-
+    Captured from the docs pages' own frontmatter. These prove the API surface is actively maintained; the
+    absence of matching changelog entries is a publishing gap, not an abandonment signal.

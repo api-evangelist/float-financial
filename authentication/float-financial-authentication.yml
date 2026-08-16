@@ -1,0 +1,99 @@
+generated: '2026-08-16'
+method: searched
+source: openapi/float-financial-openapi.yml
+docs: https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+searched_sources:
+- https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- https://docs.floatfinancial.com/docs/accounting
+- live probe of https://api.floatfinancial.com/v1/cards (HTTP 401)
+api: Float Public API
+summary:
+  types:
+  - http
+  scopes: false
+  oauth2: false
+  oidc: false
+  mtls: false
+  multi_environment: false
+schemes:
+- name: bearerToken
+  type: http
+  scheme: bearer
+  in: header
+  parameter: Authorization
+  format: 'Authorization: Bearer <api_token>'
+  sources:
+  - openapi/float-financial-openapi.yml
+  description: >-
+    A single static per-business API token. Float's OpenAPI declares this scheme in
+    components.securitySchemes but declares NO top-level `security` and no per-operation `security`, so the
+    contract never states which operations require it — a generated client sends no credential at all. In
+    practice every operation except getOpenAPI requires the token.
+token_issuance:
+  self_serve: true
+  console: https://app.floatfinancial.com/
+  path: Settings > scroll to "Business Settings" > Developers
+  role_required: Administrator
+  verbatim: >-
+    "To create and manage API tokens, log-in to app.floatfinancial.com as an Administrator and navigate to
+    Settings > scroll to 'Business Settings' > Developers."
+  source: https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+token_properties:
+  scope: business
+  granularity: all-or-nothing
+  prefix: none published
+  expiry: not documented
+  rotation: not documented
+  test_variant: none
+  note: >-
+    There are no scopes, no permissions and no read-only token type. A token that can read every card
+    transaction can also issue cards (createCard), create card limits (createCardLimit), create users
+    (createUser) and delete tax codes and custom fields. For a spend-management platform that is a wide blast
+    radius from one secret, and it is the strongest authorization finding in this profile.
+environments:
+- name: production
+  base_url: https://api.floatfinancial.com
+  token_type: live
+  note: >-
+    The only environment. Float's FAQ states it offers no sandbox or test environment, so there is no test-mode
+    key and no prefix by which a leaked token could be triaged as harmless.
+anonymous_endpoints:
+- operationId: getOpenAPI
+  path: /v1/openapi
+  method: GET
+  status: 200
+  note: The OpenAPI document is served without credentials — the only anonymous operation.
+failure_behaviour:
+  status: 401
+  body: '{"error":"UNAUTHORIZED","message":"Incorrect authentication credentials.","docs":"https://docs.floatfinancial.com"}'
+  observed_from: live GET https://api.floatfinancial.com/v1/cards with no Authorization header
+  declared_in_spec: false
+  note: 401 is returned live but is not declared on any of the 71 operations in the spec.
+oauth:
+  supported: false
+  discovery_probes:
+  - url: https://floatfinancial.com/.well-known/oauth-authorization-server
+    status: 404
+  - url: https://api.floatfinancial.com/.well-known/oauth-authorization-server
+    status: 404
+  - url: https://floatfinancial.com/.well-known/openid-configuration
+    status: 404
+  - url: https://api.floatfinancial.com/.well-known/openid-configuration
+    status: 404
+  note: >-
+    No OAuth and no OIDC. scopes/float-financial-scopes.yml is deliberately not written — there is no scope
+    surface to record.
+platform_sso:
+  saml: true
+  mfa: true
+  note: >-
+    SAML SSO (Professional and Enterprise plans) and MFA (all plans) secure the Float web app for humans. They
+    do not apply to API tokens, which remain unscoped static secrets.
+  source: https://floatfinancial.com/pricing
+remediation_for_provider:
+- >-
+  Declare a global `security` requirement referencing bearerToken so generated clients actually send the
+  credential — the scheme is defined but never applied.
+- Declare the 401 response with a schema on every authenticated operation.
+- Introduce scoped or read-only tokens; today one token grants card issuance and user creation.
+- Publish token expiry and rotation guidance, and a token prefix so leaks are identifiable.

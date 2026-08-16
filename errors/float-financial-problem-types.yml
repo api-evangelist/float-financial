@@ -1,0 +1,151 @@
+generated: '2026-08-16'
+method: derived
+source: >-
+  openapi/float-financial-openapi.yml (4xx/5xx responses) plus a live unauthenticated probe of
+  https://api.floatfinancial.com/v1/cards (HTTP 401) that revealed the actual error envelope
+api: Float Public API
+format: vendor-json
+rfc9457: false
+content_type: application/json
+envelope:
+  fields:
+  - name: error
+    type: string
+    description: Machine-readable error code in SCREAMING_SNAKE_CASE.
+    observed_values:
+    - UNAUTHORIZED
+  - name: message
+    type: string
+    description: Human-readable explanation.
+  - name: docs
+    type: string
+    description: Link to the Float API documentation.
+  observed_example: '{"error":"UNAUTHORIZED","message":"Incorrect authentication credentials.","docs":"https://docs.floatfinancial.com"}'
+  observed_from: GET https://api.floatfinancial.com/v1/cards with no Authorization header
+  method: probed
+gap:
+  declared_in_spec: false
+  detail: >-
+    THE ERROR ENVELOPE IS REAL BUT UNDECLARED. All 51 error responses in Float's OpenAPI carry a description
+    string only — none has a `schema`, and components.schemas contains no Error/Problem/ValidationError type.
+    A client generated from this spec therefore has no typed error, and an agent cannot know that `error` is the
+    field to branch on. 401 is not declared on ANY of the 71 operations even though every authenticated call can
+    return it; 429 and 5xx are likewise absent. This is the single highest-value fix available to Float: define
+    one Error schema, reference it from every 4xx/5xx response, and add 401/429/500.
+status_codes:
+- code: 400
+  count: 10
+  meaning: Invalid request / invalid request data / invalid input data
+  declared_schema: false
+  remediation: Validate the request body against the operation's requestBody schema before sending.
+- code: 401
+  count: 0
+  meaning: Missing or incorrect bearer token
+  declared_schema: false
+  observed_live: true
+  remediation: >-
+    Reissue the token from app.floatfinancial.com Settings > Business Settings > Developers and send it as
+    `Authorization: Bearer <token>`.
+  note: Observed live but NOT declared on any operation in the spec.
+- code: 403
+  count: 2
+  meaning: Operation not permitted for this business configuration
+  declared_schema: false
+  observed_message: Subsidiaries are only supported for Netsuite connections.
+  remediation: Subsidiary endpoints require a NetSuite accounting connection on the business.
+- code: 404
+  count: 38
+  meaning: Resource not found
+  declared_schema: false
+  remediation: >-
+    Confirm the UUID belongs to the business the token is scoped to. Float returns 404 (not 403) for objects
+    outside the caller's business.
+- code: 422
+  count: 1
+  meaning: Semantically valid request rejected by business configuration
+  declared_schema: false
+  observed_message: start_date is not enabled for this business
+  remediation: Feature-gated field — contact Float to enable, or omit the field.
+- code: 429
+  count: 0
+  meaning: Not declared and not documented
+  declared_schema: false
+  remediation: >-
+    Float publishes no rate limits and declares no 429. Treat any 429 defensively with exponential backoff.
+- code: 500
+  count: 0
+  meaning: Not declared
+  declared_schema: false
+problem_types:
+- id: unauthorized
+  status: 401
+  title: Incorrect authentication credentials
+  code: UNAUTHORIZED
+  method: probed
+  source: live GET https://api.floatfinancial.com/v1/cards
+  remediation: Send a valid per-business bearer token in the Authorization header.
+- id: invalid-request-data
+  status: 400
+  title: Invalid request data
+  method: derived
+  source: openapi/float-financial-openapi.yml
+  operations: 10
+  remediation: Correct the request body; the spec's requestBody schema is the contract.
+- id: subsidiaries-netsuite-only
+  status: 403
+  title: Subsidiaries are only supported for Netsuite connections.
+  method: derived
+  source: openapi/float-financial-openapi.yml
+  operations:
+  - getSubsidiaries
+  - getSubsidiaryById
+  remediation: Only call the subsidiary endpoints when the business has a NetSuite accounting connection.
+- id: not-found
+  status: 404
+  title: Resource not found
+  method: derived
+  source: openapi/float-financial-openapi.yml
+  operations: 38
+  variants:
+  - Account not found
+  - Accounting connection not found
+  - Approval policy not found
+  - Bill attachment not found
+  - Bill not found
+  - Bills not found
+  - Card limit not found
+  - Card not found
+  - Card transaction not found
+  - Card transactions not found
+  - Custom field not found
+  - Custom field option not found
+  - GL code not found
+  - Payment not found
+  - Receipt not found
+  - Reimbursement not found
+  - Reimbursement report not found
+  - Reimbursements not found
+  - Submission policy not found
+  - Subsidiary not found
+  - Tax code not found
+  - Team not found
+  - Transaction not found
+  - User not found
+  - Vendor not found
+  remediation: Verify the UUID and that it belongs to the token's business.
+- id: start-date-not-enabled
+  status: 422
+  title: start_date is not enabled for this business
+  method: derived
+  source: openapi/float-financial-openapi.yml
+  operations:
+  - createCardLimit
+  remediation: Omit start_date, or ask Float to enable scheduled card limits for the business.
+decline_codes:
+  applicable: false
+  note: >-
+    Float is a card ISSUER and spend-management platform, not an acquirer. Its public API exposes card
+    transactions after authorization (CardTransactionSchema carries review_status, accounting_stage and
+    spend_compliance_status) but publishes no issuer decline-code reference — there is no decline/response-code
+    table in the docs or the spec, so errors/float-financial-decline-codes.yml is not written rather than
+    fabricated.

@@ -1,0 +1,92 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  npm registry search (registry.npmjs.org/-/v1/search), pypi.org/pypi/{floatfinancial,float-financial}/json,
+  api.github.com/orgs/floatfinancial/repos, and the Float API documentation at https://docs.floatfinancial.com/
+package_count: 0
+official_package_count: 0
+packages: []
+note: >-
+  Float publishes no first-party client SDK in any public package registry. Searched npm (no package matching
+  "floatfinancial" or "float financial api"), PyPI (floatfinancial -> HTTP 404, float-financial -> HTTP 404),
+  and the docs site (docs.floatfinancial.com/llms.txt lists only guides and the API reference — no SDK or
+  client-library page). The Float API documentation shows raw `fetch` / `curl` examples against
+  https://api.floatfinancial.com only; there is no generated or hand-written client to install.
+  Because there is no package, there is nothing to date: `version` and `published` are recorded as null at the
+  registry level rather than guessed.
+registries_checked:
+- registry: npm
+  query: https://registry.npmjs.org/-/v1/search?text=floatfinancial
+  result: no matching package
+  version: null
+  published: null
+- registry: npm
+  query: https://registry.npmjs.org/-/v1/search?text=float%20financial%20api
+  result: no first-party package (results are unrelated float/financial utility libraries)
+  version: null
+  published: null
+- registry: pypi
+  query: https://pypi.org/pypi/floatfinancial/json
+  status: 404
+  version: null
+  published: null
+- registry: pypi
+  query: https://pypi.org/pypi/float-financial/json
+  status: 404
+  version: null
+  published: null
+github_organization:
+  url: https://github.com/floatfinancial
+  status: 200
+  public_repos: 6
+  note: >-
+    The org exists and is Float's (org name "Float", blog floatcard.com — Float's earlier domain), but every
+    public repo is an engineering fork or internal tool, not a client library for the Float Public API.
+  repos:
+  - name: netsuite-sdk-py
+    url: https://github.com/floatfinancial/netsuite-sdk-py
+    language: Python
+    pushed: '2026-04-13'
+    first_party_sdk: false
+    note: Fork of the third-party NetSuite Python SDK, used for Float's own NetSuite integration.
+  - name: strawberry-graphql-django
+    url: https://github.com/floatfinancial/strawberry-graphql-django
+    language: Python
+    pushed: '2026-05-20'
+    first_party_sdk: false
+    note: Fork of the strawberry-graphql-django library.
+  - name: strawberry
+    url: https://github.com/floatfinancial/strawberry
+    language: Python
+    pushed: '2023-10-25'
+    first_party_sdk: false
+    note: Fork of the strawberry GraphQL library.
+  - name: float-django-reversion
+    url: https://github.com/floatfinancial/float-django-reversion
+    language: Python
+    pushed: '2023-11-06'
+    first_party_sdk: false
+    note: Fork of django-reversion.
+  - name: git-town-action
+    url: https://github.com/floatfinancial/git-town-action
+    language: TypeScript
+    pushed: '2026-01-23'
+    first_party_sdk: false
+    note: Internal GitHub Action.
+  - name: goose
+    url: https://github.com/floatfinancial/goose
+    language: Rust
+    pushed: '2026-08-05'
+    first_party_sdk: false
+    note: Fork of the goose agent framework.
+alternative_client_tooling:
+- name: Float API Google Sheets template
+  type: no-code template
+  url: https://docs.google.com/spreadsheets/d/1BcLXmVfTugZOpkMJK8NFTLCJ7h--opxMo2bpI5BUOqI/edit
+  source: https://docs.floatfinancial.com/changelog/may-2025-release-notes
+  official: true
+  note: >-
+    Float's own published alternative to an SDK — a pre-built Google Sheets template you copy, paste an API
+    token and business name into, and click "Import data". Distributed as a Google Sheet, not a package.
+  version: null
+  published: null

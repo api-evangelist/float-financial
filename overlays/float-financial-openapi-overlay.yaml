@@ -1,0 +1,149 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Float Public API
+  version: 1.0.0
+x-provenance:
+  generated: '2026-08-16'
+  method: generated
+  source: openapi/float-financial-openapi.yml
+  extends: openapi/float-financial-openapi.yml
+  note: >-
+    Captures API Evangelist's enrichment of Float's published OpenAPI 3.1.0 without mutating it. Every action
+    below states something established from Float's own public material — the docs, the live API, or the spec
+    itself. Nothing is invented. The original document at openapi/_original/float-financial-openapi.json stays
+    byte-for-byte as Float served it.
+actions:
+- target: $.info
+  description: >-
+    Add contact, licence-free terms and documentation links Float publishes but does not put in the spec.
+  update:
+    contact:
+      name: Float Financial Support
+      url: https://help.floatfinancial.com/hc/en-us
+    termsOfService: https://floatfinancial.com/legal
+    x-security-contact: security@floatfinancial.com
+    x-api-evangelist-profile: https://apis.io/float-financial
+- target: $.externalDocs
+  description: Wire the documentation root, which the spec omits entirely.
+  update:
+    description: Float API Documentation
+    url: https://docs.floatfinancial.com/
+- target: $
+  description: >-
+    Apply the declared bearerToken scheme globally. Float defines components.securitySchemes.bearerToken but
+    declares no top-level `security` and no per-operation `security`, so a generated client sends no credential
+    on any of the 71 operations even though all but getOpenAPI require one.
+  update:
+    security:
+    - bearerToken: []
+- target: $.components.securitySchemes.bearerToken
+  description: Document how the bearer token is obtained — Float documents this only in the help centre.
+  update:
+    description: >-
+      Per-business API token. Create and manage tokens by logging in to app.floatfinancial.com as an
+      Administrator and going to Settings > Business Settings > Developers. There is no sandbox or test
+      environment: every token is a live production credential.
+    x-token-issuance-url: https://app.floatfinancial.com/
+    x-scoped: false
+- target: $.paths['/v1/openapi'].get
+  description: Record that the spec endpoint is the one anonymous operation.
+  update:
+    security: []
+    x-auth-required: false
+- target: $.servers
+  description: Annotate the single production server with the absence of a sandbox.
+  update:
+  - url: https://api.floatfinancial.com
+    description: >-
+      Float's Production API. This is the ONLY environment — Float's own FAQ states it does not offer a sandbox
+      or test environment for API access.
+    x-environment: production
+    x-sandbox-available: false
+- target: $.webhooks
+  description: >-
+    Surface the four card-transaction webhook events Float documents in prose at
+    https://docs.floatfinancial.com/docs/webhooks. The published spec's `webhooks` object is empty, so the event
+    surface is invisible to any tool reading only the contract. Captured here as an annotation rather than as
+    fabricated channel definitions; the full catalog lives in asyncapi/float-financial-webhooks.yml.
+  update:
+    x-float-webhook-events:
+    - transaction.authorized
+    - transaction.cleared
+    - transaction.ready_to_export
+    - transaction.export_requested
+    x-float-webhook-signing: HMAC-SHA256 via Float-Signature, Float-Webhook-Id and Float-Timestamp headers
+    x-float-webhook-payload: thin — {id, type, created_at, business_id, object:{id}}; re-fetch for detail
+    x-float-webhook-docs: https://docs.floatfinancial.com/docs/webhooks
+    x-api-evangelist-catalog: asyncapi/float-financial-webhooks.yml
+- target: $.components
+  description: >-
+    Add the error envelope Float actually returns. Observed live on GET /v1/cards without credentials (HTTP 401):
+    {"error":"UNAUTHORIZED","message":"Incorrect authentication credentials.","docs":"https://docs.floatfinancial.com"}.
+    None of the 51 error responses in the published spec declares a schema, so generated clients have no error
+    type.
+  update:
+    x-api-evangelist-schemas:
+      FloatError:
+        type: object
+        description: >-
+          The error envelope observed on live Float API responses. NOT declared in Float's published OpenAPI —
+          reconstructed by API Evangelist from an observed response and offered back as a suggestion.
+        properties:
+          error:
+            type: string
+            description: Machine-readable error code in SCREAMING_SNAKE_CASE.
+            examples:
+            - UNAUTHORIZED
+          message:
+            type: string
+            description: Human-readable explanation.
+            examples:
+            - Incorrect authentication credentials.
+          docs:
+            type: string
+            format: uri
+            description: Link to the Float API documentation.
+            examples:
+            - https://docs.floatfinancial.com
+        required:
+        - error
+        - message
+- target: $.tags
+  description: >-
+    Annotate the two BETA operations Float flags only in prose summaries, so tooling can filter pre-GA surface.
+  update:
+    x-api-evangelist-beta-operations:
+    - operationId: createCard
+      path: /v1/cards
+      note: 'Summary is prefixed "BETA:". Issues a real card — there is no sandbox.'
+    - operationId: createCardLimit
+      path: /v1/card-limits
+      note: 'Summary is prefixed "BETA:". Creates a real spend limit.'
+- target: $.info
+  description: >-
+    Record the cross-cutting runtime semantics an agent needs and the contract does not carry.
+  update:
+    x-api-evangelist-conventions:
+      pagination:
+        style: page-number
+        params:
+        - page
+        - page_size
+        response_fields:
+        - items
+        - pages
+      filtering:
+        style: django-lookup-suffix
+        params:
+        - created_at__gte
+        - created_at__lte
+        - order_by
+      idempotency:
+        header: X-Idempotency-Key
+        required: true
+        operation_count: 9
+        note: Declared on 9 of 22 writes; bulk create/PATCH operations are unprotected.
+      rate_limits:
+        published: false
+        headers: none
+      artifact: conventions/float-financial-conventions.yml
