@@ -18,6 +18,19 @@ specificationVersion: '0.23'
 created: '2026-08-16'
 modified: '2026-08-16'
 tags:
+- Spend Management
+- Corporate Cards
+- Expense Management
+- Accounts Payable
+- Bill Pay
+- Reimbursement
+- Business Banking
+- Accounting Integration
+- Fintech
+- Canada
+- Payments
+- ERP Integration
+tags_raw:
 - spend-management
 - corporate-cards
 - expense-management
@@ -42,6 +55,16 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - Spend Management
+  - Corporate Cards
+  - Expense Management
+  - Accounts Payable
+  - Reimbursement
+  - Accounting Integration
+  - ERP Integration
+  - Fintech
+  - Canada
+  tags_raw:
   - spend-management
   - corporate-cards
   - expense-management
