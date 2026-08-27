@@ -44,45 +44,400 @@ tags_raw:
 - payments
 - erp-integration
 apis:
-- name: Float Public API
+- aid: float-financial:float-financial-account-transactions-api
+  name: Float Financial Account Transactions API
   description: >-
-    REST API (OpenAPI 3.1.0, 71 operations across 47 paths) for automating accounting and reporting against
-    Float. Read card transactions, account transactions, bills, bill attachments, payments, reimbursements
-    and receipts; manage the coding dimensions (GL codes, tax codes, tax components, custom fields, vendors,
-    subsidiaries); read cards, card limits, teams, users, approval and submission policies; create and manage
-    API accounting connections and webhook subscriptions. Bearer-token auth with per-business API tokens
-    issued from the Float web app. Cursor-free page/page_size pagination with created_at range filters.
+    The Account Transactions API from Float Financial — 2 operation(s) for account transactions.
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
-  - Spend Management
-  - Corporate Cards
-  - Expense Management
-  - Accounts Payable
-  - Reimbursement
-  - Accounting Integration
-  - ERP Integration
-  - Fintech
-  - Canada
-  tags_raw:
-  - spend-management
-  - corporate-cards
-  - expense-management
-  - accounts-payable
-  - reimbursements
-  - accounting-integration
-  - erp-integration
-  - fintech
-  - canada
+  - Account Transactions
   properties:
   - type: OpenAPI
-    url: openapi/float-financial-openapi.yml
+    url: openapi/float-financial-account-transactions-api-openapi.yml
   - type: Documentation
     url: https://docs.floatfinancial.com/
   - type: APIReference
     url: https://docs.floatfinancial.com/reference/gettransactions
   - type: GettingStarted
-    url: https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-accounting-connections-api
+  name: Float Financial Accounting Connections API
+  description: >-
+    The Accounting Connections API from Float Financial — 2 operation(s) for accounting connections.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Accounting Connections
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-accounting-connections-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-accounts-api
+  name: Float Financial Accounts API
+  description: The Accounts API from Float Financial — 2 operation(s) for accounts.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-approval-policies-api
+  name: Float Financial Approval Policies API
+  description: The Approval Policies API from Float Financial — 2 operation(s) for approval policies.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Approval Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-approval-policies-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-bill-attachments-api
+  name: Float Financial Bill Attachments API
+  description: The Bill Attachments API from Float Financial — 2 operation(s) for bill attachments.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Bill Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-bill-attachments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-bills-api
+  name: Float Financial Bills API
+  description: The Bills API from Float Financial — 3 operation(s) for bills.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Bills
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-bills-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-card-limits-api
+  name: Float Financial Card Limits API
+  description: The Card Limits API from Float Financial — 2 operation(s) for card limits.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Card Limits
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-card-limits-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-card-transactions-api
+  name: Float Financial Card Transactions API
+  description: The Card Transactions API from Float Financial — 2 operation(s) for card transactions.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Card Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-card-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-cards-api
+  name: Float Financial Cards API
+  description: The Cards API from Float Financial — 2 operation(s) for cards.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Cards
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-cards-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-custom-fields-api
+  name: Float Financial Custom Fields API
+  description: The Custom Fields API from Float Financial — 4 operation(s) for custom fields.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Custom Fields
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-custom-fields-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-gl-codes-api
+  name: Float Financial GL Codes API
+  description: The GL Codes API from Float Financial — 2 operation(s) for gl codes.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - GL Codes
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-gl-codes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-meta-api
+  name: Float Financial Meta API
+  description: The Meta API from Float Financial — 1 operation(s) for meta.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Meta
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-meta-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-payments-api
+  name: Float Financial Payments API
+  description: The Payments API from Float Financial — 2 operation(s) for payments.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-payments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-receipts-api
+  name: Float Financial Receipts API
+  description: The Receipts API from Float Financial — 2 operation(s) for receipts.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Receipts
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-receipts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-reimbursements-api
+  name: Float Financial Reimbursements API
+  description: The Reimbursements API from Float Financial — 3 operation(s) for reimbursements.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Reimbursements
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-reimbursements-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-submission-policies-api
+  name: Float Financial Submission Policies API
+  description: >-
+    The Submission Policies API from Float Financial — 2 operation(s) for submission policies.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Submission Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-submission-policies-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-subsidiaries-api
+  name: Float Financial Subsidiaries API
+  description: The Subsidiaries API from Float Financial — 2 operation(s) for subsidiaries.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Subsidiaries
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-subsidiaries-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-tax-codes-api
+  name: Float Financial Tax Codes API
+  description: The Tax Codes API from Float Financial — 2 operation(s) for tax codes.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Tax Codes
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-tax-codes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-tax-components-api
+  name: Float Financial Tax Components API
+  description: The Tax Components API from Float Financial — 1 operation(s) for tax components.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Tax Components
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-tax-components-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-teams-api
+  name: Float Financial Teams API
+  description: The Teams API from Float Financial — 2 operation(s) for teams.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Teams
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-teams-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-users-api
+  name: Float Financial Users API
+  description: The Users API from Float Financial — 2 operation(s) for users.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-users-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-vendors-api
+  name: Float Financial Vendors API
+  description: The Vendors API from Float Financial — 2 operation(s) for vendors.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Vendors
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-vendors-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
+- aid: float-financial:float-financial-webhooks-api
+  name: Float Financial Webhooks API
+  description: The Webhooks API from Float Financial — 1 operation(s) for webhooks.
+  humanURL: https://docs.floatfinancial.com/
+  baseURL: https://api.floatfinancial.com
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/float-financial-webhooks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.floatfinancial.com/
+  - type: APIReference
+    url: https://docs.floatfinancial.com/reference/gettransactions
+  - type: GettingStarted
+    url: >-
+      https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
