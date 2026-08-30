@@ -30,18 +30,18 @@ specificationVersion: '0.23'
 created: '2026-08-16'
 modified: '2026-08-16'
 tags:
-- Spend Management
-- Corporate Cards
-- Expense Management
-- Accounts Payable
-- Bill Pay
-- Reimbursement
-- Business Banking
-- Accounting Integration
+- spend-management
+- corporate-cards
+- expense-management
+- accounts-payable
+- bill-pay
+- reimbursements
+- business-banking
+- accounting-integration
 - Fintech
-- Canada
+- canada
 - Payments
-- ERP Integration
+- erp-integration
 tags_raw:
 - spend-management
 - corporate-cards
@@ -98,6 +98,8 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
@@ -115,6 +117,8 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - ApprovalPolicies
+  tags_raw:
   - Approval Policies
   properties:
   - type: OpenAPI
@@ -302,6 +306,8 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - Reimbursement
+  tags_raw:
   - Reimbursements
   properties:
   - type: OpenAPI
@@ -388,6 +394,8 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - Team
+  tags_raw:
   - Teams
   properties:
   - type: OpenAPI
@@ -405,6 +413,8 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -439,6 +449,8 @@ apis:
   humanURL: https://docs.floatfinancial.com/
   baseURL: https://api.floatfinancial.com
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
