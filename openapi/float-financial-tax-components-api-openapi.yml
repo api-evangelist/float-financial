@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  title: Float Public Tax Components API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Tax Components
+paths:
+  /v1/tax-components:
+    get:
+      operationId: tax_components_retrieve
+      summary: Retrieve a list of all tax components
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Tax Components
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_TaxComponentOutputSchema'
+          description: A paginated list of all tax components
+components:
+  schemas:
+    TaxComponentOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - id
+      - name
+      - rate
+      title: TaxComponentOutputSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    CountablePagedResponse_TaxComponentOutputSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/TaxComponentOutputSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_TaxComponentOutputSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

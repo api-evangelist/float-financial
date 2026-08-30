@@ -1,0 +1,477 @@
+openapi: 3.2.0
+info:
+  title: Float Public Submission Policies API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Submission Policies
+paths:
+  /v1/submission-policies:
+    get:
+      operationId: getSubmissionPolicies
+      summary: Retrieve a paginated list of submission policies
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Submission Policies
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_SubmissionPolicySchema'
+          description: A paginated list of submission policies
+  /v1/submission-policies/{submission_policy_id}:
+    get:
+      operationId: getSubmissionPolicyById
+      summary: Retrieve a submission policy by ID
+      parameters:
+      - in: path
+        name: submission_policy_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Submission Policies
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionPolicySchema'
+          description: A single submission policy
+        '404':
+          description: Submission policy not found
+components:
+  schemas:
+    RulesSchema:
+      properties:
+        description:
+          $ref: '#/components/schemas/RuleFieldSchema'
+          description: Rules for transaction descriptions.
+        receipt:
+          $ref: '#/components/schemas/RuleFieldSchema'
+          description: Rules for receipt attachments.
+        vendor:
+          $ref: '#/components/schemas/AllowedValuesRuleSchema_AccountingVendor_'
+          description: Rules for transaction vendors.
+        gl_code:
+          $ref: '#/components/schemas/AllowedValuesRuleSchema_GLCode_'
+          description: Rules for GL code assignments.
+        tax_code:
+          $ref: '#/components/schemas/AllowedValuesRuleSchema_TaxCode_'
+          description: Rules for tax code assignments.
+        tag:
+          $ref: '#/components/schemas/AllowedValuesRuleSchema_GenericTag_'
+          description: Rules for transaction tags.
+        custom_fields:
+          description: Rules for custom field requirements.
+          items:
+            $ref: '#/components/schemas/CustomFieldRuleSchema'
+          title: Custom Fields
+          type: array
+      required:
+      - description
+      - receipt
+      - vendor
+      - gl_code
+      - tax_code
+      - tag
+      - custom_fields
+      title: RulesSchema
+      type: object
+    NameReferenceSchema_AccountingVendor_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[AccountingVendor]
+      type: object
+    AllowedValuesRuleSchema_AccountingVendor_:
+      properties:
+        required:
+          description: Whether this field is required for submissions.
+          title: Required
+          type: boolean
+        over_amount:
+          description: The minimum amount in cents above which this field is required. Only applicable when required is true.
+          title: Over Amount
+          type: integer
+        only_allowed_values:
+          description: Whether only the specified allowed values are permitted for this field.
+          title: Only Allowed Values
+          type: boolean
+        allowed_values:
+          description: The list of allowed values for this field when restricted.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_AccountingVendor_'
+          title: Allowed Values
+          type: array
+      required:
+      - required
+      - over_amount
+      - only_allowed_values
+      - allowed_values
+      title: AllowedValuesRuleSchema[AccountingVendor]
+      type: object
+    CountablePagedResponse_SubmissionPolicySchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/SubmissionPolicySchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_SubmissionPolicySchema
+      type: object
+    SubmissionPolicySchema:
+      properties:
+        id:
+          description: The unique identifier of the submission policy.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The name of the submission policy.
+          title: Name
+          type: string
+        type:
+          description: The type of the submission policy.
+          title: Type
+          type: string
+        description:
+          description: The description of the submission policy.
+          nullable: true
+          title: Description
+          type: string
+        auto_pause:
+          $ref: '#/components/schemas/AutoPauseSchema'
+          description: Configuration for automatic card pausing on policy violations.
+        rules:
+          $ref: '#/components/schemas/RulesSchema'
+          description: The compliance rules enforced by this submission policy.
+      required:
+      - id
+      - name
+      - type
+      - description
+      - auto_pause
+      - rules
+      title: SubmissionPolicySchema
+      type: object
+    AllowedValuesRuleSchema_GLCode_:
+      properties:
+        required:
+          description: Whether this field is required for submissions.
+          title: Required
+          type: boolean
+        over_amount:
+          description: The minimum amount in cents above which this field is required. Only applicable when required is true.
+          title: Over Amount
+          type: integer
+        only_allowed_values:
+          description: Whether only the specified allowed values are permitted for this field.
+          title: Only Allowed Values
+          type: boolean
+        allowed_values:
+          description: The list of allowed values for this field when restricted.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_GLCode_'
+          title: Allowed Values
+          type: array
+      required:
+      - required
+      - over_amount
+      - only_allowed_values
+      - allowed_values
+      title: AllowedValuesRuleSchema[GLCode]
+      type: object
+    NameReferenceSchema_GLCode_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[GLCode]
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    AllowedValuesRuleSchema_GenericTag_:
+      properties:
+        required:
+          description: Whether this field is required for submissions.
+          title: Required
+          type: boolean
+        over_amount:
+          description: The minimum amount in cents above which this field is required. Only applicable when required is true.
+          title: Over Amount
+          type: integer
+        only_allowed_values:
+          description: Whether only the specified allowed values are permitted for this field.
+          title: Only Allowed Values
+          type: boolean
+        allowed_values:
+          description: The list of allowed values for this field when restricted.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_GenericTag_'
+          title: Allowed Values
+          type: array
+      required:
+      - required
+      - over_amount
+      - only_allowed_values
+      - allowed_values
+      title: AllowedValuesRuleSchema[GenericTag]
+      type: object
+    AutoPauseSchema:
+      properties:
+        enabled:
+          description: Whether the card is automatically paused when policy violations occur.
+          title: Enabled
+          type: boolean
+        after_num_violations:
+          description: The number of violations after which the card is automatically paused.
+          nullable: true
+          title: After Num Violations
+          type: integer
+      required:
+      - enabled
+      - after_num_violations
+      title: AutoPauseSchema
+      type: object
+    NameReferenceSchema_TaxCode_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[TaxCode]
+      type: object
+    CustomFieldRuleSchema:
+      properties:
+        required:
+          description: Whether this field is required for submissions.
+          title: Required
+          type: boolean
+        over_amount:
+          description: The minimum amount in cents above which this field is required. Only applicable when required is true.
+          title: Over Amount
+          type: integer
+        only_allowed_values:
+          description: Whether only the specified allowed values are permitted for this field.
+          title: Only Allowed Values
+          type: boolean
+        allowed_values:
+          description: The list of allowed values for this field when restricted.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_CustomFieldsPolicyRule_'
+          title: Allowed Values
+          type: array
+        custom_field:
+          $ref: '#/components/schemas/NameReferenceSchema_CustomFieldsPolicyRule_'
+          description: The custom field that this rule applies to.
+      required:
+      - required
+      - over_amount
+      - only_allowed_values
+      - allowed_values
+      - custom_field
+      title: CustomFieldRuleSchema
+      type: object
+    AllowedValuesRuleSchema_TaxCode_:
+      properties:
+        required:
+          description: Whether this field is required for submissions.
+          title: Required
+          type: boolean
+        over_amount:
+          description: The minimum amount in cents above which this field is required. Only applicable when required is true.
+          title: Over Amount
+          type: integer
+        only_allowed_values:
+          description: Whether only the specified allowed values are permitted for this field.
+          title: Only Allowed Values
+          type: boolean
+        allowed_values:
+          description: The list of allowed values for this field when restricted.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_TaxCode_'
+          title: Allowed Values
+          type: array
+      required:
+      - required
+      - over_amount
+      - only_allowed_values
+      - allowed_values
+      title: AllowedValuesRuleSchema[TaxCode]
+      type: object
+    RuleFieldSchema:
+      properties:
+        required:
+          description: Whether this field is required for submissions.
+          title: Required
+          type: boolean
+        over_amount:
+          description: The minimum amount in cents above which this field is required. Only applicable when required is true.
+          title: Over Amount
+          type: integer
+      required:
+      - required
+      - over_amount
+      title: RuleFieldSchema
+      type: object
+    NameReferenceSchema_GenericTag_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[GenericTag]
+      type: object
+    NameReferenceSchema_CustomFieldsPolicyRule_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[CustomFieldsPolicyRule]
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

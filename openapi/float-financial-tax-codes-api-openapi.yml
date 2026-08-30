@@ -1,0 +1,389 @@
+openapi: 3.2.0
+info:
+  title: Float Public Tax Codes API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Tax Codes
+paths:
+  /v1/tax-codes:
+    get:
+      operationId: getTaxCodes
+      summary: Retrieve a list of all tax codes
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Tax Codes
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_TaxCodeOutputSchema'
+          description: A paginated list of all tax codes
+    post:
+      operationId: createTaxCodes
+      summary: Create tax codes
+      tags:
+      - Tax Codes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxCodeInputListSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '202':
+          description: Tax code creation request received
+  /v1/tax-codes/{tax_code_id}:
+    get:
+      operationId: getTaxCodeById
+      summary: Retrieve a single tax code by ID
+      parameters:
+      - in: path
+        name: tax_code_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Tax Codes
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxCodeOutputSchema'
+          description: A single tax code
+        '404':
+          description: Tax Code not found
+    patch:
+      operationId: updateTaxCode
+      description: Updates modifiable fields of an existing tax code. If components are provided, all existing components are replaced. At least one field must be provided.
+      summary: Update a tax code
+      parameters:
+      - in: path
+        name: tax_code_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Tax Codes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTaxCodeUpdateSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxCodeOutputSchema'
+          description: Tax code updated successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: Tax code not found
+    delete:
+      operationId: deleteTaxCodeById
+      summary: Delete a single tax code by ID
+      parameters:
+      - in: path
+        name: tax_code_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Tax Codes
+      security:
+      - bearerToken: []
+      responses:
+        '204':
+          description: Tax code deletion request processed
+components:
+  schemas:
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
+          type: string
+      required:
+      - email
+      title: EmailPreference
+      type: object
+    PatchedTaxCodeUpdateSchema:
+      properties:
+        name:
+          default: null
+          description: Name of the tax code.
+          maxLength: 255
+          nullable: true
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax code.
+          nullable: true
+          title: External Id
+          type: string
+        components:
+          default: null
+          description: List of tax components. If provided, replaces all existing components.
+          items:
+            $ref: '#/components/schemas/TaxComponentInputSchema'
+          nullable: true
+          title: Components
+          type: array
+      title: TaxCodeUpdateSchema
+      type: object
+    CountablePagedResponse_TaxCodeOutputSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/TaxCodeOutputSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_TaxCodeOutputSchema
+      type: object
+    TaxCodeInputSchema:
+      properties:
+        external_id:
+          default: null
+          description: External identifier for the tax code.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax code.
+          title: Name
+          type: string
+        components:
+          description: List of tax components associated with the tax code.
+          items:
+            $ref: '#/components/schemas/TaxComponentInputSchema'
+          title: Components
+          type: array
+      required:
+      - name
+      title: TaxCodeInputSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    TaxCodeInputListSchema:
+      properties:
+        items:
+          description: List of TaxCode input items.
+          items:
+            $ref: '#/components/schemas/TaxCodeInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for import completion.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: TaxCodeInputListSchema
+      type: object
+    TaxCodeOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax code.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax code.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax code.
+          title: Name
+          type: string
+        effective_rate:
+          description: Effective rate of the tax code.
+          title: Effective Rate
+          type: string
+        components:
+          description: List of tax components associated with the tax code.
+          items:
+            $ref: '#/components/schemas/TaxComponentOutputSchema'
+          title: Components
+          type: array
+      required:
+      - id
+      - name
+      - effective_rate
+      title: TaxCodeOutputSchema
+      type: object
+    TaxComponentOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - id
+      - name
+      - rate
+      title: TaxComponentOutputSchema
+      type: object
+    WebhookPreference:
+      properties:
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
+          type: string
+      required:
+      - url
+      title: WebhookPreference
+      type: object
+    TaxComponentInputSchema:
+      properties:
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - name
+      - rate
+      title: TaxComponentInputSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

@@ -1,0 +1,229 @@
+openapi: 3.2.0
+info:
+  title: Float Public Webhooks API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Webhooks
+paths:
+  /v1/webhooks:
+    get:
+      operationId: getWebhookSubscriptions
+      summary: Retrieve a paginated list of webhook subscriptions
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Webhooks
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseWebhookSubscriptionSchema'
+          description: A paginated list of all webhook subscriptions
+    post:
+      operationId: createWebhookSubscription
+      description: Register a new webhook endpoint to receive card transaction events. The signing secret is only returned once at creation time - store it securely.
+      summary: Create a webhook subscription
+      tags:
+      - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookSubscriptionSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateWebhookSubscriptionResponseSchema'
+          description: Webhook subscription created successfully. The signing_secret is only returned once.
+        '400':
+          description: Invalid request data
+components:
+  schemas:
+    WebhookSubscriptionOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the webhook subscription.
+          format: uuid
+          title: Id
+          type: string
+        url:
+          description: The webhook endpoint URL.
+          title: Url
+          type: string
+        created_at:
+          description: When the webhook was created.
+          format: date-time
+          title: Created At
+          type: string
+        updated_at:
+          description: When the webhook was last updated.
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - url
+      - created_at
+      - updated_at
+      title: WebhookSubscriptionOutputSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    CreateWebhookSubscriptionResponseSchema:
+      properties:
+        id:
+          description: Unique identifier for the webhook subscription.
+          format: uuid
+          title: Id
+          type: string
+        url:
+          description: The webhook endpoint URL.
+          title: Url
+          type: string
+        created_at:
+          description: When the webhook was created.
+          format: date-time
+          title: Created At
+          type: string
+        updated_at:
+          description: When the webhook was last updated.
+          format: date-time
+          title: Updated At
+          type: string
+        signing_secret:
+          description: Signing secret for verifying webhook signatures. This is only returned once at creation time.
+          title: Signing Secret
+          type: string
+      required:
+      - id
+      - url
+      - created_at
+      - updated_at
+      - signing_secret
+      title: CreateWebhookSubscriptionResponseSchema
+      type: object
+    PagedResponseWebhookSubscriptionSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/WebhookSubscriptionOutputSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: PagedResponseWebhookSubscriptionSchema
+      type: object
+    CreateWebhookSubscriptionSchema:
+      properties:
+        url:
+          description: HTTPS webhook endpoint URL. Must be publicly accessible and not resolve to private IP ranges.
+          format: uri
+          maxLength: 2083
+          minLength: 1
+          title: Url
+          type: string
+      required:
+      - url
+      title: CreateWebhookSubscriptionSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

@@ -1,0 +1,206 @@
+openapi: 3.2.0
+info:
+  title: Float Public Bill Attachments API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Bill Attachments
+paths:
+  /v1/bills/{bill_id}/attachments:
+    get:
+      operationId: getBillAttachments
+      summary: Retrieve a paginated list of bill attachments by bill ID
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Bill Attachments
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_BillAttachmentSchema'
+          description: A paginated list of bill attachments
+        '404':
+          description: Bill not found
+  /v1/bills/attachments/{bill_attachment_id}:
+    get:
+      operationId: getBillAttachmentById
+      summary: Retrieve a bill attachment by ID
+      parameters:
+      - in: path
+        name: bill_attachment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Bill Attachments
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillAttachmentSchema'
+          description: A single bill attachment
+        '404':
+          description: Bill attachment not found
+components:
+  schemas:
+    BillAttachmentSchema:
+      properties:
+        id:
+          description: Unique identifier for the bill attachment.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The file name of the bill attachment.
+          title: Name
+          type: string
+        file_url:
+          description: The URL of the bill attachment.  This URL is presigned and will expire after 4 hours.
+          title: File Url
+          type: string
+        bill:
+          $ref: '#/components/schemas/ReferenceSchema_BillSchema_'
+          description: The bill that the attachment is associated with.
+        created_at:
+          description: The datetime that the bill attachment was uploaded to Float.
+          format: date-time
+          title: Created At
+          type: string
+      required:
+      - id
+      - name
+      - file_url
+      - bill
+      - created_at
+      title: BillAttachmentSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    CountablePagedResponse_BillAttachmentSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/BillAttachmentSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_BillAttachmentSchema
+      type: object
+    ReferenceSchema_BillSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[BillSchema]
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

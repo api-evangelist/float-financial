@@ -1,0 +1,30 @@
+openapi: 3.2.0
+info:
+  title: Float Public Meta API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Meta
+paths:
+  /v1/openapi:
+    get:
+      operationId: getOpenAPI
+      summary: Retrieve the OpenAPI schema for the Float API
+      tags:
+      - Meta
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: The OpenAPI schema for the Float API
+components:
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

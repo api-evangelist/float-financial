@@ -1,0 +1,347 @@
+openapi: 3.2.0
+info:
+  title: Float Public Approval Policies API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Approval Policies
+paths:
+  /v1/approval-policies:
+    get:
+      operationId: getApprovalPolicies
+      summary: Retrieve a paginated list of approval policies
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Approval Policies
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_ApprovalPolicySchema'
+          description: A paginated list of approval policies
+  /v1/approval-policies/{approval_policy_id}:
+    get:
+      operationId: getApprovalPolicyById
+      summary: Retrieve an approval policy by ID
+      parameters:
+      - in: path
+        name: approval_policy_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Approval Policies
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_ApprovalPolicySchema'
+          description: A single approval policy
+        '404':
+          description: Approval policy not found
+components:
+  schemas:
+    WorkflowType:
+      enum:
+      - DEFAULT
+      - ONE_TIME_EXPENSE
+      - RECURRING_EXPENSE
+      title: WorkflowType
+      type: string
+    ApprovalWorkflowSchema:
+      properties:
+        type:
+          $ref: '#/components/schemas/WorkflowType'
+          description: The type of approval policy workflow.
+        levels:
+          description: The levels associated with the approval policy workflow.
+          items:
+            $ref: '#/components/schemas/ApprovalLevelSchema'
+          title: Levels
+          type: array
+      required:
+      - type
+      - levels
+      title: ApprovalWorkflowSchema
+      type: object
+    ApprovalPolicySchema:
+      properties:
+        id:
+          description: The unique identifier of the approval policy.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The name of the approval policy.
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/ApprovalPolicyType'
+          description: The type of the approval policy.
+        description:
+          description: The description of the approval policy.
+          title: Description
+          type: string
+        teams:
+          description: Team associated with the approval policy.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_TeamSchema_'
+          title: Teams
+          type: array
+        is_default:
+          description: Whether this is the default approval policy for the business.
+          title: Is Default
+          type: boolean
+        workflows:
+          description: The associated approval policy workflows
+          items:
+            $ref: '#/components/schemas/ApprovalWorkflowSchema'
+          title: Workflows
+          type: array
+      required:
+      - id
+      - name
+      - type
+      - description
+      - teams
+      - is_default
+      - workflows
+      title: ApprovalPolicySchema
+      type: object
+    ApprovalStepApproversSchema:
+      properties:
+        users:
+          description: The users assigned to approve the approval step.
+          items:
+            $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          title: Users
+          type: array
+        groups:
+          description: The groups assigned to approve the approval step.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_ApprovalGroupSchema_'
+          title: Groups
+          type: array
+        dynamic:
+          description: The dynamic approvers assigned to approve the approval step.
+          items:
+            $ref: '#/components/schemas/AbstractAssignee'
+          title: Dynamic
+          type: array
+      required:
+      - users
+      - groups
+      - dynamic
+      title: ApprovalStepApproversSchema
+      type: object
+    NameReferenceSchema_ApprovalGroupSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[ApprovalGroupSchema]
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    ApprovalLevelSchema:
+      properties:
+        starting_amount_cents:
+          description: The amount cents the level starts from.
+          title: Starting Amount Cents
+          type: integer
+        steps:
+          description: The associated approval steps.
+          items:
+            $ref: '#/components/schemas/ApprovalStepSchema'
+          title: Steps
+          type: array
+      required:
+      - starting_amount_cents
+      - steps
+      title: ApprovalLevelSchema
+      type: object
+    CountablePagedResponse_ApprovalPolicySchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/ApprovalPolicySchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_ApprovalPolicySchema
+      type: object
+    NameReferenceSchema_TeamSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[TeamSchema]
+      type: object
+    ApprovalStepSchema:
+      properties:
+        approvers:
+          $ref: '#/components/schemas/ApprovalStepApproversSchema'
+          description: The associated approvers of the approval step.
+        notified_users:
+          description: The users notified when a step is completed.
+          items:
+            $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          title: Notified Users
+          type: array
+      required:
+      - approvers
+      - notified_users
+      title: ApprovalStepSchema
+      type: object
+    AbstractAssignee:
+      enum:
+      - MANAGER_LEVEL_1
+      - MANAGER_LEVEL_2
+      - MANAGER_LEVEL_3
+      - ANY_ADMIN
+      title: AbstractAssignee
+      type: string
+    ApprovalPolicyType:
+      enum:
+      - SPENDING
+      - PERSONAL_REIMBURSEMENT
+      - TRANSACTION_REVIEW
+      - BILL_APPROVAL
+      - FUNDS_RELEASE
+      title: ApprovalPolicyType
+      type: string
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

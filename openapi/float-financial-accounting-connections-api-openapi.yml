@@ -1,0 +1,167 @@
+openapi: 3.2.0
+info:
+  title: Float Public Accounting Connections API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Accounting Connections
+paths:
+  /v1/accounting-connections:
+    get:
+      operationId: getAccountingConnections
+      summary: Retrieve all accounting connections for the business
+      tags:
+      - Accounting Connections
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingConnectionListSchema'
+          description: List of accounting connections
+    post:
+      operationId: createAccountingConnection
+      summary: Create a new API accounting connection
+      parameters:
+      - in: header
+        name: X-Idempotency-Key
+        schema:
+          type: string
+        description: A unique key to ensure idempotency of the request
+        required: true
+      tags:
+      - Accounting Connections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountingConnectionCreateSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '201':
+          description: Accounting connection created successfully
+        '400':
+          description: Invalid request
+  /v1/accounting-connections/{connection_id}:
+    patch:
+      operationId: updateAccountingConnection
+      summary: Update an accounting connection
+      parameters:
+      - in: path
+        name: connection_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Accounting Connections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccountingConnectionUpdateSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          description: Accounting connection updated successfully
+        '404':
+          description: Accounting connection not found
+    delete:
+      operationId: deleteAccountingConnection
+      summary: Delete an accounting connection
+      parameters:
+      - in: path
+        name: connection_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Accounting Connections
+      security:
+      - bearerToken: []
+      responses:
+        '204':
+          description: Accounting connection deleted successfully
+        '404':
+          description: Accounting connection not found
+components:
+  schemas:
+    AccountingConnectionSchema:
+      properties:
+        id:
+          description: Unique identifier for the accounting connection
+          format: uuid
+          title: Id
+          type: string
+        provider_name:
+          description: Name of the accounting provider (e.g., 'QBO', 'Netsuite', or custom name for API connections)
+          title: Provider Name
+          type: string
+        connection_type:
+          $ref: '#/components/schemas/AccountingConnectionType'
+          description: Type of accounting connection (API or NATIVE)
+        connection_status:
+          $ref: '#/components/schemas/AccountingConnectionStatus'
+          description: Status of the connection (CONNECTED or RECONNECT_REQUIRED). Deleted connections always show RECONNECT_REQUIRED.
+        is_active:
+          description: Whether the connection is active (not soft-deleted)
+          title: Is Active
+          type: boolean
+      required:
+      - id
+      - provider_name
+      - connection_type
+      - connection_status
+      - is_active
+      title: AccountingConnectionSchema
+      type: object
+    AccountingConnectionListSchema:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/AccountingConnectionSchema'
+          title: Data
+          type: array
+      required:
+      - data
+      title: AccountingConnectionListSchema
+      type: object
+    AccountingConnectionCreateSchema:
+      type: object
+      properties:
+        provider_name:
+          type: string
+          description: Name of the accounting provider
+      required:
+      - provider_name
+    AccountingConnectionStatus:
+      enum:
+      - connected
+      - reconnect_required
+      title: AccountingConnectionStatus
+      type: string
+    PatchedAccountingConnectionUpdateSchema:
+      type: object
+      properties:
+        provider_name:
+          type: string
+          description: Name of the accounting provider (only applicable to API connections)
+    AccountingConnectionType:
+      enum:
+      - API
+      - NATIVE
+      title: AccountingConnectionType
+      type: string
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

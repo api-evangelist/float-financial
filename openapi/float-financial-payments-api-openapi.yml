@@ -1,0 +1,441 @@
+openapi: 3.2.0
+info:
+  title: Float Public Payments API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Payments
+paths:
+  /v1/payments:
+    get:
+      operationId: getPayments
+      summary: Retrieve a paginated list of payments
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Payments
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponse_PaymentSchema'
+          description: A paginated list of payments
+  /v1/payments/{payment_id}:
+    get:
+      operationId: getPaymentById
+      summary: Retrieve a payment by ID
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Payments
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponse_PaymentSchema'
+          description: A single payment
+        '404':
+          description: Payment not found
+components:
+  schemas:
+    PagedResponse_PaymentSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/PaymentSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      title: PagedResponse_PaymentSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    PayableType:
+      enum:
+      - BILL
+      - EXPENSE_REPORT
+      - DIRECT_PAYMENT
+      title: PayableType
+      type: string
+    BillPaymentStatus:
+      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
+
+        but with the addition of CREATED and MARKED_AS_PAID'
+      enum:
+      - QUEUED
+      - PENDING_FUNDING
+      - FUNDS_WITHDRAWN
+      - SENT
+      - RISK_CANCELLED
+      - FAILED
+      - REVERSED
+      - CREATED
+      - MARKED_AS_PAID
+      title: BillPaymentStatus
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    ReferenceSchema_AccountTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[AccountTransactionSchema]
+      type: object
+    FundingSourceSchema:
+      properties:
+        id:
+          description: Unique ID of the funding source.
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/FundingSource'
+          description: Type of the funding source.
+      required:
+      - id
+      - type
+      title: FundingSourceSchema
+      type: object
+    MoneyValueWithOptionalCurrencySchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+          nullable: true
+      required:
+      - value
+      - currency
+      title: MoneyValueWithOptionalCurrencySchema
+      type: object
+    FundingSource:
+      enum:
+      - PAYMENT_CONNECTION
+      - FLOAT_ACCOUNT
+      title: FundingSource
+      type: string
+    PaymentSchema:
+      properties:
+        id:
+          description: The unique ID of the payment.
+          format: uuid
+          title: Id
+          type: string
+        date:
+          description: The date of the payment.
+          format: date
+          nullable: true
+          title: Date
+          type: string
+        status:
+          $ref: '#/components/schemas/BillPaymentStatus'
+          description: The status of the payment.
+        resource_id:
+          description: The ID of the resource the payment belongs to.
+          format: uuid
+          title: Resource Id
+          type: string
+        resource_type:
+          $ref: '#/components/schemas/PayableType'
+          description: The type of resource the payment belongs to.
+        amount:
+          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
+          description: The money value of the payment.
+        failure_reason:
+          description: The failure reason if the payment failed, null if payment did not fail.
+          nullable: true
+          title: Failure Reason
+          type: string
+        funding_source:
+          $ref: '#/components/schemas/FundingSourceSchema'
+          description: The funding source of the payment.
+        account_transaction:
+          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
+          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
+          nullable: true
+      required:
+      - id
+      - date
+      - status
+      - resource_id
+      - resource_type
+      - amount
+      - failure_reason
+      - funding_source
+      - account_transaction
+      title: PaymentSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

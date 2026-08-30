@@ -1,0 +1,217 @@
+openapi: 3.2.0
+info:
+  title: Float Public Receipts API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Receipts
+paths:
+  /v1/receipts:
+    get:
+      operationId: getReceipts
+      summary: Retrieve a list of all receipts
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Receipts
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_ReceiptSchema'
+          description: A paginated list of all receipts
+  /v1/receipts/{receipt_id}:
+    get:
+      operationId: getReceiptById
+      summary: Retrieve a single receipt by ID
+      parameters:
+      - in: path
+        name: receipt_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Receipts
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptSchema'
+          description: A single receipt
+        '404':
+          description: Receipt not found
+components:
+  schemas:
+    ReceiptSchema:
+      properties:
+        id:
+          description: Unique identifier for the receipt.
+          format: uuid
+          title: Id
+          type: string
+        user:
+          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          default: null
+          description: Reference to the user who uploaded the receipt.
+          nullable: true
+        image_url:
+          description: URL of the receipt image.
+          title: Image Url
+          type: string
+        transactions:
+          description: List of transactions associated with the receipt.
+          items:
+            $ref: '#/components/schemas/ReferenceSchema_CardTransactionSchema_'
+          title: Transactions
+          type: array
+        created_at:
+          description: Timestamp when the receipt was uploaded to Float.
+          format: date-time
+          title: Created At
+          type: string
+      required:
+      - id
+      - image_url
+      - transactions
+      - created_at
+      title: ReceiptSchema
+      type: object
+    ReferenceSchema_CardTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[CardTransactionSchema]
+      type: object
+    CountablePagedResponse_ReceiptSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/ReceiptSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_ReceiptSchema
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

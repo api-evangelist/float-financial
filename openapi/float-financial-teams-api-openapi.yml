@@ -1,0 +1,261 @@
+openapi: 3.2.0
+info:
+  title: Float Public Teams API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Teams
+paths:
+  /v1/teams:
+    get:
+      operationId: getTeams
+      summary: Retrieve a paginated list of teams
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Teams
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_TeamSchema'
+          description: A paginated list of teams
+  /v1/teams/{team_id}:
+    get:
+      operationId: getTeamById
+      summary: Retrieve a team by ID
+      parameters:
+      - in: path
+        name: team_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Teams
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_TeamSchema'
+          description: A single team
+        '404':
+          description: Team not found
+components:
+  schemas:
+    CountablePagedResponse_TeamSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/TeamSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_TeamSchema
+      type: object
+    BaseApprovalPolicySchema:
+      properties:
+        id:
+          description: The unique identifier of the approval policy.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The name of the approval policy.
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/ApprovalPolicyType'
+          description: The type of the approval policy.
+      required:
+      - id
+      - name
+      - type
+      title: BaseApprovalPolicySchema
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    TeamSchema:
+      properties:
+        id:
+          description: Unique identifier for the team.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the team.
+          title: Name
+          type: string
+        managers:
+          description: List of managers for the team.
+          items:
+            $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          title: Managers
+          type: array
+        members:
+          description: List of members in the team.
+          items:
+            $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          title: Members
+          type: array
+        approval_policies:
+          description: A list of approval policies assigned to this team.
+          items:
+            $ref: '#/components/schemas/BaseApprovalPolicySchema'
+          title: Approval Policies
+          type: array
+        custom_fields:
+          description: A list of custom fields assigned to this team.
+          items:
+            $ref: '#/components/schemas/NameReferenceSchema_CustomFieldSchema_'
+          title: Custom Fields
+          type: array
+      required:
+      - id
+      - name
+      - managers
+      - members
+      - approval_policies
+      - custom_fields
+      title: TeamSchema
+      type: object
+    NameReferenceSchema_CustomFieldSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[CustomFieldSchema]
+      type: object
+    ApprovalPolicyType:
+      enum:
+      - SPENDING
+      - PERSONAL_REIMBURSEMENT
+      - TRANSACTION_REVIEW
+      - BILL_APPROVAL
+      - FUNDS_RELEASE
+      title: ApprovalPolicyType
+      type: string
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

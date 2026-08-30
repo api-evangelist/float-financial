@@ -1,0 +1,621 @@
+openapi: 3.2.0
+info:
+  title: Float Public Account Transactions API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Account Transactions
+paths:
+  /v1/account-transactions:
+    get:
+      operationId: getAccountTransactions
+      summary: Retrieve a paginated list of account transactions
+      parameters:
+      - in: query
+        name: account_id
+        schema:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        description: Unique identifier of the account associated with the transactions
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: filter_type
+        schema:
+          enum:
+          - ACCOUNTING_EXPORTABLE
+          type: string
+        description: "Type of filter to apply to the transactions\n - `ACCOUNTING_EXPORTABLE`: Transactions that can be found on the Transaction Export flow\n\n* `ACCOUNTING_EXPORTABLE` - ACCOUNTING_EXPORTABLE"
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      - in: query
+        name: transaction_type
+        schema:
+          enum:
+          - CAPTURE
+          - REFUND
+          - TOPUP
+          - TOPUP_REVERSAL
+          - FUND_WITHDRAWAL
+          - FUND_WITHDRAWAL_REVERSAL
+          - BILLING_CHARGE
+          - BILLING_REFUND
+          - CASHBACK
+          - CASHBACK_REFUND
+          - FLOAT_COMPENSATION
+          - INTEREST
+          - INTEREST_REFUND
+          - BILL_PAY_WITHDRAWAL
+          - BILL_PAY_RETURN
+          - DIRECT_PAYMENT_WITHDRAWAL
+          - DIRECT_PAYMENT_RETURN
+          - PERSONAL_REIMBURSEMENT_WITHDRAWAL
+          - PERSONAL_REIMBURSEMENT_RETURN
+          - TRANSFER_IN
+          - TRANSFER_OUT
+          - FX_TRANSFER_DEBIT
+          - FX_TRANSFER_CREDIT
+          - INCOMING_PAD
+          - INCOMING_PAD_REVERSAL
+          type: string
+        description: 'Type of transaction to filter by
+
+
+          * `CAPTURE` - CAPTURE
+
+          * `REFUND` - REFUND
+
+          * `TOPUP` - TOPUP
+
+          * `TOPUP_REVERSAL` - TOPUP_REVERSAL
+
+          * `FUND_WITHDRAWAL` - FUND_WITHDRAWAL
+
+          * `FUND_WITHDRAWAL_REVERSAL` - FUND_WITHDRAWAL_REVERSAL
+
+          * `BILLING_CHARGE` - BILLING_CHARGE
+
+          * `BILLING_REFUND` - BILLING_REFUND
+
+          * `CASHBACK` - CASHBACK
+
+          * `CASHBACK_REFUND` - CASHBACK_REFUND
+
+          * `FLOAT_COMPENSATION` - FLOAT_COMPENSATION
+
+          * `INTEREST` - INTEREST
+
+          * `INTEREST_REFUND` - INTEREST_REFUND
+
+          * `BILL_PAY_WITHDRAWAL` - BILL_PAY_WITHDRAWAL
+
+          * `BILL_PAY_RETURN` - BILL_PAY_RETURN
+
+          * `DIRECT_PAYMENT_WITHDRAWAL` - DIRECT_PAYMENT_WITHDRAWAL
+
+          * `DIRECT_PAYMENT_RETURN` - DIRECT_PAYMENT_RETURN
+
+          * `PERSONAL_REIMBURSEMENT_WITHDRAWAL` - PERSONAL_REIMBURSEMENT_WITHDRAWAL
+
+          * `PERSONAL_REIMBURSEMENT_RETURN` - PERSONAL_REIMBURSEMENT_RETURN
+
+          * `TRANSFER_IN` - TRANSFER_IN
+
+          * `TRANSFER_OUT` - TRANSFER_OUT
+
+          * `FX_TRANSFER_DEBIT` - FX_TRANSFER_DEBIT
+
+          * `FX_TRANSFER_CREDIT` - FX_TRANSFER_CREDIT
+
+          * `INCOMING_PAD` - INCOMING_PAD
+
+          * `INCOMING_PAD_REVERSAL` - INCOMING_PAD_REVERSAL'
+      tags:
+      - Account Transactions
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponse_AccountTransactionSchema'
+          description: A paginated list of account transactions
+  /v1/account-transactions/{transaction_id}:
+    get:
+      operationId: getAccountTransactionByTransactionId
+      summary: Retrieve a single account transaction by transaction ID
+      parameters:
+      - in: path
+        name: transaction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Account Transactions
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountTransactionSchema'
+          description: A single account transaction
+        '404':
+          description: Transaction not found
+components:
+  schemas:
+    NameReferenceSchema_VendorOutputSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[VendorOutputSchema]
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    PagedResponse_AccountTransactionSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/AccountTransactionSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      title: PagedResponse_AccountTransactionSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    AccountType:
+      enum:
+      - CREDIT
+      - DEBIT
+      title: AccountType
+      type: string
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    AccountTransactionType:
+      enum:
+      - CAPTURE
+      - REFUND
+      - TOPUP
+      - TOPUP_REVERSAL
+      - FUND_WITHDRAWAL
+      - FUND_WITHDRAWAL_REVERSAL
+      - BILLING_CHARGE
+      - BILLING_REFUND
+      - CASHBACK
+      - CASHBACK_REFUND
+      - FLOAT_COMPENSATION
+      - INTEREST
+      - INTEREST_REFUND
+      - BILL_PAY_WITHDRAWAL
+      - BILL_PAY_RETURN
+      - DIRECT_PAYMENT_WITHDRAWAL
+      - DIRECT_PAYMENT_RETURN
+      - PERSONAL_REIMBURSEMENT_WITHDRAWAL
+      - PERSONAL_REIMBURSEMENT_RETURN
+      - TRANSFER_IN
+      - TRANSFER_OUT
+      - FX_TRANSFER_DEBIT
+      - FX_TRANSFER_CREDIT
+      - INCOMING_PAD
+      - INCOMING_PAD_REVERSAL
+      title: AccountTransactionType
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    NameReferenceSchema_TeamSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[TeamSchema]
+      type: object
+    ExternalIdReferenceSchema_GLCodeOutputSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - external_id
+      title: ExternalIdReferenceSchema[GLCodeOutputSchema]
+      type: object
+    AccountTransactionSchema:
+      properties:
+        id:
+          description: Unique identifier for the transaction.
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/AccountTransactionType'
+          description: Type of transaction.
+        description:
+          description: Description of the transaction.
+          nullable: true
+          title: Description
+          type: string
+        created_at:
+          description: Timestamp when the transaction was created.
+          format: date-time
+          title: Created At
+          type: string
+        updated_at:
+          description: Timestamp when the transaction was updated.
+          format: date-time
+          title: Updated At
+          type: string
+        spender:
+          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          description: The spender who made the transaction.
+          nullable: true
+        team:
+          $ref: '#/components/schemas/NameReferenceSchema_TeamSchema_'
+          description: The team associated with the transaction.
+          nullable: true
+        gl_code:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_GLCodeOutputSchema_'
+          description: The GL Code associated with the transaction.
+          nullable: true
+        vendor:
+          $ref: '#/components/schemas/NameReferenceSchema_VendorOutputSchema_'
+          description: The Accounting Vendor associated with the transaction.
+          nullable: true
+        account:
+          $ref: '#/components/schemas/AccountSchema'
+          description: The account used to make the transaction.
+        account_type:
+          $ref: '#/components/schemas/AccountType'
+          deprecated: true
+          description: The account type used to make the transaction
+        account_currency:
+          $ref: '#/components/schemas/Currencies'
+          deprecated: true
+          description: Currency of the account used to make the transaction.
+        total:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: The amount value of the account transaction.
+      required:
+      - id
+      - type
+      - description
+      - created_at
+      - updated_at
+      - spender
+      - team
+      - gl_code
+      - vendor
+      - account
+      - account_type
+      - account_currency
+      - total
+      title: AccountTransactionSchema
+      type: object
+    AccountSchema:
+      properties:
+        id:
+          description: Unique identifier for the account
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/AccountType'
+          description: Type of the account
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - id
+      - type
+      - currency
+      title: AccountSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

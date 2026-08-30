@@ -1,0 +1,1868 @@
+openapi: 3.2.0
+info:
+  title: Float Public Vendors API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Vendors
+paths:
+  /v1/vendors:
+    get:
+      operationId: getVendors
+      summary: Retrieve a list of all vendors
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Vendors
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_VendorOutputSchema'
+          description: A paginated list of all vendors
+    post:
+      operationId: createVendors
+      summary: Create vendors
+      tags:
+      - Vendors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorInputListSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '202':
+          description: Vendor creation request received
+  /v1/vendors/{vendor_id}:
+    get:
+      operationId: getVendorById
+      summary: Retrieve a single vendor by ID
+      parameters:
+      - in: path
+        name: vendor_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Vendors
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorOutputSchema'
+          description: A single vendor
+        '404':
+          description: Vendor not found
+    patch:
+      operationId: patchVendor
+      summary: Update vendor
+      parameters:
+      - in: path
+        name: vendor_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Vendors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVendorUpdateSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          description: Vendor updated successfully
+        '404':
+          description: Vendor not found
+components:
+  schemas:
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
+          type: string
+      required:
+      - email
+      title: EmailPreference
+      type: object
+    CountablePagedResponse_VendorOutputSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/VendorOutputSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_VendorOutputSchema
+      type: object
+    PatchedVendorUpdateSchema:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name of the vendor.
+          maxLength: 255
+          minLength: 1
+        currency:
+          description: 'Currency used by the vendor.
+
+
+            * `AFN` - AFN
+
+            * `ALL` - ALL
+
+            * `DZD` - DZD
+
+            * `USD` - USD
+
+            * `EUR` - EUR
+
+            * `AOA` - AOA
+
+            * `XCD` - XCD
+
+            * `ARS` - ARS
+
+            * `AMD` - AMD
+
+            * `AWG` - AWG
+
+            * `AUD` - AUD
+
+            * `AZN` - AZN
+
+            * `BSD` - BSD
+
+            * `BHD` - BHD
+
+            * `BDT` - BDT
+
+            * `BBD` - BBD
+
+            * `BYN` - BYN
+
+            * `BZD` - BZD
+
+            * `XOF` - XOF
+
+            * `BMD` - BMD
+
+            * `BTN` - BTN
+
+            * `INR` - INR
+
+            * `BOB` - BOB
+
+            * `BOV` - BOV
+
+            * `BAM` - BAM
+
+            * `BWP` - BWP
+
+            * `NOK` - NOK
+
+            * `BRL` - BRL
+
+            * `BND` - BND
+
+            * `BGN` - BGN
+
+            * `BIF` - BIF
+
+            * `CVE` - CVE
+
+            * `KHR` - KHR
+
+            * `XAF` - XAF
+
+            * `CAD` - CAD
+
+            * `KYD` - KYD
+
+            * `CLF` - CLF
+
+            * `CLP` - CLP
+
+            * `CNY` - CNY
+
+            * `COP` - COP
+
+            * `COU` - COU
+
+            * `KMF` - KMF
+
+            * `CDF` - CDF
+
+            * `NZD` - NZD
+
+            * `CRC` - CRC
+
+            * `HRK` - HRK
+
+            * `CUC` - CUC
+
+            * `CUP` - CUP
+
+            * `ANG` - ANG
+
+            * `CZK` - CZK
+
+            * `DKK` - DKK
+
+            * `DJF` - DJF
+
+            * `DOP` - DOP
+
+            * `EGP` - EGP
+
+            * `SVC` - SVC
+
+            * `ERN` - ERN
+
+            * `ETB` - ETB
+
+            * `FKP` - FKP
+
+            * `FJD` - FJD
+
+            * `XPF` - XPF
+
+            * `GMD` - GMD
+
+            * `GEL` - GEL
+
+            * `GHS` - GHS
+
+            * `GIP` - GIP
+
+            * `GTQ` - GTQ
+
+            * `GBP` - GBP
+
+            * `GNF` - GNF
+
+            * `GYD` - GYD
+
+            * `HTG` - HTG
+
+            * `HNL` - HNL
+
+            * `HKD` - HKD
+
+            * `HUF` - HUF
+
+            * `ISK` - ISK
+
+            * `IDR` - IDR
+
+            * `XDR` - XDR
+
+            * `IRR` - IRR
+
+            * `IQD` - IQD
+
+            * `ILS` - ILS
+
+            * `JMD` - JMD
+
+            * `JPY` - JPY
+
+            * `JOD` - JOD
+
+            * `KZT` - KZT
+
+            * `KES` - KES
+
+            * `KPW` - KPW
+
+            * `KRW` - KRW
+
+            * `KWD` - KWD
+
+            * `KGS` - KGS
+
+            * `LAK` - LAK
+
+            * `LBP` - LBP
+
+            * `LSL` - LSL
+
+            * `ZAR` - ZAR
+
+            * `LRD` - LRD
+
+            * `LYD` - LYD
+
+            * `CHF` - CHF
+
+            * `MOP` - MOP
+
+            * `MGA` - MGA
+
+            * `MWK` - MWK
+
+            * `MYR` - MYR
+
+            * `MVR` - MVR
+
+            * `MRU` - MRU
+
+            * `MUR` - MUR
+
+            * `XUA` - XUA
+
+            * `MXN` - MXN
+
+            * `MXV` - MXV
+
+            * `MDL` - MDL
+
+            * `MNT` - MNT
+
+            * `MAD` - MAD
+
+            * `MZN` - MZN
+
+            * `MMK` - MMK
+
+            * `NAD` - NAD
+
+            * `NPR` - NPR
+
+            * `NIO` - NIO
+
+            * `NGN` - NGN
+
+            * `OMR` - OMR
+
+            * `PKR` - PKR
+
+            * `PAB` - PAB
+
+            * `PGK` - PGK
+
+            * `PYG` - PYG
+
+            * `PEN` - PEN
+
+            * `PHP` - PHP
+
+            * `PLN` - PLN
+
+            * `QAR` - QAR
+
+            * `MKD` - MKD
+
+            * `RON` - RON
+
+            * `RUB` - RUB
+
+            * `RWF` - RWF
+
+            * `SHP` - SHP
+
+            * `WST` - WST
+
+            * `STN` - STN
+
+            * `SAR` - SAR
+
+            * `RSD` - RSD
+
+            * `SCR` - SCR
+
+            * `SLL` - SLL
+
+            * `SGD` - SGD
+
+            * `XSU` - XSU
+
+            * `SBD` - SBD
+
+            * `SOS` - SOS
+
+            * `SSP` - SSP
+
+            * `LKR` - LKR
+
+            * `SDG` - SDG
+
+            * `SRD` - SRD
+
+            * `SZL` - SZL
+
+            * `SEK` - SEK
+
+            * `CHE` - CHE
+
+            * `CHW` - CHW
+
+            * `SYP` - SYP
+
+            * `TWD` - TWD
+
+            * `TJS` - TJS
+
+            * `TZS` - TZS
+
+            * `THB` - THB
+
+            * `TOP` - TOP
+
+            * `TTD` - TTD
+
+            * `TND` - TND
+
+            * `TRY` - TRY
+
+            * `TMT` - TMT
+
+            * `UGX` - UGX
+
+            * `UAH` - UAH
+
+            * `AED` - AED
+
+            * `USN` - USN
+
+            * `UYI` - UYI
+
+            * `UYU` - UYU
+
+            * `UZS` - UZS
+
+            * `VUV` - VUV
+
+            * `VEF` - VEF
+
+            * `VED` - VED
+
+            * `VND` - VND
+
+            * `YER` - YER
+
+            * `ZMW` - ZMW
+
+            * `ZWL` - ZWL
+
+            * `UNK` - UNK'
+          oneOf:
+          - $ref: '#/components/schemas/VendorUpdateSchemaCurrencyEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        currencies:
+          type:
+          - array
+          - 'null'
+          items:
+            enum:
+            - AFN
+            - ALL
+            - DZD
+            - USD
+            - EUR
+            - AOA
+            - XCD
+            - ARS
+            - AMD
+            - AWG
+            - AUD
+            - AZN
+            - BSD
+            - BHD
+            - BDT
+            - BBD
+            - BYN
+            - BZD
+            - XOF
+            - BMD
+            - BTN
+            - INR
+            - BOB
+            - BOV
+            - BAM
+            - BWP
+            - NOK
+            - BRL
+            - BND
+            - BGN
+            - BIF
+            - CVE
+            - KHR
+            - XAF
+            - CAD
+            - KYD
+            - CLF
+            - CLP
+            - CNY
+            - COP
+            - COU
+            - KMF
+            - CDF
+            - NZD
+            - CRC
+            - HRK
+            - CUC
+            - CUP
+            - ANG
+            - CZK
+            - DKK
+            - DJF
+            - DOP
+            - EGP
+            - SVC
+            - ERN
+            - ETB
+            - FKP
+            - FJD
+            - XPF
+            - GMD
+            - GEL
+            - GHS
+            - GIP
+            - GTQ
+            - GBP
+            - GNF
+            - GYD
+            - HTG
+            - HNL
+            - HKD
+            - HUF
+            - ISK
+            - IDR
+            - XDR
+            - IRR
+            - IQD
+            - ILS
+            - JMD
+            - JPY
+            - JOD
+            - KZT
+            - KES
+            - KPW
+            - KRW
+            - KWD
+            - KGS
+            - LAK
+            - LBP
+            - LSL
+            - ZAR
+            - LRD
+            - LYD
+            - CHF
+            - MOP
+            - MGA
+            - MWK
+            - MYR
+            - MVR
+            - MRU
+            - MUR
+            - XUA
+            - MXN
+            - MXV
+            - MDL
+            - MNT
+            - MAD
+            - MZN
+            - MMK
+            - NAD
+            - NPR
+            - NIO
+            - NGN
+            - OMR
+            - PKR
+            - PAB
+            - PGK
+            - PYG
+            - PEN
+            - PHP
+            - PLN
+            - QAR
+            - MKD
+            - RON
+            - RUB
+            - RWF
+            - SHP
+            - WST
+            - STN
+            - SAR
+            - RSD
+            - SCR
+            - SLL
+            - SGD
+            - XSU
+            - SBD
+            - SOS
+            - SSP
+            - LKR
+            - SDG
+            - SRD
+            - SZL
+            - SEK
+            - CHE
+            - CHW
+            - SYP
+            - TWD
+            - TJS
+            - TZS
+            - THB
+            - TOP
+            - TTD
+            - TND
+            - TRY
+            - TMT
+            - UGX
+            - UAH
+            - AED
+            - USN
+            - UYI
+            - UYU
+            - UZS
+            - VUV
+            - VEF
+            - VED
+            - VND
+            - YER
+            - ZMW
+            - ZWL
+            - UNK
+            type: string
+            description: '* `AFN` - AFN
+
+              * `ALL` - ALL
+
+              * `DZD` - DZD
+
+              * `USD` - USD
+
+              * `EUR` - EUR
+
+              * `AOA` - AOA
+
+              * `XCD` - XCD
+
+              * `ARS` - ARS
+
+              * `AMD` - AMD
+
+              * `AWG` - AWG
+
+              * `AUD` - AUD
+
+              * `AZN` - AZN
+
+              * `BSD` - BSD
+
+              * `BHD` - BHD
+
+              * `BDT` - BDT
+
+              * `BBD` - BBD
+
+              * `BYN` - BYN
+
+              * `BZD` - BZD
+
+              * `XOF` - XOF
+
+              * `BMD` - BMD
+
+              * `BTN` - BTN
+
+              * `INR` - INR
+
+              * `BOB` - BOB
+
+              * `BOV` - BOV
+
+              * `BAM` - BAM
+
+              * `BWP` - BWP
+
+              * `NOK` - NOK
+
+              * `BRL` - BRL
+
+              * `BND` - BND
+
+              * `BGN` - BGN
+
+              * `BIF` - BIF
+
+              * `CVE` - CVE
+
+              * `KHR` - KHR
+
+              * `XAF` - XAF
+
+              * `CAD` - CAD
+
+              * `KYD` - KYD
+
+              * `CLF` - CLF
+
+              * `CLP` - CLP
+
+              * `CNY` - CNY
+
+              * `COP` - COP
+
+              * `COU` - COU
+
+              * `KMF` - KMF
+
+              * `CDF` - CDF
+
+              * `NZD` - NZD
+
+              * `CRC` - CRC
+
+              * `HRK` - HRK
+
+              * `CUC` - CUC
+
+              * `CUP` - CUP
+
+              * `ANG` - ANG
+
+              * `CZK` - CZK
+
+              * `DKK` - DKK
+
+              * `DJF` - DJF
+
+              * `DOP` - DOP
+
+              * `EGP` - EGP
+
+              * `SVC` - SVC
+
+              * `ERN` - ERN
+
+              * `ETB` - ETB
+
+              * `FKP` - FKP
+
+              * `FJD` - FJD
+
+              * `XPF` - XPF
+
+              * `GMD` - GMD
+
+              * `GEL` - GEL
+
+              * `GHS` - GHS
+
+              * `GIP` - GIP
+
+              * `GTQ` - GTQ
+
+              * `GBP` - GBP
+
+              * `GNF` - GNF
+
+              * `GYD` - GYD
+
+              * `HTG` - HTG
+
+              * `HNL` - HNL
+
+              * `HKD` - HKD
+
+              * `HUF` - HUF
+
+              * `ISK` - ISK
+
+              * `IDR` - IDR
+
+              * `XDR` - XDR
+
+              * `IRR` - IRR
+
+              * `IQD` - IQD
+
+              * `ILS` - ILS
+
+              * `JMD` - JMD
+
+              * `JPY` - JPY
+
+              * `JOD` - JOD
+
+              * `KZT` - KZT
+
+              * `KES` - KES
+
+              * `KPW` - KPW
+
+              * `KRW` - KRW
+
+              * `KWD` - KWD
+
+              * `KGS` - KGS
+
+              * `LAK` - LAK
+
+              * `LBP` - LBP
+
+              * `LSL` - LSL
+
+              * `ZAR` - ZAR
+
+              * `LRD` - LRD
+
+              * `LYD` - LYD
+
+              * `CHF` - CHF
+
+              * `MOP` - MOP
+
+              * `MGA` - MGA
+
+              * `MWK` - MWK
+
+              * `MYR` - MYR
+
+              * `MVR` - MVR
+
+              * `MRU` - MRU
+
+              * `MUR` - MUR
+
+              * `XUA` - XUA
+
+              * `MXN` - MXN
+
+              * `MXV` - MXV
+
+              * `MDL` - MDL
+
+              * `MNT` - MNT
+
+              * `MAD` - MAD
+
+              * `MZN` - MZN
+
+              * `MMK` - MMK
+
+              * `NAD` - NAD
+
+              * `NPR` - NPR
+
+              * `NIO` - NIO
+
+              * `NGN` - NGN
+
+              * `OMR` - OMR
+
+              * `PKR` - PKR
+
+              * `PAB` - PAB
+
+              * `PGK` - PGK
+
+              * `PYG` - PYG
+
+              * `PEN` - PEN
+
+              * `PHP` - PHP
+
+              * `PLN` - PLN
+
+              * `QAR` - QAR
+
+              * `MKD` - MKD
+
+              * `RON` - RON
+
+              * `RUB` - RUB
+
+              * `RWF` - RWF
+
+              * `SHP` - SHP
+
+              * `WST` - WST
+
+              * `STN` - STN
+
+              * `SAR` - SAR
+
+              * `RSD` - RSD
+
+              * `SCR` - SCR
+
+              * `SLL` - SLL
+
+              * `SGD` - SGD
+
+              * `XSU` - XSU
+
+              * `SBD` - SBD
+
+              * `SOS` - SOS
+
+              * `SSP` - SSP
+
+              * `LKR` - LKR
+
+              * `SDG` - SDG
+
+              * `SRD` - SRD
+
+              * `SZL` - SZL
+
+              * `SEK` - SEK
+
+              * `CHE` - CHE
+
+              * `CHW` - CHW
+
+              * `SYP` - SYP
+
+              * `TWD` - TWD
+
+              * `TJS` - TJS
+
+              * `TZS` - TZS
+
+              * `THB` - THB
+
+              * `TOP` - TOP
+
+              * `TTD` - TTD
+
+              * `TND` - TND
+
+              * `TRY` - TRY
+
+              * `TMT` - TMT
+
+              * `UGX` - UGX
+
+              * `UAH` - UAH
+
+              * `AED` - AED
+
+              * `USN` - USN
+
+              * `UYI` - UYI
+
+              * `UYU` - UYU
+
+              * `UZS` - UZS
+
+              * `VUV` - VUV
+
+              * `VEF` - VEF
+
+              * `VED` - VED
+
+              * `VND` - VND
+
+              * `YER` - YER
+
+              * `ZMW` - ZMW
+
+              * `ZWL` - ZWL
+
+              * `UNK` - UNK'
+          description: Currencies used by the vendor.
+          minItems: 1
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: External identifier for the vendor.
+          maxLength: 255
+    NullEnum:
+      type: 'null'
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    WebhookPreference:
+      properties:
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
+          type: string
+      required:
+      - url
+      title: WebhookPreference
+      type: object
+    VendorOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the vendor.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the vendor.
+          title: Name
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the vendor.
+          nullable: true
+        currencies:
+          description: Currencies used by the vendor.
+          items:
+            $ref: '#/components/schemas/Currencies'
+          title: Currencies
+          type: array
+        external_id:
+          default: null
+          description: External identifier for the vendor.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - name
+      title: VendorOutputSchema
+      type: object
+    VendorInputSchema:
+      properties:
+        name:
+          description: Name of the vendor.
+          title: Name
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the vendor.
+          nullable: true
+        currencies:
+          default: null
+          description: Currencies used by the vendor.
+          items:
+            $ref: '#/components/schemas/Currencies'
+          minItems: 1
+          nullable: true
+          title: Currencies
+          type: array
+        external_id:
+          default: null
+          description: External identifier for the vendor.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - name
+      title: VendorInputSchema
+      type: object
+    VendorUpdateSchemaCurrencyEnum:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      type: string
+      description: '* `AFN` - AFN
+
+        * `ALL` - ALL
+
+        * `DZD` - DZD
+
+        * `USD` - USD
+
+        * `EUR` - EUR
+
+        * `AOA` - AOA
+
+        * `XCD` - XCD
+
+        * `ARS` - ARS
+
+        * `AMD` - AMD
+
+        * `AWG` - AWG
+
+        * `AUD` - AUD
+
+        * `AZN` - AZN
+
+        * `BSD` - BSD
+
+        * `BHD` - BHD
+
+        * `BDT` - BDT
+
+        * `BBD` - BBD
+
+        * `BYN` - BYN
+
+        * `BZD` - BZD
+
+        * `XOF` - XOF
+
+        * `BMD` - BMD
+
+        * `BTN` - BTN
+
+        * `INR` - INR
+
+        * `BOB` - BOB
+
+        * `BOV` - BOV
+
+        * `BAM` - BAM
+
+        * `BWP` - BWP
+
+        * `NOK` - NOK
+
+        * `BRL` - BRL
+
+        * `BND` - BND
+
+        * `BGN` - BGN
+
+        * `BIF` - BIF
+
+        * `CVE` - CVE
+
+        * `KHR` - KHR
+
+        * `XAF` - XAF
+
+        * `CAD` - CAD
+
+        * `KYD` - KYD
+
+        * `CLF` - CLF
+
+        * `CLP` - CLP
+
+        * `CNY` - CNY
+
+        * `COP` - COP
+
+        * `COU` - COU
+
+        * `KMF` - KMF
+
+        * `CDF` - CDF
+
+        * `NZD` - NZD
+
+        * `CRC` - CRC
+
+        * `HRK` - HRK
+
+        * `CUC` - CUC
+
+        * `CUP` - CUP
+
+        * `ANG` - ANG
+
+        * `CZK` - CZK
+
+        * `DKK` - DKK
+
+        * `DJF` - DJF
+
+        * `DOP` - DOP
+
+        * `EGP` - EGP
+
+        * `SVC` - SVC
+
+        * `ERN` - ERN
+
+        * `ETB` - ETB
+
+        * `FKP` - FKP
+
+        * `FJD` - FJD
+
+        * `XPF` - XPF
+
+        * `GMD` - GMD
+
+        * `GEL` - GEL
+
+        * `GHS` - GHS
+
+        * `GIP` - GIP
+
+        * `GTQ` - GTQ
+
+        * `GBP` - GBP
+
+        * `GNF` - GNF
+
+        * `GYD` - GYD
+
+        * `HTG` - HTG
+
+        * `HNL` - HNL
+
+        * `HKD` - HKD
+
+        * `HUF` - HUF
+
+        * `ISK` - ISK
+
+        * `IDR` - IDR
+
+        * `XDR` - XDR
+
+        * `IRR` - IRR
+
+        * `IQD` - IQD
+
+        * `ILS` - ILS
+
+        * `JMD` - JMD
+
+        * `JPY` - JPY
+
+        * `JOD` - JOD
+
+        * `KZT` - KZT
+
+        * `KES` - KES
+
+        * `KPW` - KPW
+
+        * `KRW` - KRW
+
+        * `KWD` - KWD
+
+        * `KGS` - KGS
+
+        * `LAK` - LAK
+
+        * `LBP` - LBP
+
+        * `LSL` - LSL
+
+        * `ZAR` - ZAR
+
+        * `LRD` - LRD
+
+        * `LYD` - LYD
+
+        * `CHF` - CHF
+
+        * `MOP` - MOP
+
+        * `MGA` - MGA
+
+        * `MWK` - MWK
+
+        * `MYR` - MYR
+
+        * `MVR` - MVR
+
+        * `MRU` - MRU
+
+        * `MUR` - MUR
+
+        * `XUA` - XUA
+
+        * `MXN` - MXN
+
+        * `MXV` - MXV
+
+        * `MDL` - MDL
+
+        * `MNT` - MNT
+
+        * `MAD` - MAD
+
+        * `MZN` - MZN
+
+        * `MMK` - MMK
+
+        * `NAD` - NAD
+
+        * `NPR` - NPR
+
+        * `NIO` - NIO
+
+        * `NGN` - NGN
+
+        * `OMR` - OMR
+
+        * `PKR` - PKR
+
+        * `PAB` - PAB
+
+        * `PGK` - PGK
+
+        * `PYG` - PYG
+
+        * `PEN` - PEN
+
+        * `PHP` - PHP
+
+        * `PLN` - PLN
+
+        * `QAR` - QAR
+
+        * `MKD` - MKD
+
+        * `RON` - RON
+
+        * `RUB` - RUB
+
+        * `RWF` - RWF
+
+        * `SHP` - SHP
+
+        * `WST` - WST
+
+        * `STN` - STN
+
+        * `SAR` - SAR
+
+        * `RSD` - RSD
+
+        * `SCR` - SCR
+
+        * `SLL` - SLL
+
+        * `SGD` - SGD
+
+        * `XSU` - XSU
+
+        * `SBD` - SBD
+
+        * `SOS` - SOS
+
+        * `SSP` - SSP
+
+        * `LKR` - LKR
+
+        * `SDG` - SDG
+
+        * `SRD` - SRD
+
+        * `SZL` - SZL
+
+        * `SEK` - SEK
+
+        * `CHE` - CHE
+
+        * `CHW` - CHW
+
+        * `SYP` - SYP
+
+        * `TWD` - TWD
+
+        * `TJS` - TJS
+
+        * `TZS` - TZS
+
+        * `THB` - THB
+
+        * `TOP` - TOP
+
+        * `TTD` - TTD
+
+        * `TND` - TND
+
+        * `TRY` - TRY
+
+        * `TMT` - TMT
+
+        * `UGX` - UGX
+
+        * `UAH` - UAH
+
+        * `AED` - AED
+
+        * `USN` - USN
+
+        * `UYI` - UYI
+
+        * `UYU` - UYU
+
+        * `UZS` - UZS
+
+        * `VUV` - VUV
+
+        * `VEF` - VEF
+
+        * `VED` - VED
+
+        * `VND` - VND
+
+        * `YER` - YER
+
+        * `ZMW` - ZMW
+
+        * `ZWL` - ZWL
+
+        * `UNK` - UNK'
+    VendorInputListSchema:
+      properties:
+        items:
+          description: List of Vendor input items.
+          items:
+            $ref: '#/components/schemas/VendorInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for the Vendors.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: VendorInputListSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

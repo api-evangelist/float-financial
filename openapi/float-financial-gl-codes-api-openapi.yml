@@ -1,0 +1,538 @@
+openapi: 3.2.0
+info:
+  title: Float Public GL Codes API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: GL Codes
+paths:
+  /v1/gl-codes:
+    get:
+      operationId: getGLCodes
+      summary: Retrieve a paginated list of GL Codes
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - GL Codes
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_GLCodeOutputSchema'
+          description: A paginated list of all GL codes
+    post:
+      operationId: createGLCodes
+      summary: Create GL codes
+      tags:
+      - GL Codes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLCodeInputListSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '202':
+          description: GL code creation request received
+  /v1/gl-codes/{gl_code_id}:
+    get:
+      operationId: getGLCodeById
+      summary: Retrieve a single GL code by ID
+      parameters:
+      - in: path
+        name: gl_code_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - GL Codes
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLCodeOutputSchema'
+          description: A single GL code
+        '404':
+          description: GL code not found
+    patch:
+      operationId: updateGLCode
+      description: Updates modifiable fields of an existing GL code. At least one field must be provided.
+      summary: Update a GL code
+      parameters:
+      - in: header
+        name: X-Idempotency-Key
+        schema:
+          type: string
+        description: A unique key to ensure idempotency of the request
+        required: true
+      - in: path
+        name: gl_code_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - GL Codes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateGLCodeSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLCodeOutputSchema'
+          description: GL code updated successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: GL code not found
+components:
+  schemas:
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
+          type: string
+      required:
+      - email
+      title: EmailPreference
+      type: object
+    GLCodeInputListSchema:
+      properties:
+        items:
+          description: List of GL code input items.
+          items:
+            $ref: '#/components/schemas/GLCodeInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for the GL codes.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: GLCodeInputListSchema
+      type: object
+    GLCodeInputSchema:
+      properties:
+        external_id:
+          description: External identifier for the GL code.
+          title: External Id
+          type: string
+        account_type:
+          description: Type of account for the GL code.
+          title: Account Type
+          type: string
+        name:
+          description: Name of the GL code.
+          title: Name
+          type: string
+        account_number:
+          default: null
+          description: Account number associated with the GL code.
+          nullable: true
+          title: Account Number
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the GL code.
+          nullable: true
+        parent_external_id:
+          default: null
+          description: Parent external identifier for hierarchical GL codes.
+          nullable: true
+          title: Parent External Id
+          type: string
+      required:
+      - external_id
+      - account_type
+      - name
+      title: GLCodeInputSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    GLCodeOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the GL code.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the GL code.
+          nullable: true
+          title: External Id
+          type: string
+        account_type:
+          description: Type of account for the GL code.
+          title: Account Type
+          type: string
+        name:
+          description: Name of the GL code.
+          title: Name
+          type: string
+        account_number:
+          default: null
+          description: Account number associated with the GL code.
+          nullable: true
+          title: Account Number
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the GL code.
+          nullable: true
+        parent_external_id:
+          default: null
+          description: Parent external identifier for hierarchical GL codes.
+          nullable: true
+          title: Parent External Id
+          type: string
+      required:
+      - id
+      - account_type
+      - name
+      title: GLCodeOutputSchema
+      type: object
+    PatchedUpdateGLCodeSchema:
+      additionalProperties: false
+      description: Schema for updating a GL Code via PATCH request.
+      properties:
+        name:
+          default: null
+          description: Name of the GL code.
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          title: Name
+          type: string
+        account_type:
+          default: null
+          description: Type of account for the GL code.
+          maxLength: 100
+          nullable: true
+          title: Account Type
+          type: string
+        account_number:
+          default: null
+          description: Account number associated with the GL code.
+          maxLength: 255
+          nullable: true
+          title: Account Number
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the GL code.
+          nullable: true
+      title: UpdateGLCodeSchema
+      type: object
+    WebhookPreference:
+      properties:
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
+          type: string
+      required:
+      - url
+      title: WebhookPreference
+      type: object
+    CountablePagedResponse_GLCodeOutputSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/GLCodeOutputSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_GLCodeOutputSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

@@ -1,0 +1,503 @@
+openapi: 3.2.0
+info:
+  title: Float Public Card Limits API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Card Limits
+paths:
+  /v1/card-limits:
+    get:
+      operationId: getCardLimits
+      summary: Retrieve a list of all card limits
+      parameters:
+      - in: query
+        name: card_id
+        schema:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        description: Unique identifier of the card to filter limits by.
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Card Limits
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_CardLimitSchema'
+          description: A paginated list of all card limits
+    post:
+      operationId: createCardLimit
+      summary: 'BETA: Create a new card limit'
+      parameters:
+      - in: header
+        name: X-Idempotency-Key
+        schema:
+          type: string
+        description: A unique key to ensure idempotency of the request
+        required: true
+      tags:
+      - Card Limits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardLimitForCardSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardLimitSchema'
+          description: A single card limit
+        '422':
+          description: start_date is not enabled for this business
+  /v1/card-limits/{card_limit_id}:
+    get:
+      operationId: getCardLimitById
+      summary: Retrieve a single card limit by ID
+      parameters:
+      - in: path
+        name: card_limit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Card Limits
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardLimitSchema'
+          description: A single card limit
+        '404':
+          description: Card limit not found
+components:
+  schemas:
+    CreateCardLimitForCardSchema:
+      properties:
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        expiry_date:
+          default: null
+          description: Expiry date of the card limit. Only used for TEMPORARY limits.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount_cents:
+          description: Amount of the card limit in cents.
+          title: Amount Cents
+          type: integer
+        reload_interval:
+          $ref: '#/components/schemas/ReloadIntervalType'
+          default: null
+          description: Reload interval of the card limit. Only used for RECURRING limits.
+          nullable: true
+        start_date:
+          default: null
+          description: Start date of the card limit. If set in the future, the limit is scheduled.
+          format: date-time
+          nullable: true
+          title: Start Date
+          type: string
+        card_id:
+          description: Unique identifier for the card.
+          format: uuid
+          title: Card Id
+          type: string
+      required:
+      - type
+      - description
+      - amount_cents
+      - card_id
+      title: CreateCardLimitForCardSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    CardLimitType:
+      enum:
+      - RECURRING
+      - TEMPORARY
+      title: CardLimitType
+      type: string
+    CardLimitSchema:
+      properties:
+        id:
+          description: Unique identifier for the card limit.
+          format: uuid
+          title: Id
+          type: string
+        card_id:
+          description: Unique identifier for the card.
+          format: uuid
+          title: Card Id
+          type: string
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        start_date:
+          description: Start date of the card limit.
+          format: date-time
+          title: Start Date
+          type: string
+        end_date:
+          description: End date of the card limit.  If None, the limit is ongoing.
+          format: date-time
+          nullable: true
+          title: End Date
+          type: string
+        expiry_date:
+          description: Expiry date of the card limit.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Amount of the card limit.
+          nullable: true
+        status:
+          $ref: '#/components/schemas/CardLimitStatus'
+          description: 'Lifecycle status of the card limit: SCHEDULED, ACTIVE, or EXPIRED.'
+      required:
+      - id
+      - card_id
+      - type
+      - description
+      - start_date
+      - end_date
+      - expiry_date
+      - amount
+      - status
+      title: CardLimitSchema
+      type: object
+    CountablePagedResponse_CardLimitSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/CardLimitSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_CardLimitSchema
+      type: object
+    CardLimitStatus:
+      enum:
+      - SCHEDULED
+      - ACTIVE
+      - EXPIRED
+      title: CardLimitStatus
+      type: string
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    ReloadIntervalType:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - NO_RELOAD
+      title: ReloadIntervalType
+      type: string
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

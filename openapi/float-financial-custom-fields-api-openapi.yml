@@ -1,0 +1,573 @@
+openapi: 3.2.0
+info:
+  title: Float Public Custom Fields API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Custom Fields
+paths:
+  /v1/custom-fields:
+    get:
+      operationId: getCustomFields
+      summary: Retrieve a paginated list of custom fields
+      parameters:
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Custom Fields
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_UnionType_MultiSelectSchema_StringSchema'
+          description: A paginated list of custom fields
+    post:
+      operationId: createCustomFields
+      summary: Create custom fields
+      tags:
+      - Custom Fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFieldInputListSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '202':
+          description: Custom field creation request received
+        '400':
+          description: Invalid request data
+    delete:
+      operationId: deleteCustomFields
+      summary: Delete custom fields
+      tags:
+      - Custom Fields
+      security:
+      - bearerToken: []
+      responses:
+        '204':
+          description: Custom field deleted
+        '400':
+          description: Invalid request data
+  /v1/custom-fields/{custom_field_id}:
+    get:
+      operationId: getCustomFieldById
+      summary: Retrieve a custom field by ID
+      parameters:
+      - in: path
+        name: custom_field_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Custom Fields
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldSchema'
+          description: A single custom field
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Custom field not found
+          description: ''
+    patch:
+      operationId: updateCustomField
+      summary: Update a custom field
+      parameters:
+      - in: header
+        name: X-Idempotency-Key
+        schema:
+          type: string
+        description: A unique key to ensure idempotency of the request
+        required: true
+      - in: path
+        name: custom_field_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Custom Fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateCustomFieldSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedCustomFieldSchema'
+          description: Custom field updated successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: Custom field not found
+    delete:
+      operationId: deleteCustomFieldById
+      summary: Delete a custom field by ID
+      parameters:
+      - in: path
+        name: custom_field_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Custom Fields
+      security:
+      - bearerToken: []
+      responses:
+        '204':
+          description: Custom field deleted
+        '404':
+          description: Custom field not found
+  /v1/custom-fields/{custom_field_id}/options:
+    post:
+      operationId: createCustomFieldOptions
+      summary: Create custom field options
+      parameters:
+      - in: path
+        name: custom_field_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Custom Fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFieldOptionInputListSchema'
+        required: true
+      security:
+      - bearerToken: []
+      responses:
+        '202':
+          description: Custom field option creation request received
+        '400':
+          description: Invalid request data
+        '404':
+          description: Custom field not found
+  /v1/custom-fields/{custom_field_id}/options/{option_id}:
+    patch:
+      operationId: updateCustomFieldOption
+      summary: Update a custom field option
+      parameters:
+      - in: header
+        name: X-Idempotency-Key
+        schema:
+          type: string
+        description: A unique key to ensure idempotency of the request
+        required: true
+      - in: path
+        name: custom_field_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: option_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Custom Fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateCustomFieldOptionSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OptionSchema'
+          description: Custom field option updated successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: Custom field option not found
+    delete:
+      operationId: deleteCustomFieldOptionById
+      summary: Delete a custom field option by ID
+      parameters:
+      - in: path
+        name: custom_field_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: option_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Custom Fields
+      security:
+      - bearerToken: []
+      responses:
+        '204':
+          description: Custom field option deleted
+        '404':
+          description: Custom field option not found
+components:
+  schemas:
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
+          type: string
+      required:
+      - email
+      title: EmailPreference
+      type: object
+    CustomFieldSchema:
+      oneOf:
+      - $ref: '#/components/schemas/MultiSelectSchema'
+      - $ref: '#/components/schemas/StringSchema'
+    CustomFieldType:
+      enum:
+      - single-select
+      - multi-select
+      - string
+      title: CustomFieldType
+      type: string
+    CustomFieldOptionInputListSchema:
+      properties:
+        options:
+          description: List of custom field options to create.
+          items:
+            $ref: '#/components/schemas/OptionInputSchema'
+          title: Options
+          type: array
+        notification_preferences:
+          description: List of notification preferences for when custom field option creation has completed.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - options
+      - notification_preferences
+      title: CustomFieldOptionInputListSchema
+      type: object
+    CountablePagedResponse_UnionType_MultiSelectSchema_StringSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/MultiSelectSchema'
+            - $ref: '#/components/schemas/StringSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_UnionType_MultiSelectSchema_StringSchema
+      type: object
+    MultiSelectSchema:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+          default: multi-select
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
+          type: string
+        options:
+          items:
+            $ref: '#/components/schemas/OptionSchema'
+          title: Options
+          type: array
+      required:
+      - id
+      - name
+      - options
+      title: MultiSelectSchema
+      type: object
+    PatchedUpdateCustomFieldSchema:
+      properties:
+        name:
+          default: null
+          description: The name of the custom field.
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field.
+          maxLength: 255
+          nullable: true
+          title: External Id
+          type: string
+      title: UpdateCustomFieldSchema
+      type: object
+    StringSchema:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+          default: string
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - name
+      title: StringSchema
+      type: object
+    OptionSchema:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
+          type: string
+        hidden:
+          title: Hidden
+          type: boolean
+      required:
+      - id
+      - name
+      - hidden
+      title: OptionSchema
+      type: object
+    CustomFieldInputSchema:
+      properties:
+        name:
+          description: The name of the custom field.
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+          description: The type of custom field.
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - name
+      - type
+      title: CustomFieldInputSchema
+      type: object
+    PatchedUpdateCustomFieldOptionSchema:
+      properties:
+        name:
+          default: null
+          description: The name of the custom field option.
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field option.
+          maxLength: 255
+          nullable: true
+          title: External Id
+          type: string
+        hidden:
+          default: null
+          description: Whether the custom field option should be hidden.
+          nullable: true
+          title: Hidden
+          type: boolean
+      title: UpdateCustomFieldOptionSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    OptionInputSchema:
+      properties:
+        name:
+          description: The name of the custom field option.
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field option.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - name
+      title: OptionInputSchema
+      type: object
+    WebhookPreference:
+      properties:
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
+          type: string
+      required:
+      - url
+      title: WebhookPreference
+      type: object
+    UpdatedCustomFieldSchema:
+      oneOf:
+      - $ref: '#/components/schemas/MultiSelectSchema'
+      - $ref: '#/components/schemas/StringSchema'
+    CustomFieldInputListSchema:
+      properties:
+        items:
+          description: List of custom fields to create.
+          items:
+            $ref: '#/components/schemas/CustomFieldInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for when custom field creation has completed.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: CustomFieldInputListSchema
+      type: object
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer

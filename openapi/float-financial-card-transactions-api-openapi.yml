@@ -1,0 +1,1032 @@
+openapi: 3.2.0
+info:
+  title: Float Public Card Transactions API
+  version: 1.0.0
+  description: Float's Public API
+servers:
+- url: https://api.floatfinancial.com
+  description: Float's Production API
+tags:
+- name: Card Transactions
+paths:
+  /v1/card-transactions:
+    get:
+      operationId: getTransactions
+      summary: Retrieve a list of paginated card transactions
+      parameters:
+      - in: query
+        name: accounting_stage
+        schema:
+          enum:
+          - IN_REVIEW
+          - READY_TO_EXPORT
+          - EXPORTED
+          type: string
+        description: 'The accounting stage of the card transactions to filter by.
+
+
+          * `IN_REVIEW` - IN_REVIEW
+
+          * `READY_TO_EXPORT` - READY_TO_EXPORT
+
+          * `EXPORTED` - EXPORTED'
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+          default: '1970-01-01T00:00:00Z'
+        description: Filter for records created at or after this timestamp. Default is the epoch start time in UTC.
+      - in: query
+        name: created_at__lte
+        schema:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        description: Filter for records created at or before this timestamp. Default is the current UTC time.
+      - in: query
+        name: order_by
+        schema:
+          enum:
+          - created_at
+          - -created_at
+          type: string
+          default: -created_at
+          minLength: 1
+        description: 'The ordering of the results. Use ''created_at'' for ascending order or ''-created_at'' for descending order.
+
+
+          * `created_at` - created_at
+
+          * `-created_at` - -created_at'
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: The page number to retrieve, starting from 1.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 1000
+        description: The number of items per page, maximum is 1000.
+      tags:
+      - Card Transactions
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountablePagedResponse_CardTransactionSchema'
+          description: A paginated list of all card transactions
+    patch:
+      operationId: patchTransactions
+      summary: Update multiple card transactions
+      tags:
+      - Card Transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCardTransactionBatchUpdateSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          description: Card transactions updated successfully
+        '404':
+          description: Card transactions not found
+  /v1/card-transactions/{transaction_id}:
+    get:
+      operationId: getTransactionById
+      summary: Retrieve a single card transaction by ID
+      parameters:
+      - in: path
+        name: transaction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Card Transactions
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionSchema'
+          description: A single card transaction
+        '404':
+          description: Card transaction not found
+    patch:
+      operationId: patchTransaction
+      summary: Update card transaction
+      parameters:
+      - in: path
+        name: transaction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Card Transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCardTransactionUpdateSchema'
+      security:
+      - bearerToken: []
+      responses:
+        '200':
+          description: Card transaction updated successfully
+        '404':
+          description: Card transaction not found
+components:
+  schemas:
+    CountablePagedResponse_CardTransactionSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/CardTransactionSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_CardTransactionSchema
+      type: object
+    ExternalIdReferenceSchema_StringSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - external_id
+      title: ExternalIdReferenceSchema[StringSchema]
+      type: object
+    ReferenceSchema_ReceiptSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[ReceiptSchema]
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    NullEnum:
+      type: 'null'
+    ReviewStatusEnum:
+      enum:
+      - NOT_STARTED
+      - PENDING
+      - APPROVED
+      - CHANGES_REQUESTED
+      - DECLINED
+      - CANCELLED
+      type: string
+    PostingDateTypeEnum:
+      enum:
+      - CURRENT_DATE
+      - LAST_TRANSACTION_DATE
+      - CUSTOM_DATE
+      type: string
+      description: '* `CURRENT_DATE` - CURRENT_DATE
+
+        * `LAST_TRANSACTION_DATE` - LAST_TRANSACTION_DATE
+
+        * `CUSTOM_DATE` - CUSTOM_DATE'
+    ExternalIdReferenceSchema_GLCodeOutputSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - external_id
+      title: ExternalIdReferenceSchema[GLCodeOutputSchema]
+      type: object
+    CardTransactionSchema:
+      properties:
+        id:
+          description: Unique identifier for the card transaction.
+          format: uuid
+          title: Id
+          type: string
+        card:
+          $ref: '#/components/schemas/NameReferenceSchema_CardSchema_'
+          description: Reference to the card associated with the transaction.
+        user:
+          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          description: Reference to the user who made the transaction.
+        team:
+          $ref: '#/components/schemas/NameReferenceSchema_TeamSchema_'
+          default: null
+          description: Reference to the team associated with the transaction.
+          nullable: true
+        receipts:
+          description: List of receipts associated with the transaction.
+          items:
+            $ref: '#/components/schemas/ReferenceSchema_ReceiptSchema_'
+          title: Receipts
+          type: array
+        vendor:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_VendorOutputSchema_'
+          default: null
+          description: Reference to the vendor associated with the transaction.
+          nullable: true
+        review_status:
+          allOf:
+          - $ref: '#/components/schemas/ReviewStatusEnum'
+          default: null
+          description: Review status of the transaction
+          nullable: true
+          title: Review Status
+        is_valid_for_export:
+          description: Whether or not this transaction has is valid for export.
+          title: Is Valid For Export
+          type: boolean
+        accounting_stage:
+          $ref: '#/components/schemas/CardTransactionAccountingStageSchema'
+          description: The accounting stage of the transaction.
+          nullable: true
+        merchant:
+          $ref: '#/components/schemas/MerchantSchema'
+          description: Reference to the merchant associated with the transaction.
+        total:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Total amount in cents in the currency of the card.
+        merchant_total:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Total amount in cents in the merchant's currency.
+        lines:
+          description: List of transaction lines.
+          items:
+            $ref: '#/components/schemas/LineSchema'
+          title: Lines
+          type: array
+        exports:
+          description: List of transaction exports.
+          items:
+            $ref: '#/components/schemas/ExportSchema'
+          title: Exports
+          type: array
+        type:
+          $ref: '#/components/schemas/CardTransactionType'
+          description: Type of the card transaction (Refund or Capture).
+        transacted_at:
+          description: Timestamp when the transaction occurred.
+          format: date-time
+          title: Transacted At
+          type: string
+        created_at:
+          description: Timestamp when the transaction was created.
+          format: date-time
+          title: Created At
+          type: string
+        updated_at:
+          description: Timestamp when the transaction was last updated.
+          format: date-time
+          title: Updated At
+          type: string
+        authorized_at:
+          default: null
+          description: Timestamp when the transaction was authorized.
+          format: date-time
+          nullable: true
+          title: Authorized At
+          type: string
+        spend_compliance_status:
+          $ref: '#/components/schemas/SpendComplianceStatus'
+          default: null
+          description: The spend compliance status of the transaction.
+          nullable: true
+        subsidiary:
+          $ref: '#/components/schemas/NameExternalIdReferenceSchema_SubsidiarySchema_'
+          default: null
+          description: The subsidiary associated with the transaction. Only present for NetSuite customers.
+          nullable: true
+        posting_date_type:
+          $ref: '#/components/schemas/PostingDateType'
+          default: null
+          description: The posting date type for the transaction (CURRENT_DATE, LAST_TRANSACTION_DATE, or CUSTOM_DATE).
+          nullable: true
+        custom_posting_date:
+          default: null
+          description: The custom posting date for the transaction. Only applicable when posting_date_type is CUSTOM_DATE.
+          format: date
+          nullable: true
+          title: Custom Posting Date
+          type: string
+      required:
+      - id
+      - card
+      - user
+      - receipts
+      - is_valid_for_export
+      - accounting_stage
+      - merchant
+      - total
+      - merchant_total
+      - lines
+      - exports
+      - type
+      - transacted_at
+      - created_at
+      - updated_at
+      title: CardTransactionSchema
+      type: object
+    CardTransactionUpdateSchema:
+      type: object
+      properties:
+        accounting_stage:
+          description: 'The transaction accounting stage.
+
+
+            * `IN_REVIEW` - IN_REVIEW
+
+            * `READY_TO_EXPORT` - READY_TO_EXPORT
+
+            * `EXPORTED` - EXPORTED'
+          oneOf:
+          - $ref: '#/components/schemas/AccountingStageEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        posting_date_type:
+          description: 'The posting date type for the transaction (CURRENT_DATE, LAST_TRANSACTION_DATE, or CUSTOM_DATE).
+
+
+            * `CURRENT_DATE` - CURRENT_DATE
+
+            * `LAST_TRANSACTION_DATE` - LAST_TRANSACTION_DATE
+
+            * `CUSTOM_DATE` - CUSTOM_DATE'
+          oneOf:
+          - $ref: '#/components/schemas/PostingDateTypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        custom_posting_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: The custom posting date for the transaction. Only applicable when posting_date_type is CUSTOM_DATE.
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    SpendComplianceStatus:
+      enum:
+      - COMPLIANT
+      - NOT_COMPLIANT
+      title: SpendComplianceStatus
+      type: string
+    AccountingStageEnum:
+      enum:
+      - IN_REVIEW
+      - READY_TO_EXPORT
+      - EXPORTED
+      type: string
+      description: '* `IN_REVIEW` - IN_REVIEW
+
+        * `READY_TO_EXPORT` - READY_TO_EXPORT
+
+        * `EXPORTED` - EXPORTED'
+    LineSchema:
+      properties:
+        gl_code:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_GLCodeOutputSchema_'
+          default: null
+          description: Reference to the GL code associated with the transaction line.
+          nullable: true
+        description:
+          default: null
+          description: Description of the transaction line.
+          nullable: true
+          title: Description
+          type: string
+        tax:
+          $ref: '#/components/schemas/TaxCodeAmountSchema'
+          description: Tax code and tax component amounts in cents for the transaction line in the currency of the card.
+        tax_code:
+          $ref: '#/components/schemas/TaxCodeOutputSchema'
+          default: null
+          description: Tax code configuration associated with the transaction line.
+          nullable: true
+        tax_exempt:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Tax exempt amount in cents for the transaction line in the currency of the card.
+        subtotal:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Subtotal amount in cents for the transaction line in the currency of the card.
+        custom_field_values:
+          description: Any custom fields added to the line (e.g. Department, Location, etc)
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/MultiSelectValue'
+            - $ref: '#/components/schemas/StringValue'
+          title: Custom Field Values
+          type: array
+      required:
+      - tax
+      - tax_exempt
+      - subtotal
+      - custom_field_values
+      title: LineSchema
+      type: object
+    TaxComponentAmountSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component amount.
+          format: uuid
+          title: Id
+          type: string
+        amount:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Amount for the tax component in the currency of the resource.
+      required:
+      - id
+      - amount
+      title: TaxComponentAmountSchema
+      type: object
+    OptionSchema:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
+          type: string
+        hidden:
+          title: Hidden
+          type: boolean
+      required:
+      - id
+      - name
+      - hidden
+      title: OptionSchema
+      type: object
+    CardTransactionAccountingStageSchema:
+      enum:
+      - IN_REVIEW
+      - READY_TO_EXPORT
+      - EXPORTED
+      title: CardTransactionAccountingStageSchema
+      type: string
+    TaxComponentOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - id
+      - name
+      - rate
+      title: TaxComponentOutputSchema
+      type: object
+    TaxCodeAmountSchema:
+      properties:
+        amount:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Total amount for the tax code in the currency of the resource.
+        components:
+          description: List of tax components associated with the tax code.
+          items:
+            $ref: '#/components/schemas/TaxComponentAmountSchema'
+          title: Components
+          type: array
+      required:
+      - amount
+      title: TaxCodeAmountSchema
+      type: object
+    StringValue:
+      properties:
+        custom_field:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_StringSchema_'
+        value:
+          title: Value
+          type: string
+      required:
+      - custom_field
+      - value
+      title: StringValue
+      type: object
+    MultiSelectValue:
+      properties:
+        custom_field:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_MultiSelectSchema_'
+        value:
+          items:
+            $ref: '#/components/schemas/OptionSchema'
+          title: Value
+          type: array
+      required:
+      - custom_field
+      - value
+      title: MultiSelectValue
+      type: object
+    ExportSchema:
+      properties:
+        exported_at:
+          description: The date and time the transaction was exported.
+          format: date-time
+          title: Exported At
+          type: string
+      required:
+      - exported_at
+      title: ExportSchema
+      type: object
+    TaxCodeOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax code.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax code.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax code.
+          title: Name
+          type: string
+        effective_rate:
+          description: Effective rate of the tax code.
+          title: Effective Rate
+          type: string
+        components:
+          description: List of tax components associated with the tax code.
+          items:
+            $ref: '#/components/schemas/TaxComponentOutputSchema'
+          title: Components
+          type: array
+      required:
+      - id
+      - name
+      - effective_rate
+      title: TaxCodeOutputSchema
+      type: object
+    ExternalIdReferenceSchema_VendorOutputSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - external_id
+      title: ExternalIdReferenceSchema[VendorOutputSchema]
+      type: object
+    MerchantSchema:
+      properties:
+        id:
+          description: Unique identifier for the merchant.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          default: null
+          description: Normalized name of the merchant.
+          nullable: true
+          title: Name
+          type: string
+        raw_name:
+          description: Raw name of the merchant.
+          title: Raw Name
+          type: string
+      required:
+      - id
+      - raw_name
+      title: MerchantSchema
+      type: object
+    NameExternalIdReferenceSchema_SubsidiarySchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - name
+      - external_id
+      title: NameExternalIdReferenceSchema[SubsidiarySchema]
+      type: object
+    NameReferenceSchema_CardSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[CardSchema]
+      type: object
+    ExternalIdReferenceSchema_MultiSelectSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - external_id
+      title: ExternalIdReferenceSchema[MultiSelectSchema]
+      type: object
+    PatchedCardTransactionUpdateSchema:
+      type: object
+      properties:
+        accounting_stage:
+          description: 'The transaction accounting stage.
+
+
+            * `IN_REVIEW` - IN_REVIEW
+
+            * `READY_TO_EXPORT` - READY_TO_EXPORT
+
+            * `EXPORTED` - EXPORTED'
+          oneOf:
+          - $ref: '#/components/schemas/AccountingStageEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        posting_date_type:
+          description: 'The posting date type for the transaction (CURRENT_DATE, LAST_TRANSACTION_DATE, or CUSTOM_DATE).
+
+
+            * `CURRENT_DATE` - CURRENT_DATE
+
+            * `LAST_TRANSACTION_DATE` - LAST_TRANSACTION_DATE
+
+            * `CUSTOM_DATE` - CUSTOM_DATE'
+          oneOf:
+          - $ref: '#/components/schemas/PostingDateTypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        custom_posting_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: The custom posting date for the transaction. Only applicable when posting_date_type is CUSTOM_DATE.
+    PatchedCardTransactionBatchUpdateSchema:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of unique identifiers for card transactions.
+        data:
+          allOf:
+          - $ref: '#/components/schemas/CardTransactionUpdateSchema'
+          description: The updates to make to all of the listed card transaction IDs.
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    PostingDateType:
+      enum:
+      - CURRENT_DATE
+      - LAST_TRANSACTION_DATE
+      - CUSTOM_DATE
+      title: PostingDateType
+      type: string
+    NameReferenceSchema_TeamSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[TeamSchema]
+      type: object
+    CardTransactionType:
+      enum:
+      - CAPTURE
+      - REFUND
+      title: CardTransactionType
+      type: string
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer
