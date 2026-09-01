@@ -30,18 +30,18 @@ specificationVersion: '0.23'
 created: '2026-08-16'
 modified: '2026-08-16'
 tags:
-- spend-management
-- corporate-cards
-- expense-management
-- accounts-payable
-- bill-pay
-- reimbursements
-- business-banking
-- accounting-integration
+- Spend Management
+- Corporate Cards
+- Expense Management
+- Accounts Payable
+- Bill Pay
+- Reimbursement
+- Business Banking
+- Accounting Integration
 - Fintech
-- canada
+- Canada
 - Payments
-- erp-integration
+- ERP Integration
 tags_raw:
 - spend-management
 - corporate-cards
