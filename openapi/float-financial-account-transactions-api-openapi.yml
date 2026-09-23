@@ -209,86 +209,6 @@ components:
       - name
       title: NameReferenceSchema[VendorOutputSchema]
       type: object
-    EmailReferenceSchema_UserSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
-          type: string
-      required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
-      type: object
-    PagedResponse_AccountTransactionSchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/AccountTransactionSchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      title: PagedResponse_AccountTransactionSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    AccountType:
-      enum:
-      - CREDIT
-      - DEBIT
-      title: AccountType
-      type: string
-    MoneyValueSchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-      required:
-      - value
-      - currency
-      title: MoneyValueSchema
-      type: object
     AccountTransactionType:
       enum:
       - CAPTURE
@@ -492,38 +412,104 @@ components:
       - UNK
       title: Currencies
       type: string
-    NameReferenceSchema_TeamSchema_:
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    AccountType:
+      enum:
+      - CREDIT
+      - DEBIT
+      title: AccountType
+      type: string
+    AccountSchema:
       properties:
         id:
-          description: Unique identifier for the referenced entity.
+          description: Unique identifier for the account
           format: uuid
           title: Id
           type: string
-        name:
-          description: Name of the referenced entity.
-          title: Name
-          type: string
+        type:
+          $ref: '#/components/schemas/AccountType'
+          description: Type of the account
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
       required:
       - id
-      - name
-      title: NameReferenceSchema[TeamSchema]
+      - type
+      - currency
+      title: AccountSchema
       type: object
-    ExternalIdReferenceSchema_GLCodeOutputSchema_:
+    PagedResponse_AccountTransactionSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/AccountTransactionSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      title: PagedResponse_AccountTransactionSchema
+      type: object
+    EmailReferenceSchema_UserSchema_:
       properties:
         id:
           description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        external_id:
-          description: External identifier for the referenced entity.
-          nullable: true
-          title: External Id
+        email:
+          description: Email of the referenced entity.
+          title: Email
           type: string
       required:
       - id
-      - external_id
-      title: ExternalIdReferenceSchema[GLCodeOutputSchema]
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
       type: object
     AccountTransactionSchema:
       properties:
@@ -596,24 +582,38 @@ components:
       - total
       title: AccountTransactionSchema
       type: object
-    AccountSchema:
+    ExternalIdReferenceSchema_GLCodeOutputSchema_:
       properties:
         id:
-          description: Unique identifier for the account
+          description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        type:
-          $ref: '#/components/schemas/AccountType'
-          description: Type of the account
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
       required:
       - id
-      - type
-      - currency
-      title: AccountSchema
+      - external_id
+      title: ExternalIdReferenceSchema[GLCodeOutputSchema]
+      type: object
+    NameReferenceSchema_TeamSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[TeamSchema]
       type: object
   securitySchemes:
     bearerToken:

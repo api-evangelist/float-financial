@@ -104,37 +104,6 @@ paths:
           description: Bill attachment not found
 components:
   schemas:
-    BillAttachmentSchema:
-      properties:
-        id:
-          description: Unique identifier for the bill attachment.
-          format: uuid
-          title: Id
-          type: string
-        name:
-          description: The file name of the bill attachment.
-          title: Name
-          type: string
-        file_url:
-          description: The URL of the bill attachment.  This URL is presigned and will expire after 4 hours.
-          title: File Url
-          type: string
-        bill:
-          $ref: '#/components/schemas/ReferenceSchema_BillSchema_'
-          description: The bill that the attachment is associated with.
-        created_at:
-          description: The datetime that the bill attachment was uploaded to Float.
-          format: date-time
-          title: Created At
-          type: string
-      required:
-      - id
-      - name
-      - file_url
-      - bill
-      - created_at
-      title: BillAttachmentSchema
-      type: object
     OrderByTypes:
       enum:
       - created_at
@@ -188,6 +157,37 @@ components:
       - pages
       - count
       title: CountablePagedResponse_BillAttachmentSchema
+      type: object
+    BillAttachmentSchema:
+      properties:
+        id:
+          description: Unique identifier for the bill attachment.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The file name of the bill attachment.
+          title: Name
+          type: string
+        file_url:
+          description: The URL of the bill attachment.  This URL is presigned and will expire after 4 hours.
+          title: File Url
+          type: string
+        bill:
+          $ref: '#/components/schemas/ReferenceSchema_BillSchema_'
+          description: The bill that the attachment is associated with.
+        created_at:
+          description: The datetime that the bill attachment was uploaded to Float.
+          format: date-time
+          title: Created At
+          type: string
+      required:
+      - id
+      - name
+      - file_url
+      - bill
+      - created_at
+      title: BillAttachmentSchema
       type: object
     ReferenceSchema_BillSchema_:
       properties:

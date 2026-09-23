@@ -96,6 +96,48 @@ paths:
           description: Team not found
 components:
   schemas:
+    BaseApprovalPolicySchema:
+      properties:
+        id:
+          description: The unique identifier of the approval policy.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The name of the approval policy.
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/ApprovalPolicyType'
+          description: The type of the approval policy.
+      required:
+      - id
+      - name
+      - type
+      title: BaseApprovalPolicySchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
     CountablePagedResponse_TeamSchema:
       properties:
         items:
@@ -144,48 +186,6 @@ components:
       - count
       title: CountablePagedResponse_TeamSchema
       type: object
-    BaseApprovalPolicySchema:
-      properties:
-        id:
-          description: The unique identifier of the approval policy.
-          format: uuid
-          title: Id
-          type: string
-        name:
-          description: The name of the approval policy.
-          title: Name
-          type: string
-        type:
-          $ref: '#/components/schemas/ApprovalPolicyType'
-          description: The type of the approval policy.
-      required:
-      - id
-      - name
-      - type
-      title: BaseApprovalPolicySchema
-      type: object
-    EmailReferenceSchema_UserSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
-          type: string
-      required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     TeamSchema:
       properties:
         id:
@@ -230,6 +230,15 @@ components:
       - custom_fields
       title: TeamSchema
       type: object
+    ApprovalPolicyType:
+      enum:
+      - SPENDING
+      - PERSONAL_REIMBURSEMENT
+      - TRANSACTION_REVIEW
+      - BILL_APPROVAL
+      - FUNDS_RELEASE
+      title: ApprovalPolicyType
+      type: string
     NameReferenceSchema_CustomFieldSchema_:
       properties:
         id:
@@ -246,15 +255,6 @@ components:
       - name
       title: NameReferenceSchema[CustomFieldSchema]
       type: object
-    ApprovalPolicyType:
-      enum:
-      - SPENDING
-      - PERSONAL_REIMBURSEMENT
-      - TRANSACTION_REVIEW
-      - BILL_APPROVAL
-      - FUNDS_RELEASE
-      title: ApprovalPolicyType
-      type: string
   securitySchemes:
     bearerToken:
       type: http

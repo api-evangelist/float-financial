@@ -125,6 +125,72 @@ paths:
           description: User not found
 components:
   schemas:
+    UserSchema:
+      properties:
+        id:
+          description: Unique identifier for the user.
+          format: uuid
+          title: Id
+          type: string
+        teams:
+          description: List of teams the user belongs to.
+          items:
+            $ref: '#/components/schemas/ReferenceSchema_TeamSchema_'
+          title: Teams
+          type: array
+        first_name:
+          description: First name of the user.
+          title: First Name
+          type: string
+        last_name:
+          description: Last name of the user.
+          title: Last Name
+          type: string
+        email:
+          description: Email of the user.
+          title: Email
+          type: string
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          description: Role of the user.
+          title: Role
+        picture:
+          default: null
+          description: URL of the user's profile picture.
+          nullable: true
+          title: Picture
+          type: string
+        created_at:
+          description: Timestamp when the user was created.
+          format: date-time
+          title: Created At
+          type: string
+      required:
+      - id
+      - teams
+      - first_name
+      - last_name
+      - email
+      - role
+      - created_at
+      title: UserSchema
+      type: object
+    RoleEnum:
+      enum:
+      - administrator
+      - ap_clerk
+      - bookkeeper
+      - manager
+      - primary_administrator
+      - spender
+      type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     ReferenceSchema_TeamSchema_:
       properties:
         id:
@@ -135,69 +201,6 @@ components:
       required:
       - id
       title: ReferenceSchema[TeamSchema]
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    RoleEnum:
-      enum:
-      - administrator
-      - ap_clerk
-      - bookkeeper
-      - manager
-      - primary_administrator
-      - spender
-      type: string
-    CountablePagedResponse_UserSchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/UserSchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-        pages:
-          description: The total number of pages available.
-          title: Pages
-          type: integer
-        count:
-          description: The total number of items available.
-          title: Count
-          type: integer
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      - pages
-      - count
-      title: CountablePagedResponse_UserSchema
       type: object
     UserCreateInputSchema:
       properties:
@@ -252,56 +255,53 @@ components:
       - role
       title: UserCreateInputSchema
       type: object
-    UserSchema:
+    CountablePagedResponse_UserSchema:
       properties:
-        id:
-          description: Unique identifier for the user.
-          format: uuid
-          title: Id
-          type: string
-        teams:
-          description: List of teams the user belongs to.
+        items:
+          description: The list of items on the current page.
           items:
-            $ref: '#/components/schemas/ReferenceSchema_TeamSchema_'
-          title: Teams
+            $ref: '#/components/schemas/UserSchema'
+          title: Items
           type: array
-        first_name:
-          description: First name of the user.
-          title: First Name
-          type: string
-        last_name:
-          description: Last name of the user.
-          title: Last Name
-          type: string
-        email:
-          description: Email of the user.
-          title: Email
-          type: string
-        role:
-          allOf:
-          - $ref: '#/components/schemas/RoleEnum'
-          description: Role of the user.
-          title: Role
-        picture:
-          default: null
-          description: URL of the user's profile picture.
-          nullable: true
-          title: Picture
-          type: string
-        created_at:
-          description: Timestamp when the user was created.
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
           format: date-time
-          title: Created At
+          title: Created At  Lte
           type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
       required:
-      - id
-      - teams
-      - first_name
-      - last_name
-      - email
-      - role
-      - created_at
-      title: UserSchema
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_UserSchema
       type: object
   securitySchemes:
     bearerToken:

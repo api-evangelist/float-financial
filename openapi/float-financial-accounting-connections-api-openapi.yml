@@ -95,6 +95,43 @@ paths:
           description: Accounting connection not found
 components:
   schemas:
+    AccountingConnectionListSchema:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/AccountingConnectionSchema'
+          title: Data
+          type: array
+      required:
+      - data
+      title: AccountingConnectionListSchema
+      type: object
+    AccountingConnectionCreateSchema:
+      type: object
+      properties:
+        provider_name:
+          type: string
+          description: Name of the accounting provider
+      required:
+      - provider_name
+    AccountingConnectionStatus:
+      enum:
+      - connected
+      - reconnect_required
+      title: AccountingConnectionStatus
+      type: string
+    AccountingConnectionType:
+      enum:
+      - API
+      - NATIVE
+      title: AccountingConnectionType
+      type: string
+    PatchedAccountingConnectionUpdateSchema:
+      type: object
+      properties:
+        provider_name:
+          type: string
+          description: Name of the accounting provider (only applicable to API connections)
     AccountingConnectionSchema:
       properties:
         id:
@@ -124,43 +161,6 @@ components:
       - is_active
       title: AccountingConnectionSchema
       type: object
-    AccountingConnectionListSchema:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/AccountingConnectionSchema'
-          title: Data
-          type: array
-      required:
-      - data
-      title: AccountingConnectionListSchema
-      type: object
-    AccountingConnectionCreateSchema:
-      type: object
-      properties:
-        provider_name:
-          type: string
-          description: Name of the accounting provider
-      required:
-      - provider_name
-    AccountingConnectionStatus:
-      enum:
-      - connected
-      - reconnect_required
-      title: AccountingConnectionStatus
-      type: string
-    PatchedAccountingConnectionUpdateSchema:
-      type: object
-      properties:
-        provider_name:
-          type: string
-          description: Name of the accounting provider (only applicable to API connections)
-    AccountingConnectionType:
-      enum:
-      - API
-      - NATIVE
-      title: AccountingConnectionType
-      type: string
   securitySchemes:
     bearerToken:
       type: http

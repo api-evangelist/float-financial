@@ -95,40 +95,6 @@ paths:
           description: Invalid request data
 components:
   schemas:
-    WebhookSubscriptionOutputSchema:
-      properties:
-        id:
-          description: Unique identifier for the webhook subscription.
-          format: uuid
-          title: Id
-          type: string
-        url:
-          description: The webhook endpoint URL.
-          title: Url
-          type: string
-        created_at:
-          description: When the webhook was created.
-          format: date-time
-          title: Created At
-          type: string
-        updated_at:
-          description: When the webhook was last updated.
-          format: date-time
-          title: Updated At
-          type: string
-      required:
-      - id
-      - url
-      - created_at
-      - updated_at
-      title: WebhookSubscriptionOutputSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     CreateWebhookSubscriptionResponseSchema:
       properties:
         id:
@@ -161,6 +127,25 @@ components:
       - updated_at
       - signing_secret
       title: CreateWebhookSubscriptionResponseSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    CreateWebhookSubscriptionSchema:
+      properties:
+        url:
+          description: HTTPS webhook endpoint URL. Must be publicly accessible and not resolve to private IP ranges.
+          format: uri
+          maxLength: 2083
+          minLength: 1
+          title: Url
+          type: string
+      required:
+      - url
+      title: CreateWebhookSubscriptionSchema
       type: object
     PagedResponseWebhookSubscriptionSchema:
       properties:
@@ -210,18 +195,33 @@ components:
       - count
       title: PagedResponseWebhookSubscriptionSchema
       type: object
-    CreateWebhookSubscriptionSchema:
+    WebhookSubscriptionOutputSchema:
       properties:
+        id:
+          description: Unique identifier for the webhook subscription.
+          format: uuid
+          title: Id
+          type: string
         url:
-          description: HTTPS webhook endpoint URL. Must be publicly accessible and not resolve to private IP ranges.
-          format: uri
-          maxLength: 2083
-          minLength: 1
+          description: The webhook endpoint URL.
           title: Url
           type: string
+        created_at:
+          description: When the webhook was created.
+          format: date-time
+          title: Created At
+          type: string
+        updated_at:
+          description: When the webhook was last updated.
+          format: date-time
+          title: Updated At
+          type: string
       required:
+      - id
       - url
-      title: CreateWebhookSubscriptionSchema
+      - created_at
+      - updated_at
+      title: WebhookSubscriptionOutputSchema
       type: object
   securitySchemes:
     bearerToken:

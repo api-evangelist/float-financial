@@ -133,56 +133,6 @@ paths:
           description: Card limit not found
 components:
   schemas:
-    CreateCardLimitForCardSchema:
-      properties:
-        type:
-          $ref: '#/components/schemas/CardLimitType'
-          description: The type of this card limit.
-        description:
-          description: Description of the card limit.
-          title: Description
-          type: string
-        expiry_date:
-          default: null
-          description: Expiry date of the card limit. Only used for TEMPORARY limits.
-          format: date
-          nullable: true
-          title: Expiry Date
-          type: string
-        amount_cents:
-          description: Amount of the card limit in cents.
-          title: Amount Cents
-          type: integer
-        reload_interval:
-          $ref: '#/components/schemas/ReloadIntervalType'
-          default: null
-          description: Reload interval of the card limit. Only used for RECURRING limits.
-          nullable: true
-        start_date:
-          default: null
-          description: Start date of the card limit. If set in the future, the limit is scheduled.
-          format: date-time
-          nullable: true
-          title: Start Date
-          type: string
-        card_id:
-          description: Unique identifier for the card.
-          format: uuid
-          title: Card Id
-          type: string
-      required:
-      - type
-      - description
-      - amount_cents
-      - card_id
-      title: CreateCardLimitForCardSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     Currencies:
       enum:
       - AFN
@@ -357,12 +307,141 @@ components:
       - UNK
       title: Currencies
       type: string
+    CardLimitStatus:
+      enum:
+      - SCHEDULED
+      - ACTIVE
+      - EXPIRED
+      title: CardLimitStatus
+      type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    ReloadIntervalType:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - NO_RELOAD
+      title: ReloadIntervalType
+      type: string
     CardLimitType:
       enum:
       - RECURRING
       - TEMPORARY
       title: CardLimitType
       type: string
+    CreateCardLimitForCardSchema:
+      properties:
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        expiry_date:
+          default: null
+          description: Expiry date of the card limit. Only used for TEMPORARY limits.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount_cents:
+          description: Amount of the card limit in cents.
+          title: Amount Cents
+          type: integer
+        reload_interval:
+          $ref: '#/components/schemas/ReloadIntervalType'
+          default: null
+          description: Reload interval of the card limit. Only used for RECURRING limits.
+          nullable: true
+        start_date:
+          default: null
+          description: Start date of the card limit. If set in the future, the limit is scheduled.
+          format: date-time
+          nullable: true
+          title: Start Date
+          type: string
+        card_id:
+          description: Unique identifier for the card.
+          format: uuid
+          title: Card Id
+          type: string
+      required:
+      - type
+      - description
+      - amount_cents
+      - card_id
+      title: CreateCardLimitForCardSchema
+      type: object
+    CountablePagedResponse_CardLimitSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/CardLimitSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_CardLimitSchema
+      type: object
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
     CardLimitSchema:
       properties:
         id:
@@ -418,85 +497,6 @@ components:
       - status
       title: CardLimitSchema
       type: object
-    CountablePagedResponse_CardLimitSchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/CardLimitSchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-        pages:
-          description: The total number of pages available.
-          title: Pages
-          type: integer
-        count:
-          description: The total number of items available.
-          title: Count
-          type: integer
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      - pages
-      - count
-      title: CountablePagedResponse_CardLimitSchema
-      type: object
-    CardLimitStatus:
-      enum:
-      - SCHEDULED
-      - ACTIVE
-      - EXPIRED
-      title: CardLimitStatus
-      type: string
-    MoneyValueSchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-      required:
-      - value
-      - currency
-      title: MoneyValueSchema
-      type: object
-    ReloadIntervalType:
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - QUARTERLY
-      - YEARLY
-      - NO_RELOAD
-      title: ReloadIntervalType
-      type: string
   securitySchemes:
     bearerToken:
       type: http

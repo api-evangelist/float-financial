@@ -281,20 +281,54 @@ paths:
           description: Custom field option not found
 components:
   schemas:
-    EmailPreference:
+    OptionSchema:
       properties:
-        email:
-          description: Email address to send notifications to.
-          title: Email
+        id:
+          format: uuid
+          title: Id
           type: string
+        name:
+          title: Name
+          type: string
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
+          type: string
+        hidden:
+          title: Hidden
+          type: boolean
       required:
-      - email
-      title: EmailPreference
+      - id
+      - name
+      - hidden
+      title: OptionSchema
       type: object
-    CustomFieldSchema:
+    UpdatedCustomFieldSchema:
       oneOf:
       - $ref: '#/components/schemas/MultiSelectSchema'
       - $ref: '#/components/schemas/StringSchema'
+    CustomFieldInputListSchema:
+      properties:
+        items:
+          description: List of custom fields to create.
+          items:
+            $ref: '#/components/schemas/CustomFieldInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for when custom field creation has completed.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: CustomFieldInputListSchema
+      type: object
     CustomFieldType:
       enum:
       - single-select
@@ -302,6 +336,60 @@ components:
       - string
       title: CustomFieldType
       type: string
+    MultiSelectSchema:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+          default: multi-select
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
+          type: string
+        options:
+          items:
+            $ref: '#/components/schemas/OptionSchema'
+          title: Options
+          type: array
+      required:
+      - id
+      - name
+      - options
+      title: MultiSelectSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    CustomFieldInputSchema:
+      properties:
+        name:
+          description: The name of the custom field.
+          title: Name
+          type: string
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+          description: The type of custom field.
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - name
+      - type
+      title: CustomFieldInputSchema
+      type: object
     CustomFieldOptionInputListSchema:
       properties:
         options:
@@ -322,6 +410,76 @@ components:
       - options
       - notification_preferences
       title: CustomFieldOptionInputListSchema
+      type: object
+    OptionInputSchema:
+      properties:
+        name:
+          description: The name of the custom field option.
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field option.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - name
+      title: OptionInputSchema
+      type: object
+    PatchedUpdateCustomFieldSchema:
+      properties:
+        name:
+          default: null
+          description: The name of the custom field.
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field.
+          maxLength: 255
+          nullable: true
+          title: External Id
+          type: string
+      title: UpdateCustomFieldSchema
+      type: object
+    PatchedUpdateCustomFieldOptionSchema:
+      properties:
+        name:
+          default: null
+          description: The name of the custom field option.
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: The external accounting ID of the custom field option.
+          maxLength: 255
+          nullable: true
+          title: External Id
+          type: string
+        hidden:
+          default: null
+          description: Whether the custom field option should be hidden.
+          nullable: true
+          title: Hidden
+          type: boolean
+      title: UpdateCustomFieldOptionSchema
+      type: object
+    WebhookPreference:
+      properties:
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
+          type: string
+      required:
+      - url
+      title: WebhookPreference
       type: object
     CountablePagedResponse_UnionType_MultiSelectSchema_StringSchema:
       properties:
@@ -373,53 +531,10 @@ components:
       - count
       title: CountablePagedResponse_UnionType_MultiSelectSchema_StringSchema
       type: object
-    MultiSelectSchema:
-      properties:
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        type:
-          $ref: '#/components/schemas/CustomFieldType'
-          default: multi-select
-        external_id:
-          default: null
-          nullable: true
-          title: External Id
-          type: string
-        options:
-          items:
-            $ref: '#/components/schemas/OptionSchema'
-          title: Options
-          type: array
-      required:
-      - id
-      - name
-      - options
-      title: MultiSelectSchema
-      type: object
-    PatchedUpdateCustomFieldSchema:
-      properties:
-        name:
-          default: null
-          description: The name of the custom field.
-          maxLength: 255
-          minLength: 1
-          nullable: true
-          title: Name
-          type: string
-        external_id:
-          default: null
-          description: The external accounting ID of the custom field.
-          maxLength: 255
-          nullable: true
-          title: External Id
-          type: string
-      title: UpdateCustomFieldSchema
-      type: object
+    CustomFieldSchema:
+      oneOf:
+      - $ref: '#/components/schemas/MultiSelectSchema'
+      - $ref: '#/components/schemas/StringSchema'
     StringSchema:
       properties:
         id:
@@ -442,130 +557,15 @@ components:
       - name
       title: StringSchema
       type: object
-    OptionSchema:
+    EmailPreference:
       properties:
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        external_id:
-          default: null
-          nullable: true
-          title: External Id
-          type: string
-        hidden:
-          title: Hidden
-          type: boolean
-      required:
-      - id
-      - name
-      - hidden
-      title: OptionSchema
-      type: object
-    CustomFieldInputSchema:
-      properties:
-        name:
-          description: The name of the custom field.
-          title: Name
-          type: string
-        type:
-          $ref: '#/components/schemas/CustomFieldType'
-          description: The type of custom field.
-        external_id:
-          default: null
-          description: The external accounting ID of the custom field.
-          nullable: true
-          title: External Id
+        email:
+          description: Email address to send notifications to.
+          title: Email
           type: string
       required:
-      - name
-      - type
-      title: CustomFieldInputSchema
-      type: object
-    PatchedUpdateCustomFieldOptionSchema:
-      properties:
-        name:
-          default: null
-          description: The name of the custom field option.
-          maxLength: 255
-          minLength: 1
-          nullable: true
-          title: Name
-          type: string
-        external_id:
-          default: null
-          description: The external accounting ID of the custom field option.
-          maxLength: 255
-          nullable: true
-          title: External Id
-          type: string
-        hidden:
-          default: null
-          description: Whether the custom field option should be hidden.
-          nullable: true
-          title: Hidden
-          type: boolean
-      title: UpdateCustomFieldOptionSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    OptionInputSchema:
-      properties:
-        name:
-          description: The name of the custom field option.
-          title: Name
-          type: string
-        external_id:
-          default: null
-          description: The external accounting ID of the custom field option.
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - name
-      title: OptionInputSchema
-      type: object
-    WebhookPreference:
-      properties:
-        url:
-          description: Webhook URL to send notifications to.
-          title: Url
-          type: string
-      required:
-      - url
-      title: WebhookPreference
-      type: object
-    UpdatedCustomFieldSchema:
-      oneOf:
-      - $ref: '#/components/schemas/MultiSelectSchema'
-      - $ref: '#/components/schemas/StringSchema'
-    CustomFieldInputListSchema:
-      properties:
-        items:
-          description: List of custom fields to create.
-          items:
-            $ref: '#/components/schemas/CustomFieldInputSchema'
-          title: Items
-          type: array
-        notification_preferences:
-          description: List of notification preferences for when custom field creation has completed.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/EmailPreference'
-            - $ref: '#/components/schemas/WebhookPreference'
-          title: Notification Preferences
-          type: array
-      required:
-      - items
-      - notification_preferences
-      title: CustomFieldInputListSchema
+      - email
+      title: EmailPreference
       type: object
   securitySchemes:
     bearerToken:

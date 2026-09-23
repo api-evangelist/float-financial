@@ -100,34 +100,6 @@ paths:
           description: Subsidiary not found
 components:
   schemas:
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    NameExternalIdReferenceSchema_Self_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        name:
-          description: Name of the referenced entity.
-          title: Name
-          type: string
-        external_id:
-          description: External identifier for the referenced entity.
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - id
-      - name
-      - external_id
-      title: NameExternalIdReferenceSchema[Self]
-      type: object
     Currencies:
       enum:
       - AFN
@@ -302,6 +274,34 @@ components:
       - UNK
       title: Currencies
       type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    NameExternalIdReferenceSchema_Self_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - name
+      - external_id
+      title: NameExternalIdReferenceSchema[Self]
+      type: object
     SubsidiarySchema:
       properties:
         id:

@@ -123,24 +123,31 @@ paths:
           description: Card not found
 components:
   schemas:
-    MultiSelectValueInputSchema:
+    CardPausedStateType:
+      enum:
+      - ACTIVE
+      - PAUSED
+      title: CardPausedStateType
+      type: string
+    OverrideAutoPauseInputSchema:
       properties:
-        custom_field_id:
-          description: ID of the custom field
-          format: uuid
-          title: Custom Field Id
-          type: string
-        option_ids:
-          description: List of selected option IDs
-          items:
-            format: uuid
-            type: string
-          title: Option Ids
-          type: array
+        override:
+          description: Whether to override the auto pause of the submission policy.
+          title: Override
+          type: boolean
+        pause_on_violation:
+          description: Whether to pause on violation of the submission policy.
+          title: Pause On Violation
+          type: boolean
+        after_num_violations:
+          description: Number of violations after which the card is automatically paused.
+          title: After Num Violations
+          type: integer
       required:
-      - custom_field_id
-      - option_ids
-      title: MultiSelectValueInputSchema
+      - override
+      - pause_on_violation
+      - after_num_violations
+      title: OverrideAutoPauseInputSchema
       type: object
     CardActivationStateType:
       enum:
@@ -151,154 +158,6 @@ components:
       - SUSPENDED
       - TERMINATED
       title: CardActivationStateType
-      type: string
-    CardPausedStateType:
-      enum:
-      - ACTIVE
-      - PAUSED
-      title: CardPausedStateType
-      type: string
-    StringValueInputSchema:
-      properties:
-        custom_field_id:
-          description: ID of the custom field
-          format: uuid
-          title: Custom Field Id
-          type: string
-        value:
-          description: Value of the custom field
-          title: Value
-          type: string
-      required:
-      - custom_field_id
-      - value
-      title: StringValueInputSchema
-      type: object
-    CardSchema:
-      properties:
-        id:
-          description: Unique identifier for the card.
-          format: uuid
-          title: Id
-          type: string
-        name:
-          description: Name of the card.
-          title: Name
-          type: string
-        user:
-          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
-          description: Reference to the user who owns the card.
-        spending_power:
-          $ref: '#/components/schemas/MoneyValueSchema'
-          description: Total spending power of the card.
-        limit:
-          $ref: '#/components/schemas/MoneyValueSchema'
-          description: The total limit of the card.
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: Currency used in the card.
-        last_four_digits:
-          default: null
-          description: Last four digits of the card number.
-          nullable: true
-          title: Last Four Digits
-          type: string
-        created_at:
-          description: Timestamp when the card was created.
-          format: date-time
-          title: Created At
-          type: string
-        card_network:
-          description: Card Network of the card.
-          title: Card Network
-          type: string
-        type:
-          $ref: '#/components/schemas/FulfillmentMethodType'
-          description: Type of the card.
-        paused_state:
-          $ref: '#/components/schemas/CardPausedStateType'
-          description: Paused state of the card.
-        activation_state:
-          $ref: '#/components/schemas/CardActivationStateType'
-          description: Activation status of the card.
-        reload_interval:
-          $ref: '#/components/schemas/ReloadIntervalType'
-          default: null
-          description: Reload interval of the card.
-          nullable: true
-      required:
-      - id
-      - name
-      - user
-      - spending_power
-      - limit
-      - currency
-      - created_at
-      - card_network
-      - type
-      - paused_state
-      - activation_state
-      title: CardSchema
-      type: object
-    CreateCardLimitSchema:
-      properties:
-        type:
-          $ref: '#/components/schemas/CardLimitType'
-          description: The type of this card limit.
-        description:
-          description: Description of the card limit.
-          title: Description
-          type: string
-        expiry_date:
-          default: null
-          description: Expiry date of the card limit. Only used for TEMPORARY limits.
-          format: date
-          nullable: true
-          title: Expiry Date
-          type: string
-        amount_cents:
-          description: Amount of the card limit in cents.
-          title: Amount Cents
-          type: integer
-        reload_interval:
-          $ref: '#/components/schemas/ReloadIntervalType'
-          default: null
-          description: Reload interval of the card limit. Only used for RECURRING limits.
-          nullable: true
-        start_date:
-          default: null
-          description: Start date of the card limit. If set in the future, the limit is scheduled.
-          format: date-time
-          nullable: true
-          title: Start Date
-          type: string
-      required:
-      - type
-      - description
-      - amount_cents
-      title: CreateCardLimitSchema
-      type: object
-    EmailReferenceSchema_UserSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
-          type: string
-      required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
       type: string
     Currencies:
       enum:
@@ -563,18 +422,28 @@ components:
       - CAD
       - USD
       type: string
-    CardLimitType:
+    OrderByTypes:
       enum:
-      - RECURRING
-      - TEMPORARY
-      title: CardLimitType
+      - created_at
+      - -created_at
+      title: OrderByTypes
       type: string
-    FulfillmentMethodType:
-      enum:
-      - PHYSICAL
-      - VIRTUAL
-      title: FulfillmentMethodType
-      type: string
+    StringValueInputSchema:
+      properties:
+        custom_field_id:
+          description: ID of the custom field
+          format: uuid
+          title: Custom Field Id
+          type: string
+        value:
+          description: Value of the custom field
+          title: Value
+          type: string
+      required:
+      - custom_field_id
+      - value
+      title: StringValueInputSchema
+      type: object
     CountablePagedResponse_CardSchema:
       properties:
         items:
@@ -623,14 +492,147 @@ components:
       - count
       title: CountablePagedResponse_CardSchema
       type: object
-    OverrideSubmissionPolicyInputSchema:
+    CardSchema:
       properties:
-        auto_pause:
-          $ref: '#/components/schemas/OverrideAutoPauseInputSchema'
-          description: Override of the auto pause of the submission policy.
+        id:
+          description: Unique identifier for the card.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the card.
+          title: Name
+          type: string
+        user:
+          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          description: Reference to the user who owns the card.
+        spending_power:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Total spending power of the card.
+        limit:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: The total limit of the card.
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: Currency used in the card.
+        last_four_digits:
+          default: null
+          description: Last four digits of the card number.
+          nullable: true
+          title: Last Four Digits
+          type: string
+        created_at:
+          description: Timestamp when the card was created.
+          format: date-time
+          title: Created At
+          type: string
+        card_network:
+          description: Card Network of the card.
+          title: Card Network
+          type: string
+        type:
+          $ref: '#/components/schemas/FulfillmentMethodType'
+          description: Type of the card.
+        paused_state:
+          $ref: '#/components/schemas/CardPausedStateType'
+          description: Paused state of the card.
+        activation_state:
+          $ref: '#/components/schemas/CardActivationStateType'
+          description: Activation status of the card.
+        reload_interval:
+          $ref: '#/components/schemas/ReloadIntervalType'
+          default: null
+          description: Reload interval of the card.
+          nullable: true
       required:
-      - auto_pause
-      title: OverrideSubmissionPolicyInputSchema
+      - id
+      - name
+      - user
+      - spending_power
+      - limit
+      - currency
+      - created_at
+      - card_network
+      - type
+      - paused_state
+      - activation_state
+      title: CardSchema
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    ReloadIntervalType:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - NO_RELOAD
+      title: ReloadIntervalType
+      type: string
+    CardLimitType:
+      enum:
+      - RECURRING
+      - TEMPORARY
+      title: CardLimitType
+      type: string
+    FulfillmentMethodType:
+      enum:
+      - PHYSICAL
+      - VIRTUAL
+      title: FulfillmentMethodType
+      type: string
+    CreateCardLimitSchema:
+      properties:
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        expiry_date:
+          default: null
+          description: Expiry date of the card limit. Only used for TEMPORARY limits.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount_cents:
+          description: Amount of the card limit in cents.
+          title: Amount Cents
+          type: integer
+        reload_interval:
+          $ref: '#/components/schemas/ReloadIntervalType'
+          default: null
+          description: Reload interval of the card limit. Only used for RECURRING limits.
+          nullable: true
+        start_date:
+          default: null
+          description: Start date of the card limit. If set in the future, the limit is scheduled.
+          format: date-time
+          nullable: true
+          title: Start Date
+          type: string
+      required:
+      - type
+      - description
+      - amount_cents
+      title: CreateCardLimitSchema
       type: object
     MoneyValueSchema:
       properties:
@@ -646,35 +648,33 @@ components:
       - currency
       title: MoneyValueSchema
       type: object
-    ReloadIntervalType:
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - QUARTERLY
-      - YEARLY
-      - NO_RELOAD
-      title: ReloadIntervalType
-      type: string
-    OverrideAutoPauseInputSchema:
+    OverrideSubmissionPolicyInputSchema:
       properties:
-        override:
-          description: Whether to override the auto pause of the submission policy.
-          title: Override
-          type: boolean
-        pause_on_violation:
-          description: Whether to pause on violation of the submission policy.
-          title: Pause On Violation
-          type: boolean
-        after_num_violations:
-          description: Number of violations after which the card is automatically paused.
-          title: After Num Violations
-          type: integer
+        auto_pause:
+          $ref: '#/components/schemas/OverrideAutoPauseInputSchema'
+          description: Override of the auto pause of the submission policy.
       required:
-      - override
-      - pause_on_violation
-      - after_num_violations
-      title: OverrideAutoPauseInputSchema
+      - auto_pause
+      title: OverrideSubmissionPolicyInputSchema
+      type: object
+    MultiSelectValueInputSchema:
+      properties:
+        custom_field_id:
+          description: ID of the custom field
+          format: uuid
+          title: Custom Field Id
+          type: string
+        option_ids:
+          description: List of selected option IDs
+          items:
+            format: uuid
+            type: string
+          title: Option Ids
+          type: array
+      required:
+      - custom_field_id
+      - option_ids
+      title: MultiSelectValueInputSchema
       type: object
   securitySchemes:
     bearerToken:

@@ -96,51 +96,6 @@ paths:
           description: Receipt not found
 components:
   schemas:
-    ReceiptSchema:
-      properties:
-        id:
-          description: Unique identifier for the receipt.
-          format: uuid
-          title: Id
-          type: string
-        user:
-          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
-          default: null
-          description: Reference to the user who uploaded the receipt.
-          nullable: true
-        image_url:
-          description: URL of the receipt image.
-          title: Image Url
-          type: string
-        transactions:
-          description: List of transactions associated with the receipt.
-          items:
-            $ref: '#/components/schemas/ReferenceSchema_CardTransactionSchema_'
-          title: Transactions
-          type: array
-        created_at:
-          description: Timestamp when the receipt was uploaded to Float.
-          format: date-time
-          title: Created At
-          type: string
-      required:
-      - id
-      - image_url
-      - transactions
-      - created_at
-      title: ReceiptSchema
-      type: object
-    ReferenceSchema_CardTransactionSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[CardTransactionSchema]
-      type: object
     CountablePagedResponse_ReceiptSchema:
       properties:
         items:
@@ -189,6 +144,23 @@ components:
       - count
       title: CountablePagedResponse_ReceiptSchema
       type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    ReferenceSchema_CardTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[CardTransactionSchema]
+      type: object
     EmailReferenceSchema_UserSchema_:
       properties:
         id:
@@ -205,12 +177,40 @@ components:
       - email
       title: EmailReferenceSchema[UserSchema]
       type: object
-    OrderByTypes:
-      enum:
+    ReceiptSchema:
+      properties:
+        id:
+          description: Unique identifier for the receipt.
+          format: uuid
+          title: Id
+          type: string
+        user:
+          $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          default: null
+          description: Reference to the user who uploaded the receipt.
+          nullable: true
+        image_url:
+          description: URL of the receipt image.
+          title: Image Url
+          type: string
+        transactions:
+          description: List of transactions associated with the receipt.
+          items:
+            $ref: '#/components/schemas/ReferenceSchema_CardTransactionSchema_'
+          title: Transactions
+          type: array
+        created_at:
+          description: Timestamp when the receipt was uploaded to Float.
+          format: date-time
+          title: Created At
+          type: string
+      required:
+      - id
+      - image_url
+      - transactions
       - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
+      title: ReceiptSchema
+      type: object
   securitySchemes:
     bearerToken:
       type: http

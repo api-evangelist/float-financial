@@ -96,6 +96,28 @@ paths:
           description: Payment not found
 components:
   schemas:
+    MoneyValueWithOptionalCurrencySchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+          nullable: true
+      required:
+      - value
+      - currency
+      title: MoneyValueWithOptionalCurrencySchema
+      type: object
+    PayableType:
+      enum:
+      - BILL
+      - EXPENSE_REPORT
+      - DIRECT_PAYMENT
+      title: PayableType
+      type: string
     PagedResponse_PaymentSchema:
       properties:
         items:
@@ -134,35 +156,6 @@ components:
       - ordered_by
       title: PagedResponse_PaymentSchema
       type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    PayableType:
-      enum:
-      - BILL
-      - EXPENSE_REPORT
-      - DIRECT_PAYMENT
-      title: PayableType
-      type: string
-    BillPaymentStatus:
-      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
-
-        but with the addition of CREATED and MARKED_AS_PAID'
-      enum:
-      - QUEUED
-      - PENDING_FUNDING
-      - FUNDS_WITHDRAWN
-      - SENT
-      - RISK_CANCELLED
-      - FAILED
-      - REVERSED
-      - CREATED
-      - MARKED_AS_PAID
-      title: BillPaymentStatus
-      type: string
     Currencies:
       enum:
       - AFN
@@ -337,52 +330,27 @@ components:
       - UNK
       title: Currencies
       type: string
-    ReferenceSchema_AccountTransactionSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[AccountTransactionSchema]
-      type: object
-    FundingSourceSchema:
-      properties:
-        id:
-          description: Unique ID of the funding source.
-          format: uuid
-          title: Id
-          type: string
-        type:
-          $ref: '#/components/schemas/FundingSource'
-          description: Type of the funding source.
-      required:
-      - id
-      - type
-      title: FundingSourceSchema
-      type: object
-    MoneyValueWithOptionalCurrencySchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-          nullable: true
-      required:
-      - value
-      - currency
-      title: MoneyValueWithOptionalCurrencySchema
-      type: object
-    FundingSource:
+    BillPaymentStatus:
+      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
+
+        but with the addition of CREATED and MARKED_AS_PAID'
       enum:
-      - PAYMENT_CONNECTION
-      - FLOAT_ACCOUNT
-      title: FundingSource
+      - QUEUED
+      - PENDING_FUNDING
+      - FUNDS_WITHDRAWN
+      - SENT
+      - RISK_CANCELLED
+      - FAILED
+      - REVERSED
+      - CREATED
+      - MARKED_AS_PAID
+      title: BillPaymentStatus
+      type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
       type: string
     PaymentSchema:
       properties:
@@ -435,6 +403,38 @@ components:
       - account_transaction
       title: PaymentSchema
       type: object
+    ReferenceSchema_AccountTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[AccountTransactionSchema]
+      type: object
+    FundingSourceSchema:
+      properties:
+        id:
+          description: Unique ID of the funding source.
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/FundingSource'
+          description: Type of the funding source.
+      required:
+      - id
+      - type
+      title: FundingSourceSchema
+      type: object
+    FundingSource:
+      enum:
+      - PAYMENT_CONNECTION
+      - FLOAT_ACCOUNT
+      title: FundingSource
+      type: string
   securitySchemes:
     bearerToken:
       type: http
