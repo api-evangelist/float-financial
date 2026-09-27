@@ -96,28 +96,83 @@ paths:
           description: Payment not found
 components:
   schemas:
-    MoneyValueWithOptionalCurrencySchema:
+    PaymentSchema:
       properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+        id:
+          description: The unique ID of the payment.
+          format: uuid
+          title: Id
+          type: string
+        date:
+          description: The date of the payment.
+          format: date
+          nullable: true
+          title: Date
+          type: string
+        status:
+          $ref: '#/components/schemas/BillPaymentStatus'
+          description: The status of the payment.
+        resource_id:
+          description: The ID of the resource the payment belongs to.
+          format: uuid
+          title: Resource Id
+          type: string
+        resource_type:
+          $ref: '#/components/schemas/PayableType'
+          description: The type of resource the payment belongs to.
+        amount:
+          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
+          description: The money value of the payment.
+        failure_reason:
+          description: The failure reason if the payment failed, null if payment did not fail.
+          nullable: true
+          title: Failure Reason
+          type: string
+        funding_source:
+          $ref: '#/components/schemas/FundingSourceSchema'
+          description: The funding source of the payment.
+        account_transaction:
+          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
+          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
           nullable: true
       required:
-      - value
-      - currency
-      title: MoneyValueWithOptionalCurrencySchema
+      - id
+      - date
+      - status
+      - resource_id
+      - resource_type
+      - amount
+      - failure_reason
+      - funding_source
+      - account_transaction
+      title: PaymentSchema
       type: object
-    PayableType:
-      enum:
-      - BILL
-      - EXPENSE_REPORT
-      - DIRECT_PAYMENT
-      title: PayableType
-      type: string
+    FundingSourceSchema:
+      properties:
+        id:
+          description: Unique ID of the funding source.
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/FundingSource'
+          description: Type of the funding source.
+      required:
+      - id
+      - type
+      title: FundingSourceSchema
+      type: object
+    ReferenceSchema_AccountTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[AccountTransactionSchema]
+      type: object
     PagedResponse_PaymentSchema:
       properties:
         items:
@@ -156,6 +211,35 @@ components:
       - ordered_by
       title: PagedResponse_PaymentSchema
       type: object
+    BillPaymentStatus:
+      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
+
+        but with the addition of CREATED and MARKED_AS_PAID'
+      enum:
+      - QUEUED
+      - PENDING_FUNDING
+      - FUNDS_WITHDRAWN
+      - SENT
+      - RISK_CANCELLED
+      - FAILED
+      - REVERSED
+      - CREATED
+      - MARKED_AS_PAID
+      title: BillPaymentStatus
+      type: string
+    PayableType:
+      enum:
+      - BILL
+      - EXPENSE_REPORT
+      - DIRECT_PAYMENT
+      title: PayableType
+      type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     Currencies:
       enum:
       - AFN
@@ -330,111 +414,27 @@ components:
       - UNK
       title: Currencies
       type: string
-    BillPaymentStatus:
-      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
-
-        but with the addition of CREATED and MARKED_AS_PAID'
-      enum:
-      - QUEUED
-      - PENDING_FUNDING
-      - FUNDS_WITHDRAWN
-      - SENT
-      - RISK_CANCELLED
-      - FAILED
-      - REVERSED
-      - CREATED
-      - MARKED_AS_PAID
-      title: BillPaymentStatus
-      type: string
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    PaymentSchema:
-      properties:
-        id:
-          description: The unique ID of the payment.
-          format: uuid
-          title: Id
-          type: string
-        date:
-          description: The date of the payment.
-          format: date
-          nullable: true
-          title: Date
-          type: string
-        status:
-          $ref: '#/components/schemas/BillPaymentStatus'
-          description: The status of the payment.
-        resource_id:
-          description: The ID of the resource the payment belongs to.
-          format: uuid
-          title: Resource Id
-          type: string
-        resource_type:
-          $ref: '#/components/schemas/PayableType'
-          description: The type of resource the payment belongs to.
-        amount:
-          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
-          description: The money value of the payment.
-        failure_reason:
-          description: The failure reason if the payment failed, null if payment did not fail.
-          nullable: true
-          title: Failure Reason
-          type: string
-        funding_source:
-          $ref: '#/components/schemas/FundingSourceSchema'
-          description: The funding source of the payment.
-        account_transaction:
-          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
-          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
-          nullable: true
-      required:
-      - id
-      - date
-      - status
-      - resource_id
-      - resource_type
-      - amount
-      - failure_reason
-      - funding_source
-      - account_transaction
-      title: PaymentSchema
-      type: object
-    ReferenceSchema_AccountTransactionSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[AccountTransactionSchema]
-      type: object
-    FundingSourceSchema:
-      properties:
-        id:
-          description: Unique ID of the funding source.
-          format: uuid
-          title: Id
-          type: string
-        type:
-          $ref: '#/components/schemas/FundingSource'
-          description: Type of the funding source.
-      required:
-      - id
-      - type
-      title: FundingSourceSchema
-      type: object
     FundingSource:
       enum:
       - PAYMENT_CONNECTION
       - FLOAT_ACCOUNT
       title: FundingSource
       type: string
+    MoneyValueWithOptionalCurrencySchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+          nullable: true
+      required:
+      - value
+      - currency
+      title: MoneyValueWithOptionalCurrencySchema
+      type: object
   securitySchemes:
     bearerToken:
       type: http

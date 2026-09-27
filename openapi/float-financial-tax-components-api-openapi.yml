@@ -72,12 +72,6 @@ paths:
           description: A paginated list of all tax components
 components:
   schemas:
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     TaxComponentOutputSchema:
       properties:
         id:
@@ -153,6 +147,12 @@ components:
       - count
       title: CountablePagedResponse_TaxComponentOutputSchema
       type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
   securitySchemes:
     bearerToken:
       type: http

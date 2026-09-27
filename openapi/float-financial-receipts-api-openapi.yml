@@ -96,6 +96,22 @@ paths:
           description: Receipt not found
 components:
   schemas:
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
     CountablePagedResponse_ReceiptSchema:
       properties:
         items:
@@ -150,33 +166,6 @@ components:
       - -created_at
       title: OrderByTypes
       type: string
-    ReferenceSchema_CardTransactionSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[CardTransactionSchema]
-      type: object
-    EmailReferenceSchema_UserSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
-          type: string
-      required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
-      type: object
     ReceiptSchema:
       properties:
         id:
@@ -210,6 +199,17 @@ components:
       - transactions
       - created_at
       title: ReceiptSchema
+      type: object
+    ReferenceSchema_CardTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[CardTransactionSchema]
       type: object
   securitySchemes:
     bearerToken:

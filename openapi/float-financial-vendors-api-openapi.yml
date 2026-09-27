@@ -136,6 +136,27 @@ paths:
           description: Vendor not found
 components:
   schemas:
+    VendorInputListSchema:
+      properties:
+        items:
+          description: List of Vendor input items.
+          items:
+            $ref: '#/components/schemas/VendorInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for the Vendors.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: VendorInputListSchema
+      type: object
     CountablePagedResponse_VendorOutputSchema:
       properties:
         items:
@@ -184,239 +205,6 @@ components:
       - count
       title: CountablePagedResponse_VendorOutputSchema
       type: object
-    VendorInputListSchema:
-      properties:
-        items:
-          description: List of Vendor input items.
-          items:
-            $ref: '#/components/schemas/VendorInputSchema'
-          title: Items
-          type: array
-        notification_preferences:
-          description: List of notification preferences for the Vendors.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/EmailPreference'
-            - $ref: '#/components/schemas/WebhookPreference'
-          title: Notification Preferences
-          type: array
-      required:
-      - items
-      - notification_preferences
-      title: VendorInputListSchema
-      type: object
-    Currencies:
-      enum:
-      - AFN
-      - ALL
-      - DZD
-      - USD
-      - EUR
-      - AOA
-      - XCD
-      - ARS
-      - AMD
-      - AWG
-      - AUD
-      - AZN
-      - BSD
-      - BHD
-      - BDT
-      - BBD
-      - BYN
-      - BZD
-      - XOF
-      - BMD
-      - BTN
-      - INR
-      - BOB
-      - BOV
-      - BAM
-      - BWP
-      - NOK
-      - BRL
-      - BND
-      - BGN
-      - BIF
-      - CVE
-      - KHR
-      - XAF
-      - CAD
-      - KYD
-      - CLF
-      - CLP
-      - CNY
-      - COP
-      - COU
-      - KMF
-      - CDF
-      - NZD
-      - CRC
-      - HRK
-      - CUC
-      - CUP
-      - ANG
-      - CZK
-      - DKK
-      - DJF
-      - DOP
-      - EGP
-      - SVC
-      - ERN
-      - ETB
-      - FKP
-      - FJD
-      - XPF
-      - GMD
-      - GEL
-      - GHS
-      - GIP
-      - GTQ
-      - GBP
-      - GNF
-      - GYD
-      - HTG
-      - HNL
-      - HKD
-      - HUF
-      - ISK
-      - IDR
-      - XDR
-      - IRR
-      - IQD
-      - ILS
-      - JMD
-      - JPY
-      - JOD
-      - KZT
-      - KES
-      - KPW
-      - KRW
-      - KWD
-      - KGS
-      - LAK
-      - LBP
-      - LSL
-      - ZAR
-      - LRD
-      - LYD
-      - CHF
-      - MOP
-      - MGA
-      - MWK
-      - MYR
-      - MVR
-      - MRU
-      - MUR
-      - XUA
-      - MXN
-      - MXV
-      - MDL
-      - MNT
-      - MAD
-      - MZN
-      - MMK
-      - NAD
-      - NPR
-      - NIO
-      - NGN
-      - OMR
-      - PKR
-      - PAB
-      - PGK
-      - PYG
-      - PEN
-      - PHP
-      - PLN
-      - QAR
-      - MKD
-      - RON
-      - RUB
-      - RWF
-      - SHP
-      - WST
-      - STN
-      - SAR
-      - RSD
-      - SCR
-      - SLL
-      - SGD
-      - XSU
-      - SBD
-      - SOS
-      - SSP
-      - LKR
-      - SDG
-      - SRD
-      - SZL
-      - SEK
-      - CHE
-      - CHW
-      - SYP
-      - TWD
-      - TJS
-      - TZS
-      - THB
-      - TOP
-      - TTD
-      - TND
-      - TRY
-      - TMT
-      - UGX
-      - UAH
-      - AED
-      - USN
-      - UYI
-      - UYU
-      - UZS
-      - VUV
-      - VEF
-      - VED
-      - VND
-      - YER
-      - ZMW
-      - ZWL
-      - UNK
-      title: Currencies
-      type: string
-    VendorInputSchema:
-      properties:
-        name:
-          description: Name of the vendor.
-          title: Name
-          type: string
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          default: null
-          description: Currency used by the vendor.
-          nullable: true
-        currencies:
-          default: null
-          description: Currencies used by the vendor.
-          items:
-            $ref: '#/components/schemas/Currencies'
-          minItems: 1
-          nullable: true
-          title: Currencies
-          type: array
-        external_id:
-          default: null
-          description: External identifier for the vendor.
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - name
-      title: VendorInputSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    NullEnum:
-      type: 'null'
     VendorUpdateSchemaCurrencyEnum:
       enum:
       - AFN
@@ -929,6 +717,238 @@ components:
         * `ZWL` - ZWL
 
         * `UNK` - UNK'
+    NullEnum:
+      type: 'null'
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    Currencies:
+      enum:
+      - AFN
+      - ALL
+      - DZD
+      - USD
+      - EUR
+      - AOA
+      - XCD
+      - ARS
+      - AMD
+      - AWG
+      - AUD
+      - AZN
+      - BSD
+      - BHD
+      - BDT
+      - BBD
+      - BYN
+      - BZD
+      - XOF
+      - BMD
+      - BTN
+      - INR
+      - BOB
+      - BOV
+      - BAM
+      - BWP
+      - NOK
+      - BRL
+      - BND
+      - BGN
+      - BIF
+      - CVE
+      - KHR
+      - XAF
+      - CAD
+      - KYD
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - KMF
+      - CDF
+      - NZD
+      - CRC
+      - HRK
+      - CUC
+      - CUP
+      - ANG
+      - CZK
+      - DKK
+      - DJF
+      - DOP
+      - EGP
+      - SVC
+      - ERN
+      - ETB
+      - FKP
+      - FJD
+      - XPF
+      - GMD
+      - GEL
+      - GHS
+      - GIP
+      - GTQ
+      - GBP
+      - GNF
+      - GYD
+      - HTG
+      - HNL
+      - HKD
+      - HUF
+      - ISK
+      - IDR
+      - XDR
+      - IRR
+      - IQD
+      - ILS
+      - JMD
+      - JPY
+      - JOD
+      - KZT
+      - KES
+      - KPW
+      - KRW
+      - KWD
+      - KGS
+      - LAK
+      - LBP
+      - LSL
+      - ZAR
+      - LRD
+      - LYD
+      - CHF
+      - MOP
+      - MGA
+      - MWK
+      - MYR
+      - MVR
+      - MRU
+      - MUR
+      - XUA
+      - MXN
+      - MXV
+      - MDL
+      - MNT
+      - MAD
+      - MZN
+      - MMK
+      - NAD
+      - NPR
+      - NIO
+      - NGN
+      - OMR
+      - PKR
+      - PAB
+      - PGK
+      - PYG
+      - PEN
+      - PHP
+      - PLN
+      - QAR
+      - MKD
+      - RON
+      - RUB
+      - RWF
+      - SHP
+      - WST
+      - STN
+      - SAR
+      - RSD
+      - SCR
+      - SLL
+      - SGD
+      - XSU
+      - SBD
+      - SOS
+      - SSP
+      - LKR
+      - SDG
+      - SRD
+      - SZL
+      - SEK
+      - CHE
+      - CHW
+      - SYP
+      - TWD
+      - TJS
+      - TZS
+      - THB
+      - TOP
+      - TTD
+      - TND
+      - TRY
+      - TMT
+      - UGX
+      - UAH
+      - AED
+      - USN
+      - UYI
+      - UYU
+      - UZS
+      - VUV
+      - VEF
+      - VED
+      - VND
+      - YER
+      - ZMW
+      - ZWL
+      - UNK
+      title: Currencies
+      type: string
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
+          type: string
+      required:
+      - email
+      title: EmailPreference
+      type: object
+    WebhookPreference:
+      properties:
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
+          type: string
+      required:
+      - url
+      title: WebhookPreference
+      type: object
+    VendorInputSchema:
+      properties:
+        name:
+          description: Name of the vendor.
+          title: Name
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the vendor.
+          nullable: true
+        currencies:
+          default: null
+          description: Currencies used by the vendor.
+          items:
+            $ref: '#/components/schemas/Currencies'
+          minItems: 1
+          nullable: true
+          title: Currencies
+          type: array
+        external_id:
+          default: null
+          description: External identifier for the vendor.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - name
+      title: VendorInputSchema
+      type: object
     PatchedVendorUpdateSchema:
       type: object
       properties:
@@ -1809,16 +1829,6 @@ components:
           - 'null'
           description: External identifier for the vendor.
           maxLength: 255
-    WebhookPreference:
-      properties:
-        url:
-          description: Webhook URL to send notifications to.
-          title: Url
-          type: string
-      required:
-      - url
-      title: WebhookPreference
-      type: object
     VendorOutputSchema:
       properties:
         id:
@@ -1851,16 +1861,6 @@ components:
       - id
       - name
       title: VendorOutputSchema
-      type: object
-    EmailPreference:
-      properties:
-        email:
-          description: Email address to send notifications to.
-          title: Email
-          type: string
-      required:
-      - email
-      title: EmailPreference
       type: object
   securitySchemes:
     bearerToken:

@@ -125,6 +125,15 @@ paths:
           description: User not found
 components:
   schemas:
+    RoleEnum:
+      enum:
+      - administrator
+      - ap_clerk
+      - bookkeeper
+      - manager
+      - primary_administrator
+      - spender
+      type: string
     UserSchema:
       properties:
         id:
@@ -175,32 +184,6 @@ components:
       - role
       - created_at
       title: UserSchema
-      type: object
-    RoleEnum:
-      enum:
-      - administrator
-      - ap_clerk
-      - bookkeeper
-      - manager
-      - primary_administrator
-      - spender
-      type: string
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    ReferenceSchema_TeamSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[TeamSchema]
       type: object
     UserCreateInputSchema:
       properties:
@@ -255,6 +238,23 @@ components:
       - role
       title: UserCreateInputSchema
       type: object
+    ReferenceSchema_TeamSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[TeamSchema]
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     CountablePagedResponse_UserSchema:
       properties:
         items:

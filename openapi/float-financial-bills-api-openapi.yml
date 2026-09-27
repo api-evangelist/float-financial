@@ -194,6 +194,54 @@ paths:
           description: Bill not found
 components:
   schemas:
+    CountablePagedResponse_BillSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/BillSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_BillSchema
+      type: object
     CustomFieldType:
       enum:
       - single-select
@@ -201,105 +249,61 @@ components:
       - string
       title: CustomFieldType
       type: string
-    BillPaymentStatus:
-      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
-
-        but with the addition of CREATED and MARKED_AS_PAID'
+    BillStatus:
       enum:
-      - QUEUED
-      - PENDING_FUNDING
-      - FUNDS_WITHDRAWN
-      - SENT
-      - RISK_CANCELLED
-      - FAILED
-      - REVERSED
-      - CREATED
+      - DRAFT
+      - PENDING_APPROVAL
+      - PENDING_PAYMENT_APPROVAL
+      - PENDING_PAYMENT
       - MARKED_AS_PAID
-      title: BillPaymentStatus
+      - PAID
+      - PAYMENT_FAILED
+      - VOID
+      title: BillStatus
       type: string
-    PatchedBillBatchUpdateSchema:
+    SyncInputSchema:
       type: object
       properties:
-        ids:
-          type: array
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: The external ID of the resource to sync.
+    BatchUpdateResponseSchema:
+      properties:
+        successes:
+          description: A list of ids of resources that have been successfully modified.
           items:
-            type: string
             format: uuid
-          description: List of unique identifiers for bills.
-        data:
-          allOf:
-          - $ref: '#/components/schemas/BillUpdateSchema'
-          description: The updates to make to all of the listed bill IDs.
-    ReferenceSchema_AccountTransactionSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[AccountTransactionSchema]
-      type: object
-    MultiSelectValue:
-      properties:
-        custom_field:
-          $ref: '#/components/schemas/ExternalIdReferenceSchema_MultiSelectSchema_'
-        value:
+            type: string
+          title: Successes
+          type: array
+        failures:
+          description: The resources that failed to be modified, with the associated failure reason.
           items:
-            $ref: '#/components/schemas/OptionSchema'
-          title: Value
+            $ref: '#/components/schemas/UpdateFailureSchema'
+          title: Failures
           type: array
       required:
-      - custom_field
-      - value
-      title: MultiSelectValue
+      - successes
+      - failures
+      title: BatchUpdateResponseSchema
       type: object
-    StringSchema:
+    PatchedBillUpdateSchema:
+      type: object
       properties:
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        type:
-          $ref: '#/components/schemas/CustomFieldType'
-          default: string
-        external_id:
-          default: null
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - id
-      - name
-      title: StringSchema
-      type: object
-    OptionSchema:
-      properties:
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        external_id:
-          default: null
-          nullable: true
-          title: External Id
-          type: string
-        hidden:
-          title: Hidden
-          type: boolean
-      required:
-      - id
-      - name
-      - hidden
-      title: OptionSchema
-      type: object
+        status:
+          description: 'The status of the bill.
+
+
+            * `MARKED_AS_PAID` - MARKED_AS_PAID
+
+            * `PENDING_PAYMENT_APPROVAL` - PENDING_PAYMENT_APPROVAL
+
+            * `PENDING_APPROVAL` - PENDING_APPROVAL'
+          oneOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/NullEnum'
     MoneyValueWithOptionalCurrencySchema:
       properties:
         value:
@@ -332,101 +336,95 @@ components:
       - external_id
       title: ExternalIdReferenceSchema[MultiSelectSchema]
       type: object
-    TaxComponentAmountWithOptionalCurrencySchema:
+    ExternalIdReferenceSchema_GLCodeOutputSchema_:
       properties:
         id:
-          description: Unique identifier for the tax component amount.
+          description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        amount:
-          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
-          description: Amount for the tax component in the currency of the resource.
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
       required:
       - id
-      - amount
-      title: TaxComponentAmountWithOptionalCurrencySchema
+      - external_id
+      title: ExternalIdReferenceSchema[GLCodeOutputSchema]
       type: object
-    BillLineItemSchema:
+    NameExternalIdReferenceSchema_BillPayeeSchema_:
       properties:
         id:
-          description: Unique identifier for the bill line item.
+          description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        description:
-          description: Description of the bill line item.
-          title: Description
+        name:
+          description: Name of the referenced entity.
+          title: Name
           type: string
-        subtotal:
-          description: The subtotal of the bill line item.
-          title: Subtotal
-          type: integer
-        tax:
-          $ref: '#/components/schemas/TaxCodeAmountWithOptionalCurrencySchema'
-          description: The tax amount value of the bill line item.
-        tax_code:
-          $ref: '#/components/schemas/TaxCodeOutputSchema'
-          description: The tax code associated with the bill line item.
+        external_id:
+          description: External identifier for the referenced entity.
           nullable: true
-        gl_code:
-          $ref: '#/components/schemas/ExternalIdReferenceSchema_GLCodeOutputSchema_'
-          description: The GL Code associated with the bill line item.
-          nullable: true
-        custom_fields:
-          deprecated: true
-          description: A list of custom fields on the bill line item.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/MultiSelectSchema'
-            - $ref: '#/components/schemas/StringSchema'
-          title: Custom Fields
-          type: array
-        custom_field_values:
-          description: A list of custom field values on the bill line item.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/MultiSelectValue'
-            - $ref: '#/components/schemas/StringValue'
-          title: Custom Field Values
-          type: array
+          title: External Id
+          type: string
       required:
       - id
-      - description
-      - subtotal
-      - tax
-      - tax_code
-      - gl_code
-      - custom_fields
-      - custom_field_values
-      title: BillLineItemSchema
+      - name
+      - external_id
+      title: NameExternalIdReferenceSchema[BillPayeeSchema]
       type: object
-    TaxCodeAmountWithOptionalCurrencySchema:
+    PaymentSchema:
       properties:
+        id:
+          description: The unique ID of the payment.
+          format: uuid
+          title: Id
+          type: string
+        date:
+          description: The date of the payment.
+          format: date
+          nullable: true
+          title: Date
+          type: string
+        status:
+          $ref: '#/components/schemas/BillPaymentStatus'
+          description: The status of the payment.
+        resource_id:
+          description: The ID of the resource the payment belongs to.
+          format: uuid
+          title: Resource Id
+          type: string
+        resource_type:
+          $ref: '#/components/schemas/PayableType'
+          description: The type of resource the payment belongs to.
         amount:
           $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
-          description: Total amount for the tax code in the currency of the resource.
-        components:
-          description: List of tax components associated with the tax code.
-          items:
-            $ref: '#/components/schemas/TaxComponentAmountWithOptionalCurrencySchema'
-          title: Components
-          type: array
-      required:
-      - amount
-      title: TaxCodeAmountWithOptionalCurrencySchema
-      type: object
-    StringValue:
-      properties:
-        custom_field:
-          $ref: '#/components/schemas/ExternalIdReferenceSchema_StringSchema_'
-        value:
-          title: Value
+          description: The money value of the payment.
+        failure_reason:
+          description: The failure reason if the payment failed, null if payment did not fail.
+          nullable: true
+          title: Failure Reason
           type: string
+        funding_source:
+          $ref: '#/components/schemas/FundingSourceSchema'
+          description: The funding source of the payment.
+        account_transaction:
+          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
+          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
+          nullable: true
       required:
-      - custom_field
-      - value
-      title: StringValue
+      - id
+      - date
+      - status
+      - resource_id
+      - resource_type
+      - amount
+      - failure_reason
+      - funding_source
+      - account_transaction
+      title: PaymentSchema
       type: object
     BillUpdateSchema:
       type: object
@@ -443,6 +441,75 @@ components:
           oneOf:
           - $ref: '#/components/schemas/StatusEnum'
           - $ref: '#/components/schemas/NullEnum'
+    ExportSchema:
+      properties:
+        exported_at:
+          description: The date and time the transaction was exported.
+          format: date-time
+          title: Exported At
+          type: string
+      required:
+      - exported_at
+      title: ExportSchema
+      type: object
+    NameReferenceSchema_BillAttachmentSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[BillAttachmentSchema]
+      type: object
+    TaxComponentOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - id
+      - name
+      - rate
+      title: TaxComponentOutputSchema
+      type: object
+    TaxComponentAmountWithOptionalCurrencySchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component amount.
+          format: uuid
+          title: Id
+          type: string
+        amount:
+          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
+          description: Amount for the tax component in the currency of the resource.
+      required:
+      - id
+      - amount
+      title: TaxComponentAmountWithOptionalCurrencySchema
+      type: object
     BillSchema:
       properties:
         id:
@@ -556,7 +623,7 @@ components:
       - export_status
       title: BillSchema
       type: object
-    MultiSelectSchema:
+    StringSchema:
       properties:
         id:
           format: uuid
@@ -567,111 +634,17 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/CustomFieldType'
-          default: multi-select
+          default: string
         external_id:
           default: null
           nullable: true
           title: External Id
           type: string
-        options:
-          items:
-            $ref: '#/components/schemas/OptionSchema'
-          title: Options
-          type: array
       required:
       - id
       - name
-      - options
-      title: MultiSelectSchema
+      title: StringSchema
       type: object
-    NullEnum:
-      type: 'null'
-    StatusEnum:
-      enum:
-      - MARKED_AS_PAID
-      - PENDING_PAYMENT_APPROVAL
-      - PENDING_APPROVAL
-      type: string
-      description: '* `MARKED_AS_PAID` - MARKED_AS_PAID
-
-        * `PENDING_PAYMENT_APPROVAL` - PENDING_PAYMENT_APPROVAL
-
-        * `PENDING_APPROVAL` - PENDING_APPROVAL'
-    EmailReferenceSchema_UserSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
-          type: string
-      required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
-      type: object
-    TaxComponentOutputSchema:
-      properties:
-        id:
-          description: Unique identifier for the tax component.
-          format: uuid
-          title: Id
-          type: string
-        external_id:
-          default: null
-          description: External identifier for the tax component.
-          nullable: true
-          title: External Id
-          type: string
-        name:
-          description: Name of the tax component.
-          title: Name
-          type: string
-        rate:
-          description: Rate of the tax component.
-          title: Rate
-          type: string
-      required:
-      - id
-      - name
-      - rate
-      title: TaxComponentOutputSchema
-      type: object
-    ExternalIdReferenceSchema_GLCodeOutputSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        external_id:
-          description: External identifier for the referenced entity.
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - id
-      - external_id
-      title: ExternalIdReferenceSchema[GLCodeOutputSchema]
-      type: object
-    PayableType:
-      enum:
-      - BILL
-      - EXPENSE_REPORT
-      - DIRECT_PAYMENT
-      title: PayableType
-      type: string
-    SyncInputSchema:
-      type: object
-      properties:
-        external_id:
-          type:
-          - string
-          - 'null'
-          description: The external ID of the resource to sync.
     UpdateFailureSchema:
       properties:
         id:
@@ -688,6 +661,199 @@ components:
       - failure_reason
       title: UpdateFailureSchema
       type: object
+    TaxCodeOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax code.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax code.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax code.
+          title: Name
+          type: string
+        effective_rate:
+          description: Effective rate of the tax code.
+          title: Effective Rate
+          type: string
+        components:
+          description: List of tax components associated with the tax code.
+          items:
+            $ref: '#/components/schemas/TaxComponentOutputSchema'
+          title: Components
+          type: array
+      required:
+      - id
+      - name
+      - effective_rate
+      title: TaxCodeOutputSchema
+      type: object
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    BillLineItemSchema:
+      properties:
+        id:
+          description: Unique identifier for the bill line item.
+          format: uuid
+          title: Id
+          type: string
+        description:
+          description: Description of the bill line item.
+          title: Description
+          type: string
+        subtotal:
+          description: The subtotal of the bill line item.
+          title: Subtotal
+          type: integer
+        tax:
+          $ref: '#/components/schemas/TaxCodeAmountWithOptionalCurrencySchema'
+          description: The tax amount value of the bill line item.
+        tax_code:
+          $ref: '#/components/schemas/TaxCodeOutputSchema'
+          description: The tax code associated with the bill line item.
+          nullable: true
+        gl_code:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_GLCodeOutputSchema_'
+          description: The GL Code associated with the bill line item.
+          nullable: true
+        custom_fields:
+          deprecated: true
+          description: A list of custom fields on the bill line item.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/MultiSelectSchema'
+            - $ref: '#/components/schemas/StringSchema'
+          title: Custom Fields
+          type: array
+        custom_field_values:
+          description: A list of custom field values on the bill line item.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/MultiSelectValue'
+            - $ref: '#/components/schemas/StringValue'
+          title: Custom Field Values
+          type: array
+      required:
+      - id
+      - description
+      - subtotal
+      - tax
+      - tax_code
+      - gl_code
+      - custom_fields
+      - custom_field_values
+      title: BillLineItemSchema
+      type: object
+    PatchedBillBatchUpdateSchema:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of unique identifiers for bills.
+        data:
+          allOf:
+          - $ref: '#/components/schemas/BillUpdateSchema'
+          description: The updates to make to all of the listed bill IDs.
+    MultiSelectValue:
+      properties:
+        custom_field:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_MultiSelectSchema_'
+        value:
+          items:
+            $ref: '#/components/schemas/OptionSchema'
+          title: Value
+          type: array
+      required:
+      - custom_field
+      - value
+      title: MultiSelectValue
+      type: object
+    FundingSourceSchema:
+      properties:
+        id:
+          description: Unique ID of the funding source.
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/FundingSource'
+          description: Type of the funding source.
+      required:
+      - id
+      - type
+      title: FundingSourceSchema
+      type: object
+    ReferenceSchema_AccountTransactionSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[AccountTransactionSchema]
+      type: object
+    PayableType:
+      enum:
+      - BILL
+      - EXPENSE_REPORT
+      - DIRECT_PAYMENT
+      title: PayableType
+      type: string
+    ExternalIdReferenceSchema_StringSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          description: External identifier for the referenced entity.
+          nullable: true
+          title: External Id
+          type: string
+      required:
+      - id
+      - external_id
+      title: ExternalIdReferenceSchema[StringSchema]
+      type: object
+    NullEnum:
+      type: 'null'
+    StatusEnum:
+      enum:
+      - MARKED_AS_PAID
+      - PENDING_PAYMENT_APPROVAL
+      - PENDING_APPROVAL
+      type: string
+      description: '* `MARKED_AS_PAID` - MARKED_AS_PAID
+
+        * `PENDING_PAYMENT_APPROVAL` - PENDING_PAYMENT_APPROVAL
+
+        * `PENDING_APPROVAL` - PENDING_APPROVAL'
     NameReferenceSchema_ApprovalPolicySchema_:
       properties:
         id:
@@ -704,120 +870,57 @@ components:
       - name
       title: NameReferenceSchema[ApprovalPolicySchema]
       type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    PaymentSchema:
-      properties:
-        id:
-          description: The unique ID of the payment.
-          format: uuid
-          title: Id
-          type: string
-        date:
-          description: The date of the payment.
-          format: date
-          nullable: true
-          title: Date
-          type: string
-        status:
-          $ref: '#/components/schemas/BillPaymentStatus'
-          description: The status of the payment.
-        resource_id:
-          description: The ID of the resource the payment belongs to.
-          format: uuid
-          title: Resource Id
-          type: string
-        resource_type:
-          $ref: '#/components/schemas/PayableType'
-          description: The type of resource the payment belongs to.
-        amount:
-          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
-          description: The money value of the payment.
-        failure_reason:
-          description: The failure reason if the payment failed, null if payment did not fail.
-          nullable: true
-          title: Failure Reason
-          type: string
-        funding_source:
-          $ref: '#/components/schemas/FundingSourceSchema'
-          description: The funding source of the payment.
-        account_transaction:
-          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
-          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
-          nullable: true
-      required:
-      - id
-      - date
-      - status
-      - resource_id
-      - resource_type
-      - amount
-      - failure_reason
-      - funding_source
-      - account_transaction
-      title: PaymentSchema
-      type: object
-    NameReferenceSchema_BillAttachmentSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        name:
-          description: Name of the referenced entity.
-          title: Name
-          type: string
-      required:
-      - id
-      - name
-      title: NameReferenceSchema[BillAttachmentSchema]
-      type: object
     FundingSource:
       enum:
       - PAYMENT_CONNECTION
       - FLOAT_ACCOUNT
       title: FundingSource
       type: string
-    FundingSourceSchema:
+    ExportStatus:
+      enum:
+      - EXPORTED
+      - EXPORT_FAILED
+      - READY_FOR_EXPORT
+      - INVALID_FOR_EXPORT
+      title: ExportStatus
+      type: string
+    BillPaymentStatus:
+      description: 'This contains all the same choices from the AccountsPayablePaymentStatus
+
+        but with the addition of CREATED and MARKED_AS_PAID'
+      enum:
+      - QUEUED
+      - PENDING_FUNDING
+      - FUNDS_WITHDRAWN
+      - SENT
+      - RISK_CANCELLED
+      - FAILED
+      - REVERSED
+      - CREATED
+      - MARKED_AS_PAID
+      title: BillPaymentStatus
+      type: string
+    TaxCodeAmountWithOptionalCurrencySchema:
       properties:
-        id:
-          description: Unique ID of the funding source.
-          format: uuid
-          title: Id
-          type: string
-        type:
-          $ref: '#/components/schemas/FundingSource'
-          description: Type of the funding source.
-      required:
-      - id
-      - type
-      title: FundingSourceSchema
-      type: object
-    BatchUpdateResponseSchema:
-      properties:
-        successes:
-          description: A list of ids of resources that have been successfully modified.
+        amount:
+          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
+          description: Total amount for the tax code in the currency of the resource.
+        components:
+          description: List of tax components associated with the tax code.
           items:
-            format: uuid
-            type: string
-          title: Successes
-          type: array
-        failures:
-          description: The resources that failed to be modified, with the associated failure reason.
-          items:
-            $ref: '#/components/schemas/UpdateFailureSchema'
-          title: Failures
+            $ref: '#/components/schemas/TaxComponentAmountWithOptionalCurrencySchema'
+          title: Components
           type: array
       required:
-      - successes
-      - failures
-      title: BatchUpdateResponseSchema
+      - amount
+      title: TaxCodeAmountWithOptionalCurrencySchema
       type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     Currencies:
       enum:
       - AFN
@@ -992,171 +1095,68 @@ components:
       - UNK
       title: Currencies
       type: string
-    ExportStatus:
-      enum:
-      - EXPORTED
-      - EXPORT_FAILED
-      - READY_FOR_EXPORT
-      - INVALID_FOR_EXPORT
-      title: ExportStatus
-      type: string
-    BillStatus:
-      enum:
-      - DRAFT
-      - PENDING_APPROVAL
-      - PENDING_PAYMENT_APPROVAL
-      - PENDING_PAYMENT
-      - MARKED_AS_PAID
-      - PAID
-      - PAYMENT_FAILED
-      - VOID
-      title: BillStatus
-      type: string
-    ExternalIdReferenceSchema_StringSchema_:
+    OptionSchema:
       properties:
         id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        external_id:
-          description: External identifier for the referenced entity.
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - id
-      - external_id
-      title: ExternalIdReferenceSchema[StringSchema]
-      type: object
-    NameExternalIdReferenceSchema_BillPayeeSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
         name:
-          description: Name of the referenced entity.
           title: Name
-          type: string
-        external_id:
-          description: External identifier for the referenced entity.
-          nullable: true
-          title: External Id
-          type: string
-      required:
-      - id
-      - name
-      - external_id
-      title: NameExternalIdReferenceSchema[BillPayeeSchema]
-      type: object
-    PatchedBillUpdateSchema:
-      type: object
-      properties:
-        status:
-          description: 'The status of the bill.
-
-
-            * `MARKED_AS_PAID` - MARKED_AS_PAID
-
-            * `PENDING_PAYMENT_APPROVAL` - PENDING_PAYMENT_APPROVAL
-
-            * `PENDING_APPROVAL` - PENDING_APPROVAL'
-          oneOf:
-          - $ref: '#/components/schemas/StatusEnum'
-          - $ref: '#/components/schemas/NullEnum'
-    TaxCodeOutputSchema:
-      properties:
-        id:
-          description: Unique identifier for the tax code.
-          format: uuid
-          title: Id
           type: string
         external_id:
           default: null
-          description: External identifier for the tax code.
           nullable: true
           title: External Id
           type: string
+        hidden:
+          title: Hidden
+          type: boolean
+      required:
+      - id
+      - name
+      - hidden
+      title: OptionSchema
+      type: object
+    StringValue:
+      properties:
+        custom_field:
+          $ref: '#/components/schemas/ExternalIdReferenceSchema_StringSchema_'
+        value:
+          title: Value
+          type: string
+      required:
+      - custom_field
+      - value
+      title: StringValue
+      type: object
+    MultiSelectSchema:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
         name:
-          description: Name of the tax code.
           title: Name
           type: string
-        effective_rate:
-          description: Effective rate of the tax code.
-          title: Effective Rate
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+          default: multi-select
+        external_id:
+          default: null
+          nullable: true
+          title: External Id
           type: string
-        components:
-          description: List of tax components associated with the tax code.
+        options:
           items:
-            $ref: '#/components/schemas/TaxComponentOutputSchema'
-          title: Components
+            $ref: '#/components/schemas/OptionSchema'
+          title: Options
           type: array
       required:
       - id
       - name
-      - effective_rate
-      title: TaxCodeOutputSchema
-      type: object
-    CountablePagedResponse_BillSchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/BillSchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-        pages:
-          description: The total number of pages available.
-          title: Pages
-          type: integer
-        count:
-          description: The total number of items available.
-          title: Count
-          type: integer
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      - pages
-      - count
-      title: CountablePagedResponse_BillSchema
-      type: object
-    ExportSchema:
-      properties:
-        exported_at:
-          description: The date and time the transaction was exported.
-          format: date-time
-          title: Exported At
-          type: string
-      required:
-      - exported_at
-      title: ExportSchema
+      - options
+      title: MultiSelectSchema
       type: object
   securitySchemes:
     bearerToken:

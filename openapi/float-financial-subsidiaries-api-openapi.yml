@@ -100,6 +100,91 @@ paths:
           description: Subsidiary not found
 components:
   schemas:
+    SubsidiarySchema:
+      properties:
+        id:
+          description: Unique identifier for the subsidiary.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the subsidiary.
+          title: Name
+          type: string
+        external_id:
+          description: External identifier for the subsidiary in the accounting system.
+          title: External Id
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: Currency of the subsidiary.
+          nullable: true
+        parent:
+          $ref: '#/components/schemas/NameExternalIdReferenceSchema_Self_'
+          default: null
+          description: Parent subsidiary of the subsidiary.
+          nullable: true
+      required:
+      - id
+      - name
+      - external_id
+      - currency
+      title: SubsidiarySchema
+      type: object
+    CountablePagedResponse_SubsidiarySchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/SubsidiarySchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_SubsidiarySchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     Currencies:
       enum:
       - AFN
@@ -274,12 +359,6 @@ components:
       - UNK
       title: Currencies
       type: string
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     NameExternalIdReferenceSchema_Self_:
       properties:
         id:
@@ -301,85 +380,6 @@ components:
       - name
       - external_id
       title: NameExternalIdReferenceSchema[Self]
-      type: object
-    SubsidiarySchema:
-      properties:
-        id:
-          description: Unique identifier for the subsidiary.
-          format: uuid
-          title: Id
-          type: string
-        name:
-          description: Name of the subsidiary.
-          title: Name
-          type: string
-        external_id:
-          description: External identifier for the subsidiary in the accounting system.
-          title: External Id
-          type: string
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: Currency of the subsidiary.
-          nullable: true
-        parent:
-          $ref: '#/components/schemas/NameExternalIdReferenceSchema_Self_'
-          default: null
-          description: Parent subsidiary of the subsidiary.
-          nullable: true
-      required:
-      - id
-      - name
-      - external_id
-      - currency
-      title: SubsidiarySchema
-      type: object
-    CountablePagedResponse_SubsidiarySchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/SubsidiarySchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-        pages:
-          description: The total number of pages available.
-          title: Pages
-          type: integer
-        count:
-          description: The total number of items available.
-          title: Count
-          type: integer
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      - pages
-      - count
-      title: CountablePagedResponse_SubsidiarySchema
       type: object
   securitySchemes:
     bearerToken:

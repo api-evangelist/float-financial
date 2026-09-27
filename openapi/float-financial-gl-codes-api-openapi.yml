@@ -149,43 +149,6 @@ paths:
           description: GL code not found
 components:
   schemas:
-    GLCodeInputSchema:
-      properties:
-        external_id:
-          description: External identifier for the GL code.
-          title: External Id
-          type: string
-        account_type:
-          description: Type of account for the GL code.
-          title: Account Type
-          type: string
-        name:
-          description: Name of the GL code.
-          title: Name
-          type: string
-        account_number:
-          default: null
-          description: Account number associated with the GL code.
-          nullable: true
-          title: Account Number
-          type: string
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          default: null
-          description: Currency used by the GL code.
-          nullable: true
-        parent_external_id:
-          default: null
-          description: Parent external identifier for hierarchical GL codes.
-          nullable: true
-          title: Parent External Id
-          type: string
-      required:
-      - external_id
-      - account_type
-      - name
-      title: GLCodeInputSchema
-      type: object
     CountablePagedResponse_GLCodeOutputSchema:
       properties:
         items:
@@ -233,6 +196,39 @@ components:
       - pages
       - count
       title: CountablePagedResponse_GLCodeOutputSchema
+      type: object
+    PatchedUpdateGLCodeSchema:
+      additionalProperties: false
+      description: Schema for updating a GL Code via PATCH request.
+      properties:
+        name:
+          default: null
+          description: Name of the GL code.
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          title: Name
+          type: string
+        account_type:
+          default: null
+          description: Type of account for the GL code.
+          maxLength: 100
+          nullable: true
+          title: Account Type
+          type: string
+        account_number:
+          default: null
+          description: Account number associated with the GL code.
+          maxLength: 255
+          nullable: true
+          title: Account Number
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the GL code.
+          nullable: true
+      title: UpdateGLCodeSchema
       type: object
     Currencies:
       enum:
@@ -408,38 +404,25 @@ components:
       - UNK
       title: Currencies
       type: string
-    PatchedUpdateGLCodeSchema:
-      additionalProperties: false
-      description: Schema for updating a GL Code via PATCH request.
+    WebhookPreference:
       properties:
-        name:
-          default: null
-          description: Name of the GL code.
-          maxLength: 255
-          minLength: 1
-          nullable: true
-          title: Name
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
           type: string
-        account_type:
-          default: null
-          description: Type of account for the GL code.
-          maxLength: 100
-          nullable: true
-          title: Account Type
+      required:
+      - url
+      title: WebhookPreference
+      type: object
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
           type: string
-        account_number:
-          default: null
-          description: Account number associated with the GL code.
-          maxLength: 255
-          nullable: true
-          title: Account Number
-          type: string
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          default: null
-          description: Currency used by the GL code.
-          nullable: true
-      title: UpdateGLCodeSchema
+      required:
+      - email
+      title: EmailPreference
       type: object
     OrderByTypes:
       enum:
@@ -447,6 +430,27 @@ components:
       - -created_at
       title: OrderByTypes
       type: string
+    GLCodeInputListSchema:
+      properties:
+        items:
+          description: List of GL code input items.
+          items:
+            $ref: '#/components/schemas/GLCodeInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for the GL codes.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: GLCodeInputListSchema
+      type: object
     GLCodeOutputSchema:
       properties:
         id:
@@ -491,46 +495,42 @@ components:
       - name
       title: GLCodeOutputSchema
       type: object
-    WebhookPreference:
+    GLCodeInputSchema:
       properties:
-        url:
-          description: Webhook URL to send notifications to.
-          title: Url
+        external_id:
+          description: External identifier for the GL code.
+          title: External Id
+          type: string
+        account_type:
+          description: Type of account for the GL code.
+          title: Account Type
+          type: string
+        name:
+          description: Name of the GL code.
+          title: Name
+          type: string
+        account_number:
+          default: null
+          description: Account number associated with the GL code.
+          nullable: true
+          title: Account Number
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          default: null
+          description: Currency used by the GL code.
+          nullable: true
+        parent_external_id:
+          default: null
+          description: Parent external identifier for hierarchical GL codes.
+          nullable: true
+          title: Parent External Id
           type: string
       required:
-      - url
-      title: WebhookPreference
-      type: object
-    GLCodeInputListSchema:
-      properties:
-        items:
-          description: List of GL code input items.
-          items:
-            $ref: '#/components/schemas/GLCodeInputSchema'
-          title: Items
-          type: array
-        notification_preferences:
-          description: List of notification preferences for the GL codes.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/EmailPreference'
-            - $ref: '#/components/schemas/WebhookPreference'
-          title: Notification Preferences
-          type: array
-      required:
-      - items
-      - notification_preferences
-      title: GLCodeInputListSchema
-      type: object
-    EmailPreference:
-      properties:
-        email:
-          description: Email address to send notifications to.
-          title: Email
-          type: string
-      required:
-      - email
-      title: EmailPreference
+      - external_id
+      - account_type
+      - name
+      title: GLCodeInputSchema
       type: object
   securitySchemes:
     bearerToken:
