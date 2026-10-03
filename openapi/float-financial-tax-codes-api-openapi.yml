@@ -160,6 +160,16 @@ paths:
           description: Tax code deletion request processed
 components:
   schemas:
+    EmailPreference:
+      properties:
+        email:
+          description: Email address to send notifications to.
+          title: Email
+          type: string
+      required:
+      - email
+      title: EmailPreference
+      type: object
     CountablePagedResponse_TaxCodeOutputSchema:
       properties:
         items:
@@ -208,6 +218,54 @@ components:
       - count
       title: CountablePagedResponse_TaxCodeOutputSchema
       type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    TaxCodeInputListSchema:
+      properties:
+        items:
+          description: List of TaxCode input items.
+          items:
+            $ref: '#/components/schemas/TaxCodeInputSchema'
+          title: Items
+          type: array
+        notification_preferences:
+          description: List of notification preferences for import completion.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/EmailPreference'
+            - $ref: '#/components/schemas/WebhookPreference'
+          title: Notification Preferences
+          type: array
+      required:
+      - items
+      - notification_preferences
+      title: TaxCodeInputListSchema
+      type: object
+    TaxComponentInputSchema:
+      properties:
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - name
+      - rate
+      title: TaxComponentInputSchema
+      type: object
     TaxCodeOutputSchema:
       properties:
         id:
@@ -241,26 +299,15 @@ components:
       - effective_rate
       title: TaxCodeOutputSchema
       type: object
-    TaxComponentInputSchema:
+    WebhookPreference:
       properties:
-        external_id:
-          default: null
-          description: External identifier for the tax component.
-          nullable: true
-          title: External Id
-          type: string
-        name:
-          description: Name of the tax component.
-          title: Name
-          type: string
-        rate:
-          description: Rate of the tax component.
-          title: Rate
+        url:
+          description: Webhook URL to send notifications to.
+          title: Url
           type: string
       required:
-      - name
-      - rate
-      title: TaxComponentInputSchema
+      - url
+      title: WebhookPreference
       type: object
     TaxCodeInputSchema:
       properties:
@@ -283,6 +330,31 @@ components:
       required:
       - name
       title: TaxCodeInputSchema
+      type: object
+    PatchedTaxCodeUpdateSchema:
+      properties:
+        name:
+          default: null
+          description: Name of the tax code.
+          maxLength: 255
+          nullable: true
+          title: Name
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax code.
+          nullable: true
+          title: External Id
+          type: string
+        components:
+          default: null
+          description: List of tax components. If provided, replaces all existing components.
+          items:
+            $ref: '#/components/schemas/TaxComponentInputSchema'
+          nullable: true
+          title: Components
+          type: array
+      title: TaxCodeUpdateSchema
       type: object
     TaxComponentOutputSchema:
       properties:
@@ -310,78 +382,6 @@ components:
       - name
       - rate
       title: TaxComponentOutputSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    WebhookPreference:
-      properties:
-        url:
-          description: Webhook URL to send notifications to.
-          title: Url
-          type: string
-      required:
-      - url
-      title: WebhookPreference
-      type: object
-    EmailPreference:
-      properties:
-        email:
-          description: Email address to send notifications to.
-          title: Email
-          type: string
-      required:
-      - email
-      title: EmailPreference
-      type: object
-    PatchedTaxCodeUpdateSchema:
-      properties:
-        name:
-          default: null
-          description: Name of the tax code.
-          maxLength: 255
-          nullable: true
-          title: Name
-          type: string
-        external_id:
-          default: null
-          description: External identifier for the tax code.
-          nullable: true
-          title: External Id
-          type: string
-        components:
-          default: null
-          description: List of tax components. If provided, replaces all existing components.
-          items:
-            $ref: '#/components/schemas/TaxComponentInputSchema'
-          nullable: true
-          title: Components
-          type: array
-      title: TaxCodeUpdateSchema
-      type: object
-    TaxCodeInputListSchema:
-      properties:
-        items:
-          description: List of TaxCode input items.
-          items:
-            $ref: '#/components/schemas/TaxCodeInputSchema'
-          title: Items
-          type: array
-        notification_preferences:
-          description: List of notification preferences for import completion.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/EmailPreference'
-            - $ref: '#/components/schemas/WebhookPreference'
-          title: Notification Preferences
-          type: array
-      required:
-      - items
-      - notification_preferences
-      title: TaxCodeInputListSchema
       type: object
   securitySchemes:
     bearerToken:

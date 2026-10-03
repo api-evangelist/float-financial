@@ -147,21 +147,12 @@ components:
       - account_transaction
       title: PaymentSchema
       type: object
-    FundingSourceSchema:
-      properties:
-        id:
-          description: Unique ID of the funding source.
-          format: uuid
-          title: Id
-          type: string
-        type:
-          $ref: '#/components/schemas/FundingSource'
-          description: Type of the funding source.
-      required:
-      - id
-      - type
-      title: FundingSourceSchema
-      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     ReferenceSchema_AccountTransactionSchema_:
       properties:
         id:
@@ -211,6 +202,27 @@ components:
       - ordered_by
       title: PagedResponse_PaymentSchema
       type: object
+    FundingSource:
+      enum:
+      - PAYMENT_CONNECTION
+      - FLOAT_ACCOUNT
+      title: FundingSource
+      type: string
+    FundingSourceSchema:
+      properties:
+        id:
+          description: Unique ID of the funding source.
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/FundingSource'
+          description: Type of the funding source.
+      required:
+      - id
+      - type
+      title: FundingSourceSchema
+      type: object
     BillPaymentStatus:
       description: 'This contains all the same choices from the AccountsPayablePaymentStatus
 
@@ -226,19 +238,6 @@ components:
       - CREATED
       - MARKED_AS_PAID
       title: BillPaymentStatus
-      type: string
-    PayableType:
-      enum:
-      - BILL
-      - EXPENSE_REPORT
-      - DIRECT_PAYMENT
-      title: PayableType
-      type: string
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
       type: string
     Currencies:
       enum:
@@ -414,12 +413,6 @@ components:
       - UNK
       title: Currencies
       type: string
-    FundingSource:
-      enum:
-      - PAYMENT_CONNECTION
-      - FLOAT_ACCOUNT
-      title: FundingSource
-      type: string
     MoneyValueWithOptionalCurrencySchema:
       properties:
         value:
@@ -435,6 +428,13 @@ components:
       - currency
       title: MoneyValueWithOptionalCurrencySchema
       type: object
+    PayableType:
+      enum:
+      - BILL
+      - EXPENSE_REPORT
+      - DIRECT_PAYMENT
+      title: PayableType
+      type: string
   securitySchemes:
     bearerToken:
       type: http

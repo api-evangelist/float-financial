@@ -72,33 +72,12 @@ paths:
           description: A paginated list of all tax components
 components:
   schemas:
-    TaxComponentOutputSchema:
-      properties:
-        id:
-          description: Unique identifier for the tax component.
-          format: uuid
-          title: Id
-          type: string
-        external_id:
-          default: null
-          description: External identifier for the tax component.
-          nullable: true
-          title: External Id
-          type: string
-        name:
-          description: Name of the tax component.
-          title: Name
-          type: string
-        rate:
-          description: Rate of the tax component.
-          title: Rate
-          type: string
-      required:
-      - id
-      - name
-      - rate
-      title: TaxComponentOutputSchema
-      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     CountablePagedResponse_TaxComponentOutputSchema:
       properties:
         items:
@@ -147,12 +126,33 @@ components:
       - count
       title: CountablePagedResponse_TaxComponentOutputSchema
       type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
+    TaxComponentOutputSchema:
+      properties:
+        id:
+          description: Unique identifier for the tax component.
+          format: uuid
+          title: Id
+          type: string
+        external_id:
+          default: null
+          description: External identifier for the tax component.
+          nullable: true
+          title: External Id
+          type: string
+        name:
+          description: Name of the tax component.
+          title: Name
+          type: string
+        rate:
+          description: Rate of the tax component.
+          title: Rate
+          type: string
+      required:
+      - id
+      - name
+      - rate
+      title: TaxComponentOutputSchema
+      type: object
   securitySchemes:
     bearerToken:
       type: http

@@ -133,20 +133,22 @@ paths:
           description: Card limit not found
 components:
   schemas:
-    MoneyValueSchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-      required:
-      - value
-      - currency
-      title: MoneyValueSchema
-      type: object
+    CardLimitType:
+      enum:
+      - RECURRING
+      - TEMPORARY
+      title: CardLimitType
+      type: string
+    ReloadIntervalType:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - NO_RELOAD
+      title: ReloadIntervalType
+      type: string
     CountablePagedResponse_CardLimitSchema:
       properties:
         items:
@@ -239,6 +241,33 @@ components:
       - card_id
       title: CreateCardLimitForCardSchema
       type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    CardLimitStatus:
+      enum:
+      - SCHEDULED
+      - ACTIVE
+      - EXPIRED
+      title: CardLimitStatus
+      type: string
     CardLimitSchema:
       properties:
         id:
@@ -294,13 +323,6 @@ components:
       - status
       title: CardLimitSchema
       type: object
-    CardLimitStatus:
-      enum:
-      - SCHEDULED
-      - ACTIVE
-      - EXPIRED
-      title: CardLimitStatus
-      type: string
     Currencies:
       enum:
       - AFN
@@ -474,28 +496,6 @@ components:
       - ZWL
       - UNK
       title: Currencies
-      type: string
-    ReloadIntervalType:
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - QUARTERLY
-      - YEARLY
-      - NO_RELOAD
-      title: ReloadIntervalType
-      type: string
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    CardLimitType:
-      enum:
-      - RECURRING
-      - TEMPORARY
-      title: CardLimitType
       type: string
   securitySchemes:
     bearerToken:

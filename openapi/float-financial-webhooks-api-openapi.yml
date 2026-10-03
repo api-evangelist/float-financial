@@ -95,7 +95,13 @@ paths:
           description: Invalid request data
 components:
   schemas:
-    WebhookSubscriptionOutputSchema:
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    CreateWebhookSubscriptionResponseSchema:
       properties:
         id:
           description: Unique identifier for the webhook subscription.
@@ -116,32 +122,18 @@ components:
           format: date-time
           title: Updated At
           type: string
+        signing_secret:
+          description: Signing secret for verifying webhook signatures. This is only returned once at creation time.
+          title: Signing Secret
+          type: string
       required:
       - id
       - url
       - created_at
       - updated_at
-      title: WebhookSubscriptionOutputSchema
+      - signing_secret
+      title: CreateWebhookSubscriptionResponseSchema
       type: object
-    CreateWebhookSubscriptionSchema:
-      properties:
-        url:
-          description: HTTPS webhook endpoint URL. Must be publicly accessible and not resolve to private IP ranges.
-          format: uri
-          maxLength: 2083
-          minLength: 1
-          title: Url
-          type: string
-      required:
-      - url
-      title: CreateWebhookSubscriptionSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     PagedResponseWebhookSubscriptionSchema:
       properties:
         items:
@@ -190,7 +182,7 @@ components:
       - count
       title: PagedResponseWebhookSubscriptionSchema
       type: object
-    CreateWebhookSubscriptionResponseSchema:
+    WebhookSubscriptionOutputSchema:
       properties:
         id:
           description: Unique identifier for the webhook subscription.
@@ -211,17 +203,25 @@ components:
           format: date-time
           title: Updated At
           type: string
-        signing_secret:
-          description: Signing secret for verifying webhook signatures. This is only returned once at creation time.
-          title: Signing Secret
-          type: string
       required:
       - id
       - url
       - created_at
       - updated_at
-      - signing_secret
-      title: CreateWebhookSubscriptionResponseSchema
+      title: WebhookSubscriptionOutputSchema
+      type: object
+    CreateWebhookSubscriptionSchema:
+      properties:
+        url:
+          description: HTTPS webhook endpoint URL. Must be publicly accessible and not resolve to private IP ranges.
+          format: uri
+          maxLength: 2083
+          minLength: 1
+          title: Url
+          type: string
+      required:
+      - url
+      title: CreateWebhookSubscriptionSchema
       type: object
   securitySchemes:
     bearerToken:
