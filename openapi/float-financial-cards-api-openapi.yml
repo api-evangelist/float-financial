@@ -123,10 +123,27 @@ paths:
           description: Card not found
 components:
   schemas:
-    CreateCardSchemaCurrencyEnum:
+    EmailReferenceSchema_UserSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        email:
+          description: Email of the referenced entity.
+          title: Email
+          type: string
+      required:
+      - id
+      - email
+      title: EmailReferenceSchema[UserSchema]
+      type: object
+    CardLimitType:
       enum:
-      - CAD
-      - USD
+      - RECURRING
+      - TEMPORARY
+      title: CardLimitType
       type: string
     CardActivationStateType:
       enum:
@@ -138,254 +155,6 @@ components:
       - TERMINATED
       title: CardActivationStateType
       type: string
-    CardLimitType:
-      enum:
-      - RECURRING
-      - TEMPORARY
-      title: CardLimitType
-      type: string
-    ReloadIntervalType:
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - QUARTERLY
-      - YEARLY
-      - NO_RELOAD
-      title: ReloadIntervalType
-      type: string
-    CreateCardLimitSchema:
-      properties:
-        type:
-          $ref: '#/components/schemas/CardLimitType'
-          description: The type of this card limit.
-        description:
-          description: Description of the card limit.
-          title: Description
-          type: string
-        expiry_date:
-          default: null
-          description: Expiry date of the card limit. Only used for TEMPORARY limits.
-          format: date
-          nullable: true
-          title: Expiry Date
-          type: string
-        amount_cents:
-          description: Amount of the card limit in cents.
-          title: Amount Cents
-          type: integer
-        reload_interval:
-          $ref: '#/components/schemas/ReloadIntervalType'
-          default: null
-          description: Reload interval of the card limit. Only used for RECURRING limits.
-          nullable: true
-        start_date:
-          default: null
-          description: Start date of the card limit. If set in the future, the limit is scheduled.
-          format: date-time
-          nullable: true
-          title: Start Date
-          type: string
-      required:
-      - type
-      - description
-      - amount_cents
-      title: CreateCardLimitSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    CountablePagedResponse_CardSchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/CardSchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-        pages:
-          description: The total number of pages available.
-          title: Pages
-          type: integer
-        count:
-          description: The total number of items available.
-          title: Count
-          type: integer
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      - pages
-      - count
-      title: CountablePagedResponse_CardSchema
-      type: object
-    MoneyValueSchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-      required:
-      - value
-      - currency
-      title: MoneyValueSchema
-      type: object
-    CardPausedStateType:
-      enum:
-      - ACTIVE
-      - PAUSED
-      title: CardPausedStateType
-      type: string
-    OverrideAutoPauseInputSchema:
-      properties:
-        override:
-          description: Whether to override the auto pause of the submission policy.
-          title: Override
-          type: boolean
-        pause_on_violation:
-          description: Whether to pause on violation of the submission policy.
-          title: Pause On Violation
-          type: boolean
-        after_num_violations:
-          description: Number of violations after which the card is automatically paused.
-          title: After Num Violations
-          type: integer
-      required:
-      - override
-      - pause_on_violation
-      - after_num_violations
-      title: OverrideAutoPauseInputSchema
-      type: object
-    StringValueInputSchema:
-      properties:
-        custom_field_id:
-          description: ID of the custom field
-          format: uuid
-          title: Custom Field Id
-          type: string
-        value:
-          description: Value of the custom field
-          title: Value
-          type: string
-      required:
-      - custom_field_id
-      - value
-      title: StringValueInputSchema
-      type: object
-    CreateCardSchema:
-      properties:
-        name:
-          description: Name of the card.
-          title: Name
-          type: string
-        description:
-          default: ''
-          description: Description of the card.
-          title: Description
-          type: string
-        currency:
-          allOf:
-          - $ref: '#/components/schemas/CreateCardSchemaCurrencyEnum'
-          description: Currency used in the card.
-          title: Currency
-        user_id:
-          description: Unique identifier of the user who owns the card.
-          format: uuid
-          title: User Id
-          type: string
-        limits:
-          default: null
-          description: Limits of the card.  Each card can have up to 1 recurring limit and any number of temporary limits.
-          items:
-            $ref: '#/components/schemas/CreateCardLimitSchema'
-          nullable: true
-          title: Limits
-          type: array
-        submission_policy_id:
-          description: Unique identifier of the submission policy this card charges to
-          format: uuid
-          title: Submission Policy Id
-          type: string
-        submission_policy_override:
-          $ref: '#/components/schemas/OverrideSubmissionPolicyInputSchema'
-          default: null
-          description: Override of the submission policy.
-          nullable: true
-        vendor_id:
-          default: null
-          description: Unique identifier of the Accounting Vendor to be attached to the card.
-          format: uuid
-          nullable: true
-          title: Vendor Id
-          type: string
-        team_id:
-          default: null
-          description: Unique identifier of the Team to be attached to the card.
-          format: uuid
-          nullable: true
-          title: Team Id
-          type: string
-        gl_code_id:
-          default: null
-          description: Unique identifier of the GL Code to be attached to the card.
-          format: uuid
-          nullable: true
-          title: Gl Code Id
-          type: string
-        tax_code_id:
-          default: null
-          description: Unique identifier of the Tax Code to be attached to the card.
-          format: uuid
-          nullable: true
-          title: Tax Code Id
-          type: string
-        custom_fields:
-          default: null
-          description: List of custom field values to be attached to the card.
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/MultiSelectValueInputSchema'
-            - $ref: '#/components/schemas/StringValueInputSchema'
-          nullable: true
-          title: Custom Fields
-          type: array
-      required:
-      - name
-      - currency
-      - user_id
-      - submission_policy_id
-      title: CreateCardSchema
-      type: object
     CardSchema:
       properties:
         id:
@@ -452,47 +221,49 @@ components:
       - activation_state
       title: CardSchema
       type: object
-    MultiSelectValueInputSchema:
-      properties:
-        custom_field_id:
-          description: ID of the custom field
-          format: uuid
-          title: Custom Field Id
-          type: string
-        option_ids:
-          description: List of selected option IDs
-          items:
-            format: uuid
-            type: string
-          title: Option Ids
-          type: array
-      required:
-      - custom_field_id
-      - option_ids
-      title: MultiSelectValueInputSchema
-      type: object
     FulfillmentMethodType:
       enum:
       - PHYSICAL
       - VIRTUAL
       title: FulfillmentMethodType
       type: string
-    EmailReferenceSchema_UserSchema_:
+    StringValueInputSchema:
       properties:
-        id:
-          description: Unique identifier for the referenced entity.
+        custom_field_id:
+          description: ID of the custom field
           format: uuid
-          title: Id
+          title: Custom Field Id
           type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
+        value:
+          description: Value of the custom field
+          title: Value
           type: string
       required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
+      - custom_field_id
+      - value
+      title: StringValueInputSchema
       type: object
+    ReloadIntervalType:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - NO_RELOAD
+      title: ReloadIntervalType
+      type: string
+    CreateCardSchemaCurrencyEnum:
+      enum:
+      - CAD
+      - USD
+      type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     Currencies:
       enum:
       - AFN
@@ -667,6 +438,26 @@ components:
       - UNK
       title: Currencies
       type: string
+    OverrideAutoPauseInputSchema:
+      properties:
+        override:
+          description: Whether to override the auto pause of the submission policy.
+          title: Override
+          type: boolean
+        pause_on_violation:
+          description: Whether to pause on violation of the submission policy.
+          title: Pause On Violation
+          type: boolean
+        after_num_violations:
+          description: Number of violations after which the card is automatically paused.
+          title: After Num Violations
+          type: integer
+      required:
+      - override
+      - pause_on_violation
+      - after_num_violations
+      title: OverrideAutoPauseInputSchema
+      type: object
     OverrideSubmissionPolicyInputSchema:
       properties:
         auto_pause:
@@ -675,6 +466,215 @@ components:
       required:
       - auto_pause
       title: OverrideSubmissionPolicyInputSchema
+      type: object
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    CreateCardLimitSchema:
+      properties:
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        expiry_date:
+          default: null
+          description: Expiry date of the card limit. Only used for TEMPORARY limits.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount_cents:
+          description: Amount of the card limit in cents.
+          title: Amount Cents
+          type: integer
+        reload_interval:
+          $ref: '#/components/schemas/ReloadIntervalType'
+          default: null
+          description: Reload interval of the card limit. Only used for RECURRING limits.
+          nullable: true
+        start_date:
+          default: null
+          description: Start date of the card limit. If set in the future, the limit is scheduled.
+          format: date-time
+          nullable: true
+          title: Start Date
+          type: string
+      required:
+      - type
+      - description
+      - amount_cents
+      title: CreateCardLimitSchema
+      type: object
+    MultiSelectValueInputSchema:
+      properties:
+        custom_field_id:
+          description: ID of the custom field
+          format: uuid
+          title: Custom Field Id
+          type: string
+        option_ids:
+          description: List of selected option IDs
+          items:
+            format: uuid
+            type: string
+          title: Option Ids
+          type: array
+      required:
+      - custom_field_id
+      - option_ids
+      title: MultiSelectValueInputSchema
+      type: object
+    CountablePagedResponse_CardSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/CardSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+        pages:
+          description: The total number of pages available.
+          title: Pages
+          type: integer
+        count:
+          description: The total number of items available.
+          title: Count
+          type: integer
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      - pages
+      - count
+      title: CountablePagedResponse_CardSchema
+      type: object
+    CardPausedStateType:
+      enum:
+      - ACTIVE
+      - PAUSED
+      title: CardPausedStateType
+      type: string
+    CreateCardSchema:
+      properties:
+        name:
+          description: Name of the card.
+          title: Name
+          type: string
+        description:
+          default: ''
+          description: Description of the card.
+          title: Description
+          type: string
+        currency:
+          allOf:
+          - $ref: '#/components/schemas/CreateCardSchemaCurrencyEnum'
+          description: Currency used in the card.
+          title: Currency
+        user_id:
+          description: Unique identifier of the user who owns the card.
+          format: uuid
+          title: User Id
+          type: string
+        limits:
+          default: null
+          description: Limits of the card.  Each card can have up to 1 recurring limit and any number of temporary limits.
+          items:
+            $ref: '#/components/schemas/CreateCardLimitSchema'
+          nullable: true
+          title: Limits
+          type: array
+        submission_policy_id:
+          description: Unique identifier of the submission policy this card charges to
+          format: uuid
+          title: Submission Policy Id
+          type: string
+        submission_policy_override:
+          $ref: '#/components/schemas/OverrideSubmissionPolicyInputSchema'
+          default: null
+          description: Override of the submission policy.
+          nullable: true
+        vendor_id:
+          default: null
+          description: Unique identifier of the Accounting Vendor to be attached to the card.
+          format: uuid
+          nullable: true
+          title: Vendor Id
+          type: string
+        team_id:
+          default: null
+          description: Unique identifier of the Team to be attached to the card.
+          format: uuid
+          nullable: true
+          title: Team Id
+          type: string
+        gl_code_id:
+          default: null
+          description: Unique identifier of the GL Code to be attached to the card.
+          format: uuid
+          nullable: true
+          title: Gl Code Id
+          type: string
+        tax_code_id:
+          default: null
+          description: Unique identifier of the Tax Code to be attached to the card.
+          format: uuid
+          nullable: true
+          title: Tax Code Id
+          type: string
+        custom_fields:
+          default: null
+          description: List of custom field values to be attached to the card.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/MultiSelectValueInputSchema'
+            - $ref: '#/components/schemas/StringValueInputSchema'
+          nullable: true
+          title: Custom Fields
+          type: array
+      required:
+      - name
+      - currency
+      - user_id
+      - submission_policy_id
+      title: CreateCardSchema
       type: object
   securitySchemes:
     bearerToken:

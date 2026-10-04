@@ -96,6 +96,30 @@ paths:
           description: Account not found
 components:
   schemas:
+    AccountViewSchema:
+      properties:
+        id:
+          description: Unique identifier for the account
+          format: uuid
+          title: Id
+          type: string
+        type:
+          $ref: '#/components/schemas/AccountType'
+          description: Type of the account
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+        account_balance:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: The amount of the account balance.
+          nullable: true
+      required:
+      - id
+      - type
+      - currency
+      - account_balance
+      title: AccountViewSchema
+      type: object
     CountablePagedResponse_AccountViewSchema:
       properties:
         items:
@@ -149,50 +173,6 @@ components:
       - created_at
       - -created_at
       title: OrderByTypes
-      type: string
-    MoneyValueSchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-      required:
-      - value
-      - currency
-      title: MoneyValueSchema
-      type: object
-    AccountViewSchema:
-      properties:
-        id:
-          description: Unique identifier for the account
-          format: uuid
-          title: Id
-          type: string
-        type:
-          $ref: '#/components/schemas/AccountType'
-          description: Type of the account
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-        account_balance:
-          $ref: '#/components/schemas/MoneyValueSchema'
-          description: The amount of the account balance.
-          nullable: true
-      required:
-      - id
-      - type
-      - currency
-      - account_balance
-      title: AccountViewSchema
-      type: object
-    AccountType:
-      enum:
-      - CREDIT
-      - DEBIT
-      title: AccountType
       type: string
     Currencies:
       enum:
@@ -367,6 +347,26 @@ components:
       - ZWL
       - UNK
       title: Currencies
+      type: string
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    AccountType:
+      enum:
+      - CREDIT
+      - DEBIT
+      title: AccountType
       type: string
   securitySchemes:
     bearerToken:

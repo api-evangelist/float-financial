@@ -96,35 +96,6 @@ paths:
           description: Approval policy not found
 components:
   schemas:
-    ApprovalStepSchema:
-      properties:
-        approvers:
-          $ref: '#/components/schemas/ApprovalStepApproversSchema'
-          description: The associated approvers of the approval step.
-        notified_users:
-          description: The users notified when a step is completed.
-          items:
-            $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
-          title: Notified Users
-          type: array
-      required:
-      - approvers
-      - notified_users
-      title: ApprovalStepSchema
-      type: object
-    WorkflowType:
-      enum:
-      - DEFAULT
-      - ONE_TIME_EXPENSE
-      - RECURRING_EXPENSE
-      title: WorkflowType
-      type: string
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
     NameReferenceSchema_TeamSchema_:
       properties:
         id:
@@ -141,56 +112,22 @@ components:
       - name
       title: NameReferenceSchema[TeamSchema]
       type: object
-    ApprovalLevelSchema:
-      properties:
-        starting_amount_cents:
-          description: The amount cents the level starts from.
-          title: Starting Amount Cents
-          type: integer
-        steps:
-          description: The associated approval steps.
-          items:
-            $ref: '#/components/schemas/ApprovalStepSchema'
-          title: Steps
-          type: array
-      required:
-      - starting_amount_cents
-      - steps
-      title: ApprovalLevelSchema
-      type: object
-    ApprovalPolicyType:
-      enum:
-      - SPENDING
-      - PERSONAL_REIMBURSEMENT
-      - TRANSACTION_REVIEW
-      - BILL_APPROVAL
-      - FUNDS_RELEASE
-      title: ApprovalPolicyType
-      type: string
-    NameReferenceSchema_ApprovalGroupSchema_:
+    EmailReferenceSchema_UserSchema_:
       properties:
         id:
           description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        name:
-          description: Name of the referenced entity.
-          title: Name
+        email:
+          description: Email of the referenced entity.
+          title: Email
           type: string
       required:
       - id
-      - name
-      title: NameReferenceSchema[ApprovalGroupSchema]
+      - email
+      title: EmailReferenceSchema[UserSchema]
       type: object
-    AbstractAssignee:
-      enum:
-      - MANAGER_LEVEL_1
-      - MANAGER_LEVEL_2
-      - MANAGER_LEVEL_3
-      - ANY_ADMIN
-      title: AbstractAssignee
-      type: string
     ApprovalStepApproversSchema:
       properties:
         users:
@@ -216,6 +153,29 @@ components:
       - groups
       - dynamic
       title: ApprovalStepApproversSchema
+      type: object
+    WorkflowType:
+      enum:
+      - DEFAULT
+      - ONE_TIME_EXPENSE
+      - RECURRING_EXPENSE
+      title: WorkflowType
+      type: string
+    ApprovalStepSchema:
+      properties:
+        approvers:
+          $ref: '#/components/schemas/ApprovalStepApproversSchema'
+          description: The associated approvers of the approval step.
+        notified_users:
+          description: The users notified when a step is completed.
+          items:
+            $ref: '#/components/schemas/EmailReferenceSchema_UserSchema_'
+          title: Notified Users
+          type: array
+      required:
+      - approvers
+      - notified_users
+      title: ApprovalStepSchema
       type: object
     CountablePagedResponse_ApprovalPolicySchema:
       properties:
@@ -265,22 +225,30 @@ components:
       - count
       title: CountablePagedResponse_ApprovalPolicySchema
       type: object
-    EmailReferenceSchema_UserSchema_:
+    ApprovalWorkflowSchema:
       properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
-          type: string
+        type:
+          $ref: '#/components/schemas/WorkflowType'
+          description: The type of approval policy workflow.
+        levels:
+          description: The levels associated with the approval policy workflow.
+          items:
+            $ref: '#/components/schemas/ApprovalLevelSchema'
+          title: Levels
+          type: array
       required:
-      - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
+      - type
+      - levels
+      title: ApprovalWorkflowSchema
       type: object
+    AbstractAssignee:
+      enum:
+      - MANAGER_LEVEL_1
+      - MANAGER_LEVEL_2
+      - MANAGER_LEVEL_3
+      - ANY_ADMIN
+      title: AbstractAssignee
+      type: string
     ApprovalPolicySchema:
       properties:
         id:
@@ -325,21 +293,53 @@ components:
       - workflows
       title: ApprovalPolicySchema
       type: object
-    ApprovalWorkflowSchema:
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    ApprovalPolicyType:
+      enum:
+      - SPENDING
+      - PERSONAL_REIMBURSEMENT
+      - TRANSACTION_REVIEW
+      - BILL_APPROVAL
+      - FUNDS_RELEASE
+      title: ApprovalPolicyType
+      type: string
+    NameReferenceSchema_ApprovalGroupSchema_:
       properties:
-        type:
-          $ref: '#/components/schemas/WorkflowType'
-          description: The type of approval policy workflow.
-        levels:
-          description: The levels associated with the approval policy workflow.
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: Name of the referenced entity.
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: NameReferenceSchema[ApprovalGroupSchema]
+      type: object
+    ApprovalLevelSchema:
+      properties:
+        starting_amount_cents:
+          description: The amount cents the level starts from.
+          title: Starting Amount Cents
+          type: integer
+        steps:
+          description: The associated approval steps.
           items:
-            $ref: '#/components/schemas/ApprovalLevelSchema'
-          title: Levels
+            $ref: '#/components/schemas/ApprovalStepSchema'
+          title: Steps
           type: array
       required:
-      - type
-      - levels
-      title: ApprovalWorkflowSchema
+      - starting_amount_cents
+      - steps
+      title: ApprovalLevelSchema
       type: object
   securitySchemes:
     bearerToken:

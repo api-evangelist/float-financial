@@ -133,22 +133,6 @@ paths:
           description: Card limit not found
 components:
   schemas:
-    CardLimitType:
-      enum:
-      - RECURRING
-      - TEMPORARY
-      title: CardLimitType
-      type: string
-    ReloadIntervalType:
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - QUARTERLY
-      - YEARLY
-      - NO_RELOAD
-      title: ReloadIntervalType
-      type: string
     CountablePagedResponse_CardLimitSchema:
       properties:
         items:
@@ -197,70 +181,12 @@ components:
       - count
       title: CountablePagedResponse_CardLimitSchema
       type: object
-    CreateCardLimitForCardSchema:
-      properties:
-        type:
-          $ref: '#/components/schemas/CardLimitType'
-          description: The type of this card limit.
-        description:
-          description: Description of the card limit.
-          title: Description
-          type: string
-        expiry_date:
-          default: null
-          description: Expiry date of the card limit. Only used for TEMPORARY limits.
-          format: date
-          nullable: true
-          title: Expiry Date
-          type: string
-        amount_cents:
-          description: Amount of the card limit in cents.
-          title: Amount Cents
-          type: integer
-        reload_interval:
-          $ref: '#/components/schemas/ReloadIntervalType'
-          default: null
-          description: Reload interval of the card limit. Only used for RECURRING limits.
-          nullable: true
-        start_date:
-          default: null
-          description: Start date of the card limit. If set in the future, the limit is scheduled.
-          format: date-time
-          nullable: true
-          title: Start Date
-          type: string
-        card_id:
-          description: Unique identifier for the card.
-          format: uuid
-          title: Card Id
-          type: string
-      required:
-      - type
-      - description
-      - amount_cents
-      - card_id
-      title: CreateCardLimitForCardSchema
-      type: object
-    OrderByTypes:
+    CardLimitType:
       enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
+      - RECURRING
+      - TEMPORARY
+      title: CardLimitType
       type: string
-    MoneyValueSchema:
-      properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
-      required:
-      - value
-      - currency
-      title: MoneyValueSchema
-      type: object
     CardLimitStatus:
       enum:
       - SCHEDULED
@@ -268,61 +194,22 @@ components:
       - EXPIRED
       title: CardLimitStatus
       type: string
-    CardLimitSchema:
-      properties:
-        id:
-          description: Unique identifier for the card limit.
-          format: uuid
-          title: Id
-          type: string
-        card_id:
-          description: Unique identifier for the card.
-          format: uuid
-          title: Card Id
-          type: string
-        type:
-          $ref: '#/components/schemas/CardLimitType'
-          description: The type of this card limit.
-        description:
-          description: Description of the card limit.
-          title: Description
-          type: string
-        start_date:
-          description: Start date of the card limit.
-          format: date-time
-          title: Start Date
-          type: string
-        end_date:
-          description: End date of the card limit.  If None, the limit is ongoing.
-          format: date-time
-          nullable: true
-          title: End Date
-          type: string
-        expiry_date:
-          description: Expiry date of the card limit.
-          format: date
-          nullable: true
-          title: Expiry Date
-          type: string
-        amount:
-          $ref: '#/components/schemas/MoneyValueSchema'
-          description: Amount of the card limit.
-          nullable: true
-        status:
-          $ref: '#/components/schemas/CardLimitStatus'
-          description: 'Lifecycle status of the card limit: SCHEDULED, ACTIVE, or EXPIRED.'
-      required:
-      - id
-      - card_id
-      - type
-      - description
-      - start_date
-      - end_date
-      - expiry_date
-      - amount
-      - status
-      title: CardLimitSchema
-      type: object
+    ReloadIntervalType:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - NO_RELOAD
+      title: ReloadIntervalType
+      type: string
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     Currencies:
       enum:
       - AFN
@@ -497,6 +384,119 @@ components:
       - UNK
       title: Currencies
       type: string
+    MoneyValueSchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+      required:
+      - value
+      - currency
+      title: MoneyValueSchema
+      type: object
+    CardLimitSchema:
+      properties:
+        id:
+          description: Unique identifier for the card limit.
+          format: uuid
+          title: Id
+          type: string
+        card_id:
+          description: Unique identifier for the card.
+          format: uuid
+          title: Card Id
+          type: string
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        start_date:
+          description: Start date of the card limit.
+          format: date-time
+          title: Start Date
+          type: string
+        end_date:
+          description: End date of the card limit.  If None, the limit is ongoing.
+          format: date-time
+          nullable: true
+          title: End Date
+          type: string
+        expiry_date:
+          description: Expiry date of the card limit.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount:
+          $ref: '#/components/schemas/MoneyValueSchema'
+          description: Amount of the card limit.
+          nullable: true
+        status:
+          $ref: '#/components/schemas/CardLimitStatus'
+          description: 'Lifecycle status of the card limit: SCHEDULED, ACTIVE, or EXPIRED.'
+      required:
+      - id
+      - card_id
+      - type
+      - description
+      - start_date
+      - end_date
+      - expiry_date
+      - amount
+      - status
+      title: CardLimitSchema
+      type: object
+    CreateCardLimitForCardSchema:
+      properties:
+        type:
+          $ref: '#/components/schemas/CardLimitType'
+          description: The type of this card limit.
+        description:
+          description: Description of the card limit.
+          title: Description
+          type: string
+        expiry_date:
+          default: null
+          description: Expiry date of the card limit. Only used for TEMPORARY limits.
+          format: date
+          nullable: true
+          title: Expiry Date
+          type: string
+        amount_cents:
+          description: Amount of the card limit in cents.
+          title: Amount Cents
+          type: integer
+        reload_interval:
+          $ref: '#/components/schemas/ReloadIntervalType'
+          default: null
+          description: Reload interval of the card limit. Only used for RECURRING limits.
+          nullable: true
+        start_date:
+          default: null
+          description: Start date of the card limit. If set in the future, the limit is scheduled.
+          format: date-time
+          nullable: true
+          title: Start Date
+          type: string
+        card_id:
+          description: Unique identifier for the card.
+          format: uuid
+          title: Card Id
+          type: string
+      required:
+      - type
+      - description
+      - amount_cents
+      - card_id
+      title: CreateCardLimitForCardSchema
+      type: object
   securitySchemes:
     bearerToken:
       type: http

@@ -95,6 +95,20 @@ paths:
           description: Accounting connection not found
 components:
   schemas:
+    AccountingConnectionStatus:
+      enum:
+      - connected
+      - reconnect_required
+      title: AccountingConnectionStatus
+      type: string
+    AccountingConnectionCreateSchema:
+      type: object
+      properties:
+        provider_name:
+          type: string
+          description: Name of the accounting provider
+      required:
+      - provider_name
     AccountingConnectionListSchema:
       properties:
         data:
@@ -106,12 +120,12 @@ components:
       - data
       title: AccountingConnectionListSchema
       type: object
-    AccountingConnectionStatus:
-      enum:
-      - connected
-      - reconnect_required
-      title: AccountingConnectionStatus
-      type: string
+    PatchedAccountingConnectionUpdateSchema:
+      type: object
+      properties:
+        provider_name:
+          type: string
+          description: Name of the accounting provider (only applicable to API connections)
     AccountingConnectionSchema:
       properties:
         id:
@@ -147,20 +161,6 @@ components:
       - NATIVE
       title: AccountingConnectionType
       type: string
-    PatchedAccountingConnectionUpdateSchema:
-      type: object
-      properties:
-        provider_name:
-          type: string
-          description: Name of the accounting provider (only applicable to API connections)
-    AccountingConnectionCreateSchema:
-      type: object
-      properties:
-        provider_name:
-          type: string
-          description: Name of the accounting provider
-      required:
-      - provider_name
   securitySchemes:
     bearerToken:
       type: http

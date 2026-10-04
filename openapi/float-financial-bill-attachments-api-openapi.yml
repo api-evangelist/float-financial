@@ -104,17 +104,6 @@ paths:
           description: Bill attachment not found
 components:
   schemas:
-    ReferenceSchema_BillSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[BillSchema]
-      type: object
     CountablePagedResponse_BillAttachmentSchema:
       properties:
         items:
@@ -162,6 +151,17 @@ components:
       - pages
       - count
       title: CountablePagedResponse_BillAttachmentSchema
+      type: object
+    ReferenceSchema_BillSchema_:
+      properties:
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[BillSchema]
       type: object
     BillAttachmentSchema:
       properties:

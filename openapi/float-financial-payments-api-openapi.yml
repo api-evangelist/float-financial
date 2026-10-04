@@ -96,118 +96,6 @@ paths:
           description: Payment not found
 components:
   schemas:
-    PaymentSchema:
-      properties:
-        id:
-          description: The unique ID of the payment.
-          format: uuid
-          title: Id
-          type: string
-        date:
-          description: The date of the payment.
-          format: date
-          nullable: true
-          title: Date
-          type: string
-        status:
-          $ref: '#/components/schemas/BillPaymentStatus'
-          description: The status of the payment.
-        resource_id:
-          description: The ID of the resource the payment belongs to.
-          format: uuid
-          title: Resource Id
-          type: string
-        resource_type:
-          $ref: '#/components/schemas/PayableType'
-          description: The type of resource the payment belongs to.
-        amount:
-          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
-          description: The money value of the payment.
-        failure_reason:
-          description: The failure reason if the payment failed, null if payment did not fail.
-          nullable: true
-          title: Failure Reason
-          type: string
-        funding_source:
-          $ref: '#/components/schemas/FundingSourceSchema'
-          description: The funding source of the payment.
-        account_transaction:
-          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
-          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
-          nullable: true
-      required:
-      - id
-      - date
-      - status
-      - resource_id
-      - resource_type
-      - amount
-      - failure_reason
-      - funding_source
-      - account_transaction
-      title: PaymentSchema
-      type: object
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    ReferenceSchema_AccountTransactionSchema_:
-      properties:
-        id:
-          description: Unique identifier for the referenced entity.
-          format: uuid
-          title: Id
-          type: string
-      required:
-      - id
-      title: ReferenceSchema[AccountTransactionSchema]
-      type: object
-    PagedResponse_PaymentSchema:
-      properties:
-        items:
-          description: The list of items on the current page.
-          items:
-            $ref: '#/components/schemas/PaymentSchema'
-          title: Items
-          type: array
-        page:
-          description: The current page number.
-          title: Page
-          type: integer
-        page_size:
-          description: The number of items per page.
-          title: Page Size
-          type: integer
-        created_at__lte:
-          description: The most recent date for which results are included.
-          format: date-time
-          title: Created At  Lte
-          type: string
-        created_at__gte:
-          description: The least recent date for which results are included.
-          format: date-time
-          title: Created At  Gte
-          type: string
-        ordered_by:
-          $ref: '#/components/schemas/OrderByTypes'
-          description: The ordering used to sort results.
-      required:
-      - items
-      - page
-      - page_size
-      - created_at__lte
-      - created_at__gte
-      - ordered_by
-      title: PagedResponse_PaymentSchema
-      type: object
-    FundingSource:
-      enum:
-      - PAYMENT_CONNECTION
-      - FLOAT_ACCOUNT
-      title: FundingSource
-      type: string
     FundingSourceSchema:
       properties:
         id:
@@ -222,6 +110,27 @@ components:
       - id
       - type
       title: FundingSourceSchema
+      type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
+    MoneyValueWithOptionalCurrencySchema:
+      properties:
+        value:
+          description: The monetary amount in its smallest unit (e.g. cents for CAD).
+          title: Value
+          type: integer
+        currency:
+          $ref: '#/components/schemas/Currencies'
+          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+          nullable: true
+      required:
+      - value
+      - currency
+      title: MoneyValueWithOptionalCurrencySchema
       type: object
     BillPaymentStatus:
       description: 'This contains all the same choices from the AccountsPayablePaymentStatus
@@ -413,20 +322,111 @@ components:
       - UNK
       title: Currencies
       type: string
-    MoneyValueWithOptionalCurrencySchema:
+    ReferenceSchema_AccountTransactionSchema_:
       properties:
-        value:
-          description: The monetary amount in its smallest unit (e.g. cents for CAD).
-          title: Value
-          type: integer
-        currency:
-          $ref: '#/components/schemas/Currencies'
-          description: The ISO 4217 currency code (e.g., 'CAD' for Canadian Dollar).
+        id:
+          description: Unique identifier for the referenced entity.
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: ReferenceSchema[AccountTransactionSchema]
+      type: object
+    FundingSource:
+      enum:
+      - PAYMENT_CONNECTION
+      - FLOAT_ACCOUNT
+      title: FundingSource
+      type: string
+    PaymentSchema:
+      properties:
+        id:
+          description: The unique ID of the payment.
+          format: uuid
+          title: Id
+          type: string
+        date:
+          description: The date of the payment.
+          format: date
+          nullable: true
+          title: Date
+          type: string
+        status:
+          $ref: '#/components/schemas/BillPaymentStatus'
+          description: The status of the payment.
+        resource_id:
+          description: The ID of the resource the payment belongs to.
+          format: uuid
+          title: Resource Id
+          type: string
+        resource_type:
+          $ref: '#/components/schemas/PayableType'
+          description: The type of resource the payment belongs to.
+        amount:
+          $ref: '#/components/schemas/MoneyValueWithOptionalCurrencySchema'
+          description: The money value of the payment.
+        failure_reason:
+          description: The failure reason if the payment failed, null if payment did not fail.
+          nullable: true
+          title: Failure Reason
+          type: string
+        funding_source:
+          $ref: '#/components/schemas/FundingSourceSchema'
+          description: The funding source of the payment.
+        account_transaction:
+          $ref: '#/components/schemas/ReferenceSchema_AccountTransactionSchema_'
+          description: The account transaction associated with the payment.  This is present when the payment has been sent from a Float account.
           nullable: true
       required:
-      - value
-      - currency
-      title: MoneyValueWithOptionalCurrencySchema
+      - id
+      - date
+      - status
+      - resource_id
+      - resource_type
+      - amount
+      - failure_reason
+      - funding_source
+      - account_transaction
+      title: PaymentSchema
+      type: object
+    PagedResponse_PaymentSchema:
+      properties:
+        items:
+          description: The list of items on the current page.
+          items:
+            $ref: '#/components/schemas/PaymentSchema'
+          title: Items
+          type: array
+        page:
+          description: The current page number.
+          title: Page
+          type: integer
+        page_size:
+          description: The number of items per page.
+          title: Page Size
+          type: integer
+        created_at__lte:
+          description: The most recent date for which results are included.
+          format: date-time
+          title: Created At  Lte
+          type: string
+        created_at__gte:
+          description: The least recent date for which results are included.
+          format: date-time
+          title: Created At  Gte
+          type: string
+        ordered_by:
+          $ref: '#/components/schemas/OrderByTypes'
+          description: The ordering used to sort results.
+      required:
+      - items
+      - page
+      - page_size
+      - created_at__lte
+      - created_at__gte
+      - ordered_by
+      title: PagedResponse_PaymentSchema
       type: object
     PayableType:
       enum:

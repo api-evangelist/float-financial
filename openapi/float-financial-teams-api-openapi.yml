@@ -96,27 +96,21 @@ paths:
           description: Team not found
 components:
   schemas:
-    OrderByTypes:
-      enum:
-      - created_at
-      - -created_at
-      title: OrderByTypes
-      type: string
-    NameReferenceSchema_CustomFieldSchema_:
+    EmailReferenceSchema_UserSchema_:
       properties:
         id:
           description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        name:
-          description: Name of the referenced entity.
-          title: Name
+        email:
+          description: Email of the referenced entity.
+          title: Email
           type: string
       required:
       - id
-      - name
-      title: NameReferenceSchema[CustomFieldSchema]
+      - email
+      title: EmailReferenceSchema[UserSchema]
       type: object
     BaseApprovalPolicySchema:
       properties:
@@ -138,6 +132,12 @@ components:
       - type
       title: BaseApprovalPolicySchema
       type: object
+    OrderByTypes:
+      enum:
+      - created_at
+      - -created_at
+      title: OrderByTypes
+      type: string
     CountablePagedResponse_TeamSchema:
       properties:
         items:
@@ -230,21 +230,21 @@ components:
       - custom_fields
       title: TeamSchema
       type: object
-    EmailReferenceSchema_UserSchema_:
+    NameReferenceSchema_CustomFieldSchema_:
       properties:
         id:
           description: Unique identifier for the referenced entity.
           format: uuid
           title: Id
           type: string
-        email:
-          description: Email of the referenced entity.
-          title: Email
+        name:
+          description: Name of the referenced entity.
+          title: Name
           type: string
       required:
       - id
-      - email
-      title: EmailReferenceSchema[UserSchema]
+      - name
+      title: NameReferenceSchema[CustomFieldSchema]
       type: object
     ApprovalPolicyType:
       enum:
