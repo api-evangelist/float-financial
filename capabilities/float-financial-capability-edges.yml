@@ -1,0 +1,77 @@
+slug: float-financial
+provider: Float Financial
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 6
+edges:
+- tag: Bills
+  spec_file: float-financial-bills-api-openapi.yml
+  capability_id: BC-200.20
+  capability_id_l1: BC-200
+  capability_name: Accounts Payable Management
+  confidence: 0.85
+  evidence: GET /v1/bills  Retrieve a paginated list of bills; schemas BillPaymentStatus, PaymentSchema,
+    NameExternalIdReferenceSchema_BillPayeeSchema_, FundingSourceSchema
+  reason: Bills with payees, payment status and funding sources are supplier invoices being processed
+    and paid — accounts payable / bill pay, which the vendor description also calls out. Clear AP invoice-and-payment
+    lifecycle surface.
+- tag: GL Codes
+  spec_file: float-financial-gl-codes-api-openapi.yml
+  capability_id: BC-200.10
+  capability_id_l1: BC-200
+  capability_name: General Ledger Management
+  confidence: 0.8
+  evidence: GET /v1/gl-codes getGLCodes 'Retrieve a paginated list of GL Codes'; schemas GLCodeInputSchema,
+    GLCodeOutputSchema, Currencies
+  reason: General ledger account codes are maintained and created through this surface, which is chart-of-accounts
+    maintenance under General Ledger Management.
+- tag: Tax Codes
+  spec_file: float-financial-tax-codes-api-openapi.yml
+  capability_id: BC-220.20
+  capability_id_l1: BC-220
+  capability_name: Indirect Tax Management
+  confidence: 0.75
+  evidence: POST /v1/tax-codes createTaxCodes; schemas TaxCodeInputSchema, TaxComponentInputSchema
+  reason: Maintenance of tax codes composed of tax components for a Canadian spend platform is GST/HST-style
+    indirect tax rate configuration used to tax transactions.
+- tag: Payments
+  spec_file: float-financial-payments-api-openapi.yml
+  capability_id: BC-200.20
+  capability_id_l1: BC-200
+  capability_name: Accounts Payable Management
+  confidence: 0.72
+  evidence: schemas PaymentSchema, FundingSourceSchema, BillPaymentStatus, PayableType; 'Retrieve a paginated
+    list of payments'
+  reason: The BillPaymentStatus and PayableType schemas show these are bill/payable payments from the
+    vendor's accounts-payable (bill pay) product, i.e. invoice payment execution. Read-only reporting
+    keeps confidence moderate.
+- tag: Webhooks
+  spec_file: float-financial-webhooks-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.72
+  evidence: POST /v1/webhooks createWebhookSubscription Create a webhook subscription; schema CreateWebhookSubscriptionSchema
+  reason: Outbound event subscription lifecycle exposed to API consumers, which is exactly the Webhook
+    & Event Subscription Management sub-capability; otherwise generic integration plumbing, hence moderate
+    confidence.
+- tag: Bill Attachments
+  spec_file: float-financial-bill-attachments-api-openapi.yml
+  capability_id: BC-200.20
+  capability_id_l1: BC-200
+  capability_name: Accounts Payable Management
+  confidence: 0.7
+  evidence: GET /v1/bills/{bill_id}/attachments  Retrieve a paginated list of bill attachments by bill
+    ID; schema ReferenceSchema_BillSchema_
+  reason: Attachments are the supporting documents (supplier invoices/receipts) for payable bills, part
+    of invoice processing in Accounts Payable. Confidence moderate because the surface itself is only
+    document retrieval subordinate to the Bills resource.
