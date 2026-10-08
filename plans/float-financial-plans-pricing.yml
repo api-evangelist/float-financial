@@ -96,3 +96,33 @@ footnotes:
 - 1% cashback with over $25k in monthly spending per card program (USD, CAD). Enterprise has different rewards structures.
 - Float may change yield rates at any time without notice.
 terms: https://floatfinancial.com/legal
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - negotiated
+  - subscription
+  units: []
+  plans:
+  - name: Essentials
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Professional
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods:
+    - term
