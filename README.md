@@ -64,5 +64,144 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Float Financial is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.hiive.com/securities/float-financial-stock
+Float Financial Solutions Inc. is a Toronto-based Canadian business finance platform combining corporate charge cards, high-yield business accounts, expense management, accounts payable / bill pay, employee reimbursements and multi-currency FX into one spend management product for Canadian companies. Founded in 2019 and used by thousands of Canadian businesses, Float publishes a REST "Float Public API" at api.floatfinancial.com that exposes card and account transactions, cards and card limits, bills and bill attachments, payments, reimbursements, receipts, vendors, GL codes, tax codes and components, custom fields, subsidiaries, teams, users, approval and submission policies, accounting connections and webhook subscriptions — designed primarily for finance teams building custom accounting/ERP integrations where Float's packaged QuickBooks Online, Xero and NetSuite connectors do not fit.
+
+**Areas:** Spend Management · Corporate Cards · Expense Management · Accounts Payable · Bill Pay · Reimbursement · Business Banking · Accounting Integration · Fintech · Canada · Payments · ERP Integration
+
+## Float Financial on APIs.io
+
+Everything profiled for Float Financial is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/float-financial/](https://apis.io/providers/float-financial/)** — or go straight to one of the APIs or properties below.
+
+### APIs (23)
+
+- [Float Financial Account Transactions API](https://apis.io/apis/float-financial/float-financial-account-transactions-api/) — The Account Transactions API from Float Financial — 2 operation(s) for account transactions.
+- [Float Financial Accounting Connections API](https://apis.io/apis/float-financial/float-financial-accounting-connections-api/) — The Accounting Connections API from Float Financial — 2 operation(s) for accounting connections.
+- [Float Financial Accounts API](https://apis.io/apis/float-financial/float-financial-accounts-api/) — The Accounts API from Float Financial — 2 operation(s) for accounts.
+- [Float Financial Approval Policies API](https://apis.io/apis/float-financial/float-financial-approval-policies-api/) — The Approval Policies API from Float Financial — 2 operation(s) for approval policies.
+- [Float Financial Bill Attachments API](https://apis.io/apis/float-financial/float-financial-bill-attachments-api/) — The Bill Attachments API from Float Financial — 2 operation(s) for bill attachments.
+- [Float Financial Bills API](https://apis.io/apis/float-financial/float-financial-bills-api/) — The Bills API from Float Financial — 3 operation(s) for bills.
+- [Float Financial Card Limits API](https://apis.io/apis/float-financial/float-financial-card-limits-api/) — The Card Limits API from Float Financial — 2 operation(s) for card limits.
+- [Float Financial Card Transactions API](https://apis.io/apis/float-financial/float-financial-card-transactions-api/) — The Card Transactions API from Float Financial — 2 operation(s) for card transactions.
+- [Float Financial Cards API](https://apis.io/apis/float-financial/float-financial-cards-api/) — The Cards API from Float Financial — 2 operation(s) for cards.
+- [Float Financial Custom Fields API](https://apis.io/apis/float-financial/float-financial-custom-fields-api/) — The Custom Fields API from Float Financial — 4 operation(s) for custom fields.
+- [Float Financial GL Codes API](https://apis.io/apis/float-financial/float-financial-gl-codes-api/) — The GL Codes API from Float Financial — 2 operation(s) for gl codes.
+- [Float Financial Meta API](https://apis.io/apis/float-financial/float-financial-meta-api/) — The Meta API from Float Financial — 1 operation(s) for meta.
+- [Float Financial Payments API](https://apis.io/apis/float-financial/float-financial-payments-api/) — The Payments API from Float Financial — 2 operation(s) for payments.
+- [Float Financial Receipts API](https://apis.io/apis/float-financial/float-financial-receipts-api/) — The Receipts API from Float Financial — 2 operation(s) for receipts.
+- [Float Financial Reimbursements API](https://apis.io/apis/float-financial/float-financial-reimbursements-api/) — The Reimbursements API from Float Financial — 3 operation(s) for reimbursements.
+- [Float Financial Submission Policies API](https://apis.io/apis/float-financial/float-financial-submission-policies-api/) — The Submission Policies API from Float Financial — 2 operation(s) for submission policies.
+- [Float Financial Subsidiaries API](https://apis.io/apis/float-financial/float-financial-subsidiaries-api/) — The Subsidiaries API from Float Financial — 2 operation(s) for subsidiaries.
+- [Float Financial Tax Codes API](https://apis.io/apis/float-financial/float-financial-tax-codes-api/) — The Tax Codes API from Float Financial — 2 operation(s) for tax codes.
+- [Float Financial Tax Components API](https://apis.io/apis/float-financial/float-financial-tax-components-api/) — The Tax Components API from Float Financial — 1 operation(s) for tax components.
+- [Float Financial Teams API](https://apis.io/apis/float-financial/float-financial-teams-api/) — The Teams API from Float Financial — 2 operation(s) for teams.
+- [Float Financial Users API](https://apis.io/apis/float-financial/float-financial-users-api/) — The Users API from Float Financial — 2 operation(s) for users.
+- [Float Financial Vendors API](https://apis.io/apis/float-financial/float-financial-vendors-api/) — The Vendors API from Float Financial — 2 operation(s) for vendors.
+- [Float Financial Webhooks API](https://apis.io/apis/float-financial/float-financial-webhooks-api/) — The Webhooks API from Float Financial — 1 operation(s) for webhooks.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Float Financial Webhooks](https://apis.io/asyncapis/float-financial/float-financial-webhooks/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Float Financial Openapi Overlay](https://apis.io/overlays/float-financial/float-financial-openapi-overlay/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Float Financial Authentication](https://apis.io/security/float-financial/float-financial-authentication/)
+- [Float Financial Domain Security](https://apis.io/security/float-financial/float-financial-domain-security/)
+- [Float Financial Trust Center](https://apis.io/security/float-financial/float-financial-trust-center/)
+- [Float Financial Vulnerability Disclosure](https://apis.io/security/float-financial/float-financial-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Float Financial Plans Pricing](https://apis.io/plans/float-financial/float-financial-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Float Financial Rate Limits](https://apis.io/rate-limits/float-financial/float-financial-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://floatfinancial.com/)
+- [Documentation](https://docs.floatfinancial.com/)
+- [Getting started](https://help.floatfinancial.com/hc/en-us/articles/38048585600404-Get-Started-with-Float-s-Public-API)
+- [API reference](https://docs.floatfinancial.com/reference/gettransactions)
+- [Pricing](https://floatfinancial.com/pricing)
+- [Sign up](https://app.floatfinancial.com/signup)
+- [Support](https://help.floatfinancial.com/hc/en-us)
+- [Blog](https://floatfinancial.com/blog)
+- [Terms of service](https://floatfinancial.com/legal)
+- [Privacy policy](https://floatfinancial.com/legal#float-financial-solutions-privacy-policy)
+- [GitHub](https://github.com/floatfinancial)
+
+## API Evangelist rating
+
+**Kin Score 59.9** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 57.2 |
+| Contract governance | 18.2 |
+| Operational transparency | 36.8 |
+| Developer ergonomics | 45.8 |
+| Access clarity | 85.5 |
+
+**Agent readiness 32.5** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | verified |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 32.1** — Payments
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/float-financial/](https://apis.io/providers/float-financial/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Float Financial: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/float-financial/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
